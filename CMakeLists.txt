@@ -28,9 +28,6 @@ set(Shizu.Runtime.project-name "Shizu.Runtime")
 # To simply things.
 set(name "Shizu.Runtime")
 
-# Remember the path to the cmake directory.
-set(${name}.cmake-files-dir ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
 # Copy the files of the rendition to the interpreter binary directory.
 # rendition_name The rendition name.
 macro(copy_plugin target module)
@@ -107,7 +104,7 @@ if (NOT idlib-file-system.tag)
   set(idlib-file-system.tag 1.4)
 endif()
 
-set(idlib-fie-system.source-dir CACHE STRING "IdLib File System: Path to the source directory")
+set(idlib-file-system.source-dir CACHE STRING "IdLib File System: Path to the source directory")
 if (NOT idlib-file-system.source-dir)
   set(idlib-file-system.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-file-system-1.4-src")
 endif()
@@ -130,7 +127,7 @@ FetchContent_MakeAvailable(idlib-bit-scan idlib-file-system)
 #######################################################################################################################
 
 # Include the cmake library.
-include(${${name}.cmake-files-dir}/all.cmake)
+include(${idlib-process.source-dir}/cmake/all.cmake)
 
 # Enable testing.
 enable_testing()
