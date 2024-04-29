@@ -130,7 +130,7 @@ Shizu_String_concatenate
 	}
   size_t hashValue = self->numberOfBytes + other->numberOfBytes;
 	for (size_t i = 0, n = self->numberOfBytes; i < n; ++i) {
-		hashValue = (hashValue << 5) ^ (hashValue >> 3) | (Shizu_Integer32)self->bytes[i];
+		hashValue = (hashValue << 5) ^ (hashValue >> 3) | (size_t)self->bytes[i];
 	}
 	for (size_t i = 0, n = other->numberOfBytes; i < n; ++i) {
 		hashValue = (hashValue << 5) ^ (hashValue >> 3) | (size_t)other->bytes[i];
