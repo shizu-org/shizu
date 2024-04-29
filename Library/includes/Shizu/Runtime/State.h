@@ -241,4 +241,10 @@ Shizu_Dl_getSymbol
     char const* name
   );
 
+void
+Shizu_State_ensureModulesLoaded
+  (
+    Shizu_State* state
+  );
+
 #endif // SHIZU_RUNTIME_STATE_H_INCLUDED

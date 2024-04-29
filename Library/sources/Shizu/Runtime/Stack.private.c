@@ -166,6 +166,16 @@ Shizu_Stack_push
   stack->elements[stack->size++] = value;
 }
 
+void
+Shizu_Stack_clear
+  (
+    Shizu_State* state
+  )
+{
+  Shizu_Stack* stack = Shizu_State_getStack(state);
+  stack->size = 0;
+}
+
 bool
 Shizu_Stack_isBoolean
   (

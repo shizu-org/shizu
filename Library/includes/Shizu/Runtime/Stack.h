@@ -56,6 +56,11 @@ Shizu_Stack_peek
     Shizu_State* state
   );
 
+void
+Shizu_Stack_clear
+  (
+    Shizu_State* state
+  );
 
 
 
