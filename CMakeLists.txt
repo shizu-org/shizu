@@ -95,7 +95,7 @@ FetchContent_Declare(idlib-bit-scan
 #######################################################################################################################
 
 set(idlib-file-system.repository CACHE STRING "IdLib File System: The Git repository to check out")
-if (NOT idlib-file-systme.repository)
+if (NOT idlib-file-system.repository)
   set(idlib-file-system.repository https://github.com/michaelheilmann/idlib-file-system.git)
 endif()
 
