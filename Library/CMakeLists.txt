@@ -94,6 +94,9 @@ list(APPEND ${name}.header_files includes/Shizu/Runtime/StaticAssert.h)
 list(APPEND ${name}.source_files sources/Shizu/Runtime/NoReturn.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/NoReturn.h)
 
+list(APPEND ${name}.source_files sources/Shizu/Runtime/getWorkingDirectory.c)
+list(APPEND ${name}.header_files includes/Shizu/Runtime/getWorkingDirectory.h)
+
 # Configuration variables for 'Configure.h.in'.
 if (${${name}.operating_system} STREQUAL ${${name}.operating_system_windows})
   set(Shizu_Configuration_OperatingSystem Shizu_Configuration_OperatingSystem_Windows)
