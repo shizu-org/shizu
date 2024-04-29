@@ -28,6 +28,7 @@
 #include "Shizu/Runtime/State.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.private.h"
+#include "Shizu/Runtime/Types/_SmallTypeArray.h"
 
 // This flag is set after a successful call to the Shizu_OnStaticInitialize function of the type. If the call is not successful, the flag is not set.
 // A successful call to Shizu_OnStaticUninitialize clears the flag.
@@ -54,12 +55,8 @@ struct Shizu_Type {
   } name;
   Shizu_OnTypeDestroyedCallback* typeDestroyed;
   Shizu_TypeDescriptor const* descriptor;
-  // Capacity is the size of the array.
-  // The first n <= capacity entries point to elements, the remaining elements are NULL. 
-  struct {
-    Shizu_Type** elements;
-    size_t capacity;
-  } children;
+  // The array of pointers to child types of this type.
+  SmallTypeArray children;
   // A pointer to the DL from which the type originates from or the null pointer.
   Shizu_Dl* dl;
   // A pointer to the dispatch if Shizu_TypeFlags_DispatchInitialized is set in flags.
@@ -86,6 +83,7 @@ Shizu_Types_uninitialize
     Shizu_State* self
   );
 
+// This ensure that the dispatch of a type is initialized.
 void
 Shizu_Types_ensureDispatchInitialized
   (
@@ -94,6 +92,8 @@ Shizu_Types_ensureDispatchInitialized
     Shizu_Type* type
   );
 
+// This ensures that the dispatch of a type and all its descendant types are uninitialized.
+// It is guaranteed that the dispatch of a descendant type is uninitialized before the dispatch of an ancestor type is uninitialized.
 void
 Shizu_Types_ensureDispatchUninitialized
   (

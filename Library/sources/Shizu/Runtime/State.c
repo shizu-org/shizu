@@ -296,6 +296,15 @@ Shizu_Types_uninitialize
     Shizu_State* self
   )
 {
+  // Uninitialize all dispatches such that
+  // the dispatch of a child type is uninitialized before the dispatch of its parent type.
+  for (size_t i = 0, n = self->types.capacity; i < n; ++i) {
+    Shizu_Type* type = self->types.elements[i];
+    while (type) {
+      Shizu_Types_ensureDispatchUninitialized(self->state1, &self->types, type);
+      type = type->next;
+    }
+  }
   while (self->types.size) {
     // Worst-case is k^n where n is the number of types and k is the capacity.
     // Do *no*u use this in performance critical code.
@@ -304,8 +313,10 @@ Shizu_Types_uninitialize
       Shizu_Type* current = self->types.elements[i];
       while (current) {
         if (!Shizu_Types_getTypeChildCount(self->state1, &self->types, current)) {
+          if (0 != (Shizu_TypeFlags_DispatchInitialized & current->flags)) {
+            fprintf(stderr, "%s:%d: unreachable cod reached\n", __FILE__, __LINE__);
+          }
           Shizu_Type* type = current;
-          Shizu_Types_ensureDispatchUninitialized(self->state1, &self->types, type);
           *previous = current->next;
           current = current->next;
           self->types.size--;

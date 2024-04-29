@@ -28,6 +28,9 @@
 // strlen, strcmp
 #include <string.h>
 
+// fprintf, stderr
+#include <stdio.h>
+
 void
 Shizu_Types_initialize
   ( 
@@ -57,6 +60,9 @@ Shizu_Types_ensureDispatchUninitialized
 {
   if (0 == (Shizu_TypeFlags_DispatchInitialized & type->flags)) {
     return;
+  }
+  for (uint8_t i = 0, n = SmallTypeArray_getSize(&type->children); i < n; ++i) {
+    Shizu_Types_ensureDispatchUninitialized(state1, self, type->children.elements[i]);
   }
   if (type->descriptor->dispatchUninitialize) {
     type->descriptor->dispatchUninitialize(state1, type->dispatch);
@@ -127,28 +133,10 @@ Shizu_Type_destroy
   }
   // Remove this type from the array of references to child types of its parent type.
   if (type->parentType) {
-    size_t index1 = (size_t)-1;
-    for (size_t i = 0, n = type->parentType->children.capacity; i < n; ++i) {
-      if (type->parentType->children.elements[i] == type) {
-        index1 = i;
-        break;
-      }
-    }
-    size_t index2 = (size_t)-1;
-    for (size_t i = type->parentType->children.capacity; i > 0; --i) {
-      if (type->parentType->children.elements[i - 1]) {
-        index2 = i - 1;
-        break;
-      }
-    }
-    // if (index1 != index2) {
-    type->parentType->children.elements[index1] = type->parentType->children.elements[index2];
-    type->parentType->children.elements[index2] = NULL;
-    // }
+    SmallTypeArray_ensureRemoved(&type->parentType->children, type);
   }
   // Deallocate array of references to children.
-  free(type->children.elements);
-  type->children.elements = NULL;
+  SmallTypeArray_uninitialize(&type->children);
   // Deallocate the name.
   free(type->name.bytes);
   type->name.bytes = NULL;
@@ -169,11 +157,7 @@ Shizu_Types_getTypeChildCount
     Shizu_Type* type
   )
 {
-  size_t count = 0;
-  while (count < type->children.capacity && type->children.elements[count]) {
-    count++;
-  }
-  return count;
+  return SmallTypeArray_getSize(&type->children);
 }
 
 Shizu_Type*
@@ -199,9 +183,6 @@ Shizu_Types_getTypeByName
   }
   return NULL;
 }
-
-// fprintf, stderr
-#include <stdio.h>
 
 Shizu_Type*
 Shizu_Types_createType
@@ -254,54 +235,24 @@ Shizu_Types_createType
   type->typeDestroyed = typeDestroyed;
   type->dl = dl;
   // Allocate array for references to children.
-  type->children.capacity = 1;
-  type->children.elements = malloc(sizeof(Shizu_Type*) * type->children.capacity);
-  if (!type->children.elements) {
-    fprintf(stderr, "%s:%d: allocation of `%zu` Bytes failed\n", __FILE__, __LINE__, sizeof(Shizu_Type*) * type->children.capacity);
+  if (SmallTypeArray_initialize(&type->children)) {
     free(type->name.bytes);
     type->name.bytes = NULL;
     free(type);
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
-  for (size_t i = 0, n = type->children.capacity; i < n; ++i) {
-    type->children.elements[i] = NULL;
-  }
   // Add this type to the array of references to children of its parent type.
   if (parentType) {
-    size_t n = Shizu_Types_getTypeChildCount(state1, self, parentType);
-    if (parentType->children.capacity == n) {
-      if (parentType->children.capacity == 65536) {
-        fprintf(stderr, "%s:%d: unable to add `%s` as child type of type `%s`.\n", __FILE__, __LINE__, name, parentType->name.bytes);
-        free(type->children.elements);
-        type->children.elements = NULL;
-        free(type->name.bytes);
-        type->name.bytes = NULL;
-        free(type);
-        Shizu_State1_setStatus(state1, 1);
-        Shizu_State1_jump(state1);
-      }
-      size_t newCapacity = parentType->children.capacity * 2;
-      Shizu_Type** newElements = realloc(parentType->children.elements, sizeof(Shizu_Type*) * newCapacity);
-      if (!newElements) {
-        fprintf(stderr, "%s:%d: allocation of `%zu` Bytes failed\n", __FILE__, __LINE__, sizeof(Shizu_Type*) * newCapacity);
-        free(type->children.elements);
-        type->children.elements = NULL;
-        free(type->name.bytes);
-        type->name.bytes = NULL;
-        free(type);
-        Shizu_State1_setStatus(state1, 1);
-        Shizu_State1_jump(state1);
-      }
-      for (size_t i = n; i < newCapacity; ++i) {
-        newElements[i] = NULL;
-      }
-      parentType->children.capacity = newCapacity;
-      parentType->children.elements = newElements;
+    if (SmallTypeArray_append(&parentType->children, type)) {
+      SmallTypeArray_uninitialize(&parentType->children);
+      free(type->name.bytes);
+      type->name.bytes = NULL;
+      free(type);
+      Shizu_State1_setStatus(state1, 1);
+      Shizu_State1_jump(state1);
     }
-    parentType->children.elements[n] = type;
   }
-
   type->next = self->elements[hashIndex];
   self->elements[hashIndex] = type;
   self->size++;

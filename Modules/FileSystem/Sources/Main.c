@@ -28,9 +28,12 @@ Shizu_Module_unload
   )
 { fprintf(stdout, "[Module : File System] unloaded\n"); }
 
-Shizu_Module_Export Shizu_String*
+Shizu_Module_Export char const*
 Shizu_Module_getName
   (
     Shizu_State* state
   )
-{ return Shizu_String_create(state, "Shizu Module File System", strlen("Shizu Module File System")); }
+{
+  static const char* NAME = "Shizu Module File System";
+  return NAME;
+}

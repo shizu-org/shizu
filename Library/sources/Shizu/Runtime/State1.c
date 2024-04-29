@@ -351,13 +351,13 @@ Shizu_State1_getOrLoadDl
   if (!handle) {
     return NULL;
   }
-  char const* (*getDlName)() = Shizu_OperatingSystem_getDlSymbol(handle, "Shizu_getDlName");
-  if (!getDlName) {
+  char const* (*getName)() = Shizu_OperatingSystem_getDlSymbol(handle, "Shizu_Module_getName");
+  if (!getName) {
     Shizu_OperatingSystem_unloadDl(handle);
     handle = Shizu_OperatingSystem_DlHandle_Invalid;
     return NULL;
   }
-  char* name1 = strdup(getDlName());
+  char* name1 = strdup(getName());
   if (!name1) {
     Shizu_OperatingSystem_unloadDl(handle);
     handle = Shizu_OperatingSystem_DlHandle_Invalid;
@@ -409,7 +409,7 @@ Shizu_State1_getOrLoadDl
 
   Shizu_Dl* dl = state->dls;
   while (NULL != dl) {
-    if (!strcmp(dl->name, name1)) {
+    if (!strcmp(dl->name, path1)) {
       free(path1);
       path1 = NULL;
       free(name1);

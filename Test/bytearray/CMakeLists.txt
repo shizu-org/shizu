@@ -29,6 +29,20 @@ list(APPEND ${name}.source_files sources/Shizu.Runtime.Test.ByteArray/Main.c)
 
 end_executable()
 
+set_property(TARGET ${name} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 target_link_libraries(${name} PRIVATE ${Shizu.Runtime.project-name})
 
+add_dependencies(${name} Shizu.Runtime.Modules.FileSystem)
+
 add_test(NAME ${name} COMMAND ${name})
+
+set(modules "")
+get_target_property(modules Shizu.Runtime modules)
+foreach (module ${modules})
+  add_dependencies(${name} ${module})
+endforeach()
+
+foreach (module ${modules})
+  copy_plugin(${name} ${module})
+endforeach()

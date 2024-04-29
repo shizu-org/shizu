@@ -43,6 +43,8 @@ list(APPEND ${name}.header_files includes/Shizu/Runtime/Type.h)
 list(APPEND ${name}.source_files sources/Shizu/Runtime/Type.private.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/Type.private.h)
 
+list(APPEND ${name}.header_files includes/Shizu/Runtime/Types/_SmallTypeArray.h)
+
 list(APPEND ${name}.source_files sources/Shizu/Runtime/Stack.private.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/Stack.private.h)
 list(APPEND ${name}.source_files sources/Shizu/Runtime/Stack.c)
@@ -135,7 +137,7 @@ define_property(TARGET PROPERTY modules
 
 set_target_properties(Shizu.Runtime PROPERTIES modules "")
 
-target_link_libraries(${name} idlib-bit-scan idlib-process)
+target_link_libraries(${name} idlib-file-system idlib-bit-scan idlib-process)
 
 source_group(TREE ${CMAKE_CURRENT_BINARY_DIR} FILES ${${name}.configuration_files})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.header_files})

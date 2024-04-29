@@ -181,6 +181,7 @@ safeExecute
   Shizu_JumpTarget jumpTarget;
   Shizu_State_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
+    Shizu_State_ensureModulesLoaded(state);
     (*test)(state);
     Shizu_State_popJumpTarget(state);
   } else {

@@ -29,7 +29,10 @@ list(APPEND ${name}.source_files sources/Shizu.Runtime.Test.Fundamental/Main.c)
 
 end_executable()
 
+set_property(TARGET ${name} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 target_link_libraries(${name} PRIVATE ${Shizu.Runtime.project-name})
+
 add_dependencies(${name} Shizu.Runtime.Modules.FileSystem)
 
 add_test(NAME ${name} COMMAND ${name})
