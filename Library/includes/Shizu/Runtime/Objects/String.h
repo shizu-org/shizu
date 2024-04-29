@@ -90,4 +90,20 @@ Shizu_String_getNumberOfBytes
     Shizu_String* self
   );
 
+Shizu_Boolean
+Shizu_String_startsWith
+  (
+    Shizu_State* state,
+    Shizu_String* self,
+    Shizu_String* prefix
+  );
+
+Shizu_Boolean
+Shizu_String_endsWith
+  (
+    Shizu_State* state,
+    Shizu_String* self,
+    Shizu_String* suffix
+  );
+
 #endif // SHIZU_RUNTIME_STRING_H_INCLUDED

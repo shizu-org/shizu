@@ -167,3 +167,32 @@ Shizu_String_getNumberOfBytes
     Shizu_String* self
   )
 { return self->numberOfBytes; }
+
+Shizu_Boolean
+Shizu_String_startsWith
+  (
+    Shizu_State* state,
+    Shizu_String* self,
+    Shizu_String* prefix
+  )
+{
+  if (prefix->numberOfBytes > self->numberOfBytes) {
+    return false;
+  }
+  return !memcmp(prefix->bytes, self->bytes, prefix->numberOfBytes);
+}
+
+Shizu_Boolean
+Shizu_String_endsWith
+  (
+    Shizu_State* state,
+    Shizu_String* self,
+    Shizu_String* suffix
+  )
+{
+  if (suffix->numberOfBytes > self->numberOfBytes) {
+    return false;
+  }
+  size_t start = self->numberOfBytes - suffix->numberOfBytes;
+  return !memcmp(suffix->bytes, self->bytes + start, suffix->numberOfBytes);
+}
