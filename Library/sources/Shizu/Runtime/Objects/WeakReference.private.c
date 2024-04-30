@@ -114,13 +114,13 @@ Shizu_WeakReference_staticInitialize
     Shizu_State* state
   )
 {
-  if (Shizu_State_allocateNamedMemory(state, namedMemoryName, sizeof(WeakReferences))) {
+  if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(WeakReferences))) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
   WeakReferences* g = NULL;
-  if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
-    Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+    Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
@@ -131,7 +131,7 @@ Shizu_WeakReference_staticInitialize
 		g->maximalCapacity = Shizu_Integer32_Maximum;
 	}
   if (g->maximalCapacity < g->minimalCapacity) {
-    Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+    Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
     free(g);
     g = NULL;
     Shizu_State_setStatus(state, 1);
@@ -142,7 +142,7 @@ Shizu_WeakReference_staticInitialize
   g->capacity = g->minimalCapacity;
   g->buckets = malloc(sizeof(Shizu_WeakReference*) * g->capacity);
 	if (!g->buckets) {
-    Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+    Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 		free(g);
 		g = NULL;
 		Shizu_State_setStatus(state, 1);
@@ -163,7 +163,7 @@ Shizu_WeakReference_staticUninitialize
   )
 {
   WeakReferences* g = NULL;
-  if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
@@ -183,7 +183,7 @@ Shizu_WeakReference_staticUninitialize
   g->buckets = NULL;
 
   // (2)
-  Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+  Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 }
 
 static void
@@ -194,7 +194,7 @@ Shizu_WeakReference_finalize
   )
 {
   WeakReferences* g = NULL;
-  if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
@@ -234,7 +234,7 @@ Shizu_WeakReference_create
 {
   Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
   WeakReferences* g = NULL;
-  if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
@@ -261,7 +261,7 @@ Shizu_WeakReferences_notifyDestroy
 	)
 {
   WeakReferences* g = NULL;
-  if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
     // This can happen if we are not yet initialized.
     return;
   }

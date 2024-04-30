@@ -316,4 +316,43 @@ Shizu_State1_getDlSymbol
     char const* name
   );
 
+/// @brief Allocate named memory.
+/// @param name The name.
+/// @param n The size.
+/// @error Named memory of the specified name already exists.
+/// @error An allocation failed.
+/// @error name is a null pointer.
+/// @return A zero value on success. A non-zero value on failure.
+int
+Shizu_State1_allocateNamedStorage
+  (
+    Shizu_State1* state1,
+    char const* name,
+    size_t n
+  );
+
+/// @brief Deallocate named memory.
+/// @param name The name of the named memory.
+/// @return A zero value on success. A non-zero value on failure.
+/// This function succeeds if the storage does not exist.
+int
+Shizu_State1_deallocateNamedStorage
+  (
+    Shizu_State1* state1,
+    char const* name
+  );
+
+/// @brief Get type-scoped memory.
+/// @param name The name of the named memory.
+/// @param p A pointer to a <code>void*</code> value.
+/// @return A zero value on success. A non-zero value on failure.
+/// @success <code>*p</code> was assigned a pointer to the storage.
+int
+Shizu_State1_getNamedStorage
+  (
+    Shizu_State1* state1,
+    char const* name,
+    void** p
+  );
+
 #endif // SHIZU_STATE1_H_INCLUDED

@@ -155,7 +155,7 @@ Shizu_State_createType
 
 // The DL a type is created by must not be unloaded as long as the type exists.
 // For a type T defined in a DL we store in T.dl a reference to the DL in the type object.
-// If T is defined in the  executable we store in T.dl the null reference.
+// If T is defined in the executable we store in T.dl the null reference.
 #define Shizu_defineType(Name, ParentName) \
   static void \
   Name##_typeDestroyed \

@@ -31,6 +31,8 @@
 // malloc, realloc, free
 #include <malloc.h>
 
+#include "Shizu/Runtime/State1.h"
+
 static void
 Shizu_List_staticInitialize
 	(
@@ -173,13 +175,13 @@ Shizu_List_staticInitialize
 		Shizu_State* state
 	)
 {
-	if (Shizu_State_allocateNamedMemory(state, namedMemoryName, sizeof(Lists))) {
+	if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(Lists))) {
 		Shizu_State_setStatus(state, 1);
 		Shizu_State_jump(state);
 	}
 	Lists* g = NULL;
-	if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
-		Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+	if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+		Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 		Shizu_State_setStatus(state, 1);
 		Shizu_State_jump(state);
 	}
@@ -213,7 +215,7 @@ Shizu_List_staticFinalize
 		Shizu_State* state
 	)
 {
-	Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+	Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 }
 
 static void
@@ -306,8 +308,8 @@ Shizu_List_insertValue
 		size_t oldCapacity = self->capacity;
 		size_t newCapacity;
 		Lists* g = NULL;
-		if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
-			Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+		if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+			Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 			Shizu_State_setStatus(state, 1);
 			Shizu_State_jump(state);
 		}

@@ -43,136 +43,11 @@
 // strcmp
 #include <string.h>
 
-#include "idlib/process.h"
-
-typedef struct NamedStorageNode NamedStorageNode;
-
-struct NamedStorageNode {
-  NamedStorageNode* next;
-  char* name;
-  void* p;
-  size_t n;
-};
-
-/// @brief Replacement for C global variables / singletons.
-typedef struct NamedStorageService {
-  NamedStorageNode* nodes;
-} NamedStorageService;
-
-int
-NamedStorageService_initialize
-  (
-    NamedStorageService* self
-  )
-{
-  self->nodes = NULL;
-  return 0;
-}
-
-int
-NamedStorageService_uninitialize
-  (
-    NamedStorageService* self
-  )
-{
-  if (self->nodes) {
-    fprintf(stderr, "%s:%d: warning: storage service still contains storage nodes\n", __FILE__, __LINE__);
-  }
-  return 0;
-}
-
-int
-NamedStorageService_allocate
-  (
-    NamedStorageService* self,
-    char const* name,
-    size_t n
-  )
-{
-  NamedStorageNode* node = NULL;
-
-  node = self->nodes;
-  while (node) {
-    if (!strcmp(node->name, name)) {
-      return 1;
-    }
-    node = node->next;
-  }
-
-  node = malloc(sizeof(NamedStorageNode));
-  if (!node) {
-    return 1;
-  }
-  node->name = strdup(name);
-  if (!node->name) {
-    free(node);
-    return 1;
-  }
-  node->p = malloc(n > 0 ? n : 1);
-  if (!node->p) {
-    free(node->name);
-    free(node);
-    return 1;
-  }
-  node->n = n;
-  node->next = self->nodes;
-  self->nodes = node;
-  return 0;
-}
-
-int
-NamedStorageService_deallocate
-  (
-    NamedStorageService* self,
-    char const* name
-  )
-{
-  NamedStorageNode** previous = &self->nodes;
-  NamedStorageNode* current = self->nodes;
-  while (current) {
-    if (!strcmp(current->name, name)) {
-      NamedStorageNode* node = current;
-      *previous = current->next;
-      current = current->next;
-      free(node->name);
-      node->name = NULL;
-      free(node->p);
-      node->p = NULL;
-      free(node);
-    } else {
-      previous = &current->next;
-      current = current->next;
-    }
-  }
-  return 0;
-}
-
-int
-NamedStorageService_get
-  (
-    NamedStorageService* self,
-    char const* name,
-    void** p
-  )
-{
-  NamedStorageNode* current = self->nodes;
-  while (current) {
-    if (!strcmp(current->name, name)) {
-      *p = current->p;
-      return 0;
-    } else {
-      current = current->next;
-    }
-  }
-  return 1;
-}
-
 
 
 struct Shizu_State {
   int referenceCount;
   Shizu_State1* state1;
-  NamedStorageService namedStorageService;
   Shizu_Gc* gc;
   Shizu_Locks* locks;
   Shizu_Stack* stack;
@@ -202,13 +77,6 @@ Shizu_State_create
       self = NULL;
       return 1;
     }
-    if (NamedStorageService_initialize(&self->namedStorageService)) {
-      Shizu_State1_relinquish(self->state1);
-      self->state1 = NULL;
-      free(self);
-      self = NULL;
-      return 1;
-    }
     self->gc = NULL;
     self->locks = NULL;
     self->stack = NULL;
@@ -221,7 +89,6 @@ Shizu_State_create
       Shizu_State_popJumpTarget(self);
     } else {
       Shizu_State_popJumpTarget(self);
-      NamedStorageService_uninitialize(&self->namedStorageService);
       Shizu_State1_relinquish(self->state1);
       self->state1 = NULL;
       free(self);
@@ -237,7 +104,6 @@ Shizu_State_create
       Shizu_State_popJumpTarget(self);
       Shizu_Gc_shutdown(self, self->gc);
       self->gc = NULL;
-      NamedStorageService_uninitialize(&self->namedStorageService);
       Shizu_State1_relinquish(self->state1);
       self->state1 = NULL;
       free(self);
@@ -255,7 +121,6 @@ Shizu_State_create
       self->locks = NULL;
       Shizu_Gc_shutdown(self, self->gc);
       self->gc = NULL;
-      NamedStorageService_uninitialize(&self->namedStorageService);
       Shizu_State1_relinquish(self->state1);
       self->state1 = NULL;
       free(self);
@@ -275,7 +140,6 @@ Shizu_State_create
       self->locks = NULL;
       Shizu_Gc_shutdown(self, self->gc);
       self->gc = NULL;
-      NamedStorageService_uninitialize(&self->namedStorageService);
       Shizu_State1_relinquish(self->state1);
       self->state1 = NULL;
       free(self);
@@ -351,7 +215,6 @@ Shizu_State_destroy
     Shizu_Gc_shutdown(self, self->gc);
     self->gc = NULL;
     Shizu_Types_uninitialize(self);
-    NamedStorageService_uninitialize(&self->namedStorageService);
     Shizu_State1_relinquish(self->state1);
     self->state1 = NULL;
     g_singleton = NULL;
@@ -500,32 +363,6 @@ Shizu_State_getTypes
   )
 { return &self->types; }
 
-int
-Shizu_State_allocateNamedMemory
-  (
-    Shizu_State* state,
-    char const* name,
-    size_t n
-  )
-{ return NamedStorageService_allocate(&state->namedStorageService, name, n); }
-
-int
-Shizu_State_deallocateNamedMemory
-  (
-    Shizu_State* state,
-    char const* name
-  )
-{ return NamedStorageService_deallocate(&state->namedStorageService, name); }
-
-int
-Shizu_State_getNamedMemory
-  (
-    Shizu_State* state,
-    char const* name,
-    void** p
-  )
-{ return NamedStorageService_get(&state->namedStorageService, name, p); }
-
 Shizu_Dl*
 Shizu_State_getOrLoadDl
   (
@@ -575,3 +412,12 @@ Shizu_Dl_getSymbol
     char const* name
   )
 { return Shizu_State1_getDlSymbol(state->state1, dl, name); }
+
+Shizu_State1*
+Shizu_State_getState1
+  (
+    Shizu_State* state
+  )
+{
+  return state->state1;
+}

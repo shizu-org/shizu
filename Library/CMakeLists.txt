@@ -99,6 +99,10 @@ list(APPEND ${name}.header_files includes/Shizu/Runtime/NoReturn.h)
 list(APPEND ${name}.source_files sources/Shizu/Runtime/getWorkingDirectory.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/getWorkingDirectory.h)
 
+list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/Environment.private.c)
+list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.private.h)
+list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.h)
+
 # Configuration variables for 'Configure.h.in'.
 if (${${name}.operating_system} STREQUAL ${${name}.operating_system_windows})
   set(Shizu_Configuration_OperatingSystem Shizu_Configuration_OperatingSystem_Windows)

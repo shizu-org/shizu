@@ -162,41 +162,6 @@ Shizu_State_getTypes
     Shizu_State* self
   );
 
-/// @brief Allocate named memory.
-/// @param name The name.
-/// @param n The size.
-/// @error Named memory of the specified name already exists.
-/// @error An allocation failed.
-/// @error name is a null pointer.
-/// @return A zero value on success. A non-zero value on failure.
-int
-Shizu_State_allocateNamedMemory
-  (
-    Shizu_State* state,
-    char const* name,
-    size_t n
-  );
-
-/// @brief Deallocate named memory.
-/// @param name The name of the named memory.
-int
-Shizu_State_deallocateNamedMemory
-  (
-    Shizu_State* state,
-    char const* name
-  );
-
-/// @brief Get type-scoped memory.
-/// @param name
-/// @error no memory of the specified ID exists.
-int
-Shizu_State_getNamedMemory
-  (
-    Shizu_State* state,
-    char const* name,
-    void** p
-  );
-
 Shizu_Dl*
 Shizu_State_getOrLoadDl
   (
@@ -243,6 +208,12 @@ Shizu_Dl_getSymbol
 
 void
 Shizu_State_ensureModulesLoaded
+  (
+    Shizu_State* state
+  );
+
+Shizu_State1*
+Shizu_State_getState1
   (
     Shizu_State* state
   );

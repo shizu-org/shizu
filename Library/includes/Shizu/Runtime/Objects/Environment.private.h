@@ -19,24 +19,38 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_OBJECTS_BYTEARRAY_PRIVATE_H_INCLUDED)
-#define SHIZU_RUNTIME_OBJECTS_BYTEARRAY_PRIVATE_H_INCLUDED
+#if !defined(SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED)
+#define SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
-  #error("Do not include `Shizu/Runtime/Objects/ByteArray.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
+  #error("Do not include `Shizu/Runtime/Objects/Environment.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
-#include "Shizu/Runtime/Objects/ByteArray.h"
+#include "Shizu/Runtime/Objects/Environment.h"
 #include "Shizu/Runtime/Gc.private.h"
 
-struct Shizu_ByteArray_Dispatch {
+/**
+ * @since 0.1
+ * @brief A node in an environment.
+ * @unmanaged
+ */
+typedef struct Shizu_Environment_Node Shizu_Environment_Node;
+
+struct Shizu_Environment_Node {
+  Shizu_Environment_Node* next;
+  Shizu_String* key;
+  Shizu_Value value;
+};
+
+struct Shizu_Environment_Dispatch {
   Shizu_Object_Dispatch _parent;
 };
 
-struct Shizu_ByteArray {
+struct Shizu_Environment {
   Shizu_Object _parent;
+  Shizu_Environment_Node** buckets;
   size_t size;
   size_t capacity;
-  uint8_t* elements;
 };
 
-#endif // SHIZU_RUNTIME_OBJECTS_BYTEARRAY_PRIVATE_H_INCLUDED
+#endif // SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED
+

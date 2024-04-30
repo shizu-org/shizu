@@ -478,13 +478,9 @@ Shizu_State1_getDlByAdr
 #elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem || Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
 
   void* handle = NULL;
-  {
-    Dl_info info;
-    if (!dladdr(p, &info)) {
-      Shizu_OperatingSystem_unloadDl(handle);
-      handle = Shizu_OperatingSystem_DlHandle_Invalid;
-      return NULL;
-    }
+  Dl_info info;
+  if (!dladdr(p, &info)) {
+    return NULL;
   }
 
 #else
@@ -556,3 +552,94 @@ Shizu_State1_getDlSymbol
     char const* name
   )
 { return Shizu_OperatingSystem_getDlSymbol(dl->handle, name); }
+
+int
+Shizu_State1_allocateNamedStorage
+  (
+    Shizu_State1* state1,
+    char const* name,
+    size_t n
+  )
+{
+  idlib_process* process = NULL;
+  if (idlib_acquire_process(&process)) {
+    return 1;
+  }
+
+  void* p = NULL;
+  int result = idlib_get_global(process, name, strlen(name), (void**)&p);
+  if (result != IDLIB_SUCCESS && result != IDLIB_NOT_EXISTS) {
+    idlib_relinquish_process(process);
+    process = NULL;
+    return 1;
+  }
+  if (result == IDLIB_NOT_EXISTS) {
+    p = malloc(n > 0 ? n : 1);
+    if (!p) {
+      idlib_relinquish_process(process);
+      process = NULL;
+      return 1;
+    }
+    if (idlib_add_global(process, name, strlen(name), p)) {
+      free(p);
+      p = NULL;
+      idlib_relinquish_process(process);
+      process = NULL;
+      return 1;
+    }
+  } else {
+    idlib_relinquish_process(process);
+    process = NULL;
+  }
+  return 0;
+}
+
+int
+Shizu_State1_deallocateNamedStorage
+  (
+    Shizu_State1* state1,
+    char const* name
+  )
+{
+  idlib_process* process = NULL;
+  if (idlib_acquire_process(&process)) {
+    return 1;
+  }
+
+  void* p = NULL;
+  int result = idlib_get_global(process, name, strlen(name), (void**)&p);
+  if (result != IDLIB_SUCCESS && result != IDLIB_NOT_EXISTS) {
+    idlib_relinquish_process(process);
+    process = NULL;
+    return 1;
+  }
+  if (result == IDLIB_NOT_EXISTS) {
+    idlib_relinquish_process(process);
+    process = NULL;
+    return 0;
+  }
+  idlib_remove_global(process, name, strlen(name));
+  idlib_relinquish_process(process);
+  process = NULL;
+  free(p);
+  p = NULL;
+  return 0;
+}
+
+int
+Shizu_State1_getNamedStorage
+  (
+    Shizu_State1* state1,
+    char const* name,
+    void** p
+  )
+{
+  idlib_process* process = NULL;
+  if (idlib_acquire_process(&process)) {
+    return 1;
+  }
+  int result = idlib_get_global(process, name, strlen(name), p);
+  idlib_relinquish_process(process);
+  process = NULL;
+  return IDLIB_SUCCESS != result;
+}

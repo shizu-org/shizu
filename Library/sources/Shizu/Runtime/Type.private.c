@@ -128,8 +128,11 @@ Shizu_Type_destroy
   )
 {
   // Invoke the finalizer.
-  if (Shizu_TypeFlags_StaticallyInitialized == (Shizu_TypeFlags_StaticallyInitialized & type->flags) && type->descriptor->staticFinalize) {
-    type->descriptor->staticFinalize(state);
+  if (Shizu_TypeFlags_StaticallyInitialized == (Shizu_TypeFlags_StaticallyInitialized & type->flags)) {
+    if (type->descriptor->staticFinalize) {
+      type->descriptor->staticFinalize(state);
+    }
+    type->flags = type->flags & ~Shizu_TypeFlags_StaticallyInitialized;
   }
   // Remove this type from the array of references to child types of its parent type.
   if (type->parentType) {

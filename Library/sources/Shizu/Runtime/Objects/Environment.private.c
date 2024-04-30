@@ -20,7 +20,7 @@
 */
 
 #define SHIZU_RUNTIME_PRIVATE (1)
-#include "Shizu/Runtime/Objects/Map.private.h"
+#include "Shizu/Runtime/Objects/Environment.private.h"
 
 // fprintf, stderr
 #include <stdio.h>
@@ -32,75 +32,75 @@
 #include <stdlib.h>
 
 static void
-Shizu_Map_staticInitialize
+Shizu_Environment_staticInitialize
   (
     Shizu_State* state
   );
 
 static void
-Shizu_Map_staticFinalize
+Shizu_Environment_staticFinalize
   ( 
     Shizu_State* state
   );
   
 static void
-Shizu_Map_visit
+Shizu_Environment_visit
   (
     Shizu_State* state,
-    Shizu_Map* self
+    Shizu_Environment* self
   );
 
 static void
-Shizu_Map_finalize
+Shizu_Environment_finalize
   (
     Shizu_State* state,
-    Shizu_Map* self
+    Shizu_Environment* self
   );
 
-static Shizu_TypeDescriptor const Shizu_Map_Type = {
-  .staticInitialize = &Shizu_Map_staticInitialize,
-  .staticFinalize = &Shizu_Map_staticFinalize,
+static Shizu_TypeDescriptor const Shizu_Environment_Type = {
+  .staticInitialize = &Shizu_Environment_staticInitialize,
+  .staticFinalize = &Shizu_Environment_staticFinalize,
   .staticVisit = NULL,
-  .size = sizeof(Shizu_Map),
-  .visit = (Shizu_OnVisitCallback*) & Shizu_Map_visit,
-  .finalize = (Shizu_OnFinalizeCallback*) & Shizu_Map_finalize,
-  .dispatchSize = sizeof(Shizu_Map_Dispatch),
+  .size = sizeof(Shizu_Environment),
+  .visit = (Shizu_OnVisitCallback*) & Shizu_Environment_visit,
+  .finalize = (Shizu_OnFinalizeCallback*) & Shizu_Environment_finalize,
+  .dispatchSize = sizeof(Shizu_Environment_Dispatch),
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
 
-static const char* namedMemoryName = "Shizu.Maps.NamedMemory";
+static const char* namedMemoryName = "Shizu.Environments.NamedMemory";
 
-typedef struct Maps {
+typedef struct Environments {
   size_t minimumCapacity;
   size_t maximumCapacity;
-} Maps;
+} Environments;
 
 static void
-Shizu_Map_staticInitialize
+Shizu_Environment_staticInitialize
   (
     Shizu_State* state
   )
 {
-  if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(Maps))) {
+  if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(Environments))) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
-  Maps* g = NULL;
+  Environments* g = NULL;
   if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
     Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
   g->minimumCapacity = 8;
-  g->maximumCapacity = SIZE_MAX / sizeof(Shizu_Map_Node*);
+  g->maximumCapacity = SIZE_MAX / sizeof(Shizu_Environment_Node*);
   if (g->maximumCapacity > Shizu_Integer32_Maximum) {
     g->maximumCapacity = Shizu_Integer32_Maximum;
   }
 }
 
 static void
-Shizu_Map_staticFinalize
+Shizu_Environment_staticFinalize
   (
     Shizu_State* state
   )
@@ -109,16 +109,16 @@ Shizu_Map_staticFinalize
 }
 
 static void
-Shizu_Map_visit
+Shizu_Environment_visit
   (
     Shizu_State* state,
-    Shizu_Map* self
+    Shizu_Environment* self
   )
 {
 	for (size_t i = 0, n = self->capacity; i < n; ++i) {
-		Shizu_Map_Node* node = self->buckets[i];
+		Shizu_Environment_Node* node = self->buckets[i];
 		while (node) {
-			Shizu_Gc_visitValue(state, &node->key);
+			Shizu_Gc_visitObject(state, (Shizu_Object*)node->key);
 			Shizu_Gc_visitValue(state, &node->value);
 			node = node->next;
 		}
@@ -126,16 +126,16 @@ Shizu_Map_visit
 }
 
 void
-Shizu_Map_finalize
+Shizu_Environment_finalize
   (
 		Shizu_State* state,
-		Shizu_Map* self
+		Shizu_Environment* self
 	)
 {
 	for (size_t i = 0, n = self->capacity; i < n; ++i) {
-		Shizu_Map_Node** bucket = &(self->buckets[i]);
+		Shizu_Environment_Node** bucket = &(self->buckets[i]);
 		while (*bucket) {
-			Shizu_Map_Node* node = *bucket;
+			Shizu_Environment_Node* node = *bucket;
 			*bucket = node->next;
 			free(node);
 		}
@@ -144,17 +144,17 @@ Shizu_Map_finalize
   self->buckets = NULL;
 }
 
-Shizu_defineType(Shizu_Map, Shizu_Object);
+Shizu_defineType(Shizu_Environment, Shizu_Object);
 
-Shizu_Map*
-Shizu_Map_create
+Shizu_Environment*
+Shizu_Environment_create
   (
     Shizu_State* state
   )
 {
-  Shizu_Type* TYPE = Shizu_Map_getType(state);
-  Shizu_Map* self = (Shizu_Map*)Shizu_Gc_allocate(state, sizeof(Shizu_Map));
-  self->buckets = malloc(sizeof(Shizu_Map_Node*) * 8);
+  Shizu_Type* TYPE = Shizu_Environment_getType(state);
+  Shizu_Environment* self = (Shizu_Environment*)Shizu_Gc_allocate(state, sizeof(Shizu_Environment));
+  self->buckets = malloc(sizeof(Shizu_Environment_Node*) * 8);
   if (!self->buckets) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
@@ -166,4 +166,34 @@ Shizu_Map_create
   self->capacity = 8;
   ((Shizu_Object*)self)->type = TYPE;
   return self;
+}
+
+Shizu_Integer32
+Shizu_Environment_getSize
+  (
+    Shizu_State* state,
+    Shizu_Environment* self
+  )
+{
+return self->size;
+}
+
+void
+Shizu_Environment_define
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* key
+  )
+{ }
+
+Shizu_Boolean
+Shizu_Environment_ísDefined
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* key
+  )
+{  
+  return Shizu_Boolean_False;
 }

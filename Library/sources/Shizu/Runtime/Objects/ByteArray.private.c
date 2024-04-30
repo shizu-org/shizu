@@ -101,8 +101,8 @@ getNewBestCapacity
 	}
 
 	ByteArrays* g = NULL;
-	if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
-		Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+	if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+		Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 		Shizu_State_setStatus(state, 1);
 		Shizu_State_jump(state);
 	}
@@ -128,13 +128,13 @@ Shizu_ByteArray_staticInitialize
 		Shizu_State* state
 	)
 {
-	if (Shizu_State_allocateNamedMemory(state, namedMemoryName, sizeof(ByteArrays))) {
+	if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(ByteArrays))) {
 		Shizu_State_setStatus(state, 1);
 		Shizu_State_jump(state);
 	}
 	ByteArrays* g = NULL;
-	if (Shizu_State_getNamedMemory(state, namedMemoryName, &g)) {
-		Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+	if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+		Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 		Shizu_State_setStatus(state, 1);
 		Shizu_State_jump(state);
 	}
@@ -151,7 +151,7 @@ Shizu_ByteArray_staticFinalize
 		Shizu_State* state
 	)
 {
-	Shizu_State_deallocateNamedMemory(state, namedMemoryName);
+	Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 }
 
 static void
