@@ -183,21 +183,21 @@ Shizu_State1_acquire
     return 1;
   }
   idlib_process* process = NULL;
-  if (idlib_acquire_process(&process)) {
+  if (idlib_process_acquire(&process)) {
     return 1;
   }
 
   Shizu_State1* self = NULL;
   int result = idlib_get_global(process, NAME, strlen(NAME), (void**) & self);
   if (result != IDLIB_SUCCESS && result != IDLIB_NOT_EXISTS) {
-    idlib_relinquish_process(process);
+    idlib_process_relinquish(process);
     process = NULL;
     return 1;
   }
   if (result == IDLIB_NOT_EXISTS) {
     self = malloc(sizeof(Shizu_State1));
     if (!self) {
-      idlib_relinquish_process(process);
+      idlib_process_relinquish(process);
       process = NULL;
       return 1;
     }
@@ -213,12 +213,12 @@ Shizu_State1_acquire
     if (idlib_add_global(self->process, NAME, strlen(NAME), self)) {
       free(self);
       self = NULL;
-      idlib_relinquish_process(process);
+      idlib_process_relinquish(process);
       process = NULL;
       return 1;
     }    
   } else {
-    idlib_relinquish_process(process);
+    idlib_process_relinquish(process);
     process = NULL;
   }
 
@@ -256,7 +256,7 @@ Shizu_State1_relinquish
     idlib_process* process = self->process;
     self->process = NULL;
     idlib_remove_global(process, NAME, strlen(NAME));
-    idlib_relinquish_process(process);
+    idlib_process_relinquish(process);
     process = NULL;
     free(self);
     self = NULL;
@@ -562,33 +562,33 @@ Shizu_State1_allocateNamedStorage
   )
 {
   idlib_process* process = NULL;
-  if (idlib_acquire_process(&process)) {
+  if (idlib_process_acquire(&process)) {
     return 1;
   }
 
   void* p = NULL;
   int result = idlib_get_global(process, name, strlen(name), (void**)&p);
   if (result != IDLIB_SUCCESS && result != IDLIB_NOT_EXISTS) {
-    idlib_relinquish_process(process);
+    idlib_process_relinquish(process);
     process = NULL;
     return 1;
   }
   if (result == IDLIB_NOT_EXISTS) {
     p = malloc(n > 0 ? n : 1);
     if (!p) {
-      idlib_relinquish_process(process);
+      idlib_process_relinquish(process);
       process = NULL;
       return 1;
     }
     if (idlib_add_global(process, name, strlen(name), p)) {
       free(p);
       p = NULL;
-      idlib_relinquish_process(process);
+      idlib_process_relinquish(process);
       process = NULL;
       return 1;
     }
   } else {
-    idlib_relinquish_process(process);
+    idlib_process_relinquish(process);
     process = NULL;
   }
   return 0;
@@ -602,24 +602,24 @@ Shizu_State1_deallocateNamedStorage
   )
 {
   idlib_process* process = NULL;
-  if (idlib_acquire_process(&process)) {
+  if (idlib_process_acquire(&process)) {
     return 1;
   }
 
   void* p = NULL;
   int result = idlib_get_global(process, name, strlen(name), (void**)&p);
   if (result != IDLIB_SUCCESS && result != IDLIB_NOT_EXISTS) {
-    idlib_relinquish_process(process);
+    idlib_process_relinquish(process);
     process = NULL;
     return 1;
   }
   if (result == IDLIB_NOT_EXISTS) {
-    idlib_relinquish_process(process);
+    idlib_process_relinquish(process);
     process = NULL;
     return 0;
   }
   idlib_remove_global(process, name, strlen(name));
-  idlib_relinquish_process(process);
+  idlib_process_relinquish(process);
   process = NULL;
   free(p);
   p = NULL;
@@ -635,11 +635,11 @@ Shizu_State1_getNamedStorage
   )
 {
   idlib_process* process = NULL;
-  if (idlib_acquire_process(&process)) {
+  if (idlib_process_acquire(&process)) {
     return 1;
   }
   int result = idlib_get_global(process, name, strlen(name), p);
-  idlib_relinquish_process(process);
+  idlib_process_relinquish(process);
   process = NULL;
   return IDLIB_SUCCESS != result;
 }
