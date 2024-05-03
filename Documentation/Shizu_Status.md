@@ -26,3 +26,4 @@ typedef enum Shizu_Status { <implementation> } Shizu_Status
 - `Shizu_Status_SemanticalError` Status code indicating a semantical error.
 - `Shizu_Status_EnvironmentFailed` Status code indicating the environment failed.
 - `Shizu_Status_ConversionFailed` Status code indicating a conversion failed.
+- `Shizu_Status_Exists` Status code indicating failure because something exists.

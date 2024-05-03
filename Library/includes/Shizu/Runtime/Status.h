@@ -54,6 +54,8 @@ enum Shizu_Status {
 
   Shizu_Status_ConversionFailed,
 
+  Shizu_Status_Exists,
+
 }; // enum Shizu_Status
 
 #endif // SHIZU_RUNTIME_STATUS_H_INCLUDED
