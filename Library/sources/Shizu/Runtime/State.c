@@ -421,3 +421,10 @@ Shizu_State_getState1
 {
   return state->state1;
 }
+void
+Shizu_State_ensureModulesLoaded
+  (
+    Shizu_State* state
+  )
+{
+}
