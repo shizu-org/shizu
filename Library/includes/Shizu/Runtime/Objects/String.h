@@ -47,22 +47,6 @@ Shizu_String_create
   );
 
 /// @since 0.1
-/// @brief Get if this Shizu_String value is equal to another Shizu_String value.
-/// @param state A pointer to a Shizu_State value.
-/// @param self A pointer to this string
-/// @param other A pointer to the other string.
-/// @return
-/// #Shizu_Boolean_True if this Shizu_String value is equal to the other Shizu_String value.
-/// #Shizu_Boolean_False otherwise.
-Shizu_Boolean
-Shizu_String_isEqualTo
-  (
-    Shizu_State* state,
-    Shizu_String* self,
-    Shizu_String* other
-  );
-
-/// @since 0.1
 /// @brief Concatenate two string.
 /// @param state A pointer to the state.
 /// @param self A pointer to this Shizu_String value.

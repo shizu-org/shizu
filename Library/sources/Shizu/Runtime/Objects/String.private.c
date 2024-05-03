@@ -162,23 +162,6 @@ Shizu_String_create
   return self;
 }
 
-Shizu_Boolean
-Shizu_String_isEqualTo
-  (
-    Shizu_State* state,
-    Shizu_String* self,
-    Shizu_String* other
-  )
-{
-  if (self == other) {
-    return Shizu_Boolean_True;
-  } else if (self->numberOfBytes == other->numberOfBytes && self->hashValue == other->hashValue) {
-    return !memcmp(self->bytes, other->bytes, self->numberOfBytes);
-  } else {
-    return Shizu_Boolean_False;
-  }
-}
-
 Shizu_String*
 Shizu_String_concatenate
 	(
