@@ -25,10 +25,17 @@
 #include "Shizu/Runtime/State.h"
 #include "Shizu/Runtime/Value.h"
 
+// exit, EXIT_FAILURE
+#include <stdlib.h>
+// fprintf, stderr
+#include <stdio.h>
+
 Shizu_declareType(Shizu_Object);
 
 struct Shizu_Object_Dispatch {
   Shizu_Object_Dispatch* parent;
+  Shizu_Integer32 (*getHashValue)(Shizu_State* state, Shizu_Object* self);
+  Shizu_Boolean (*isEqualTo)(Shizu_State* state, Shizu_Object* self, Shizu_Object* other);
 };
 
 struct Shizu_Object {
@@ -69,6 +76,66 @@ Shizu_State_getObjectDispatch
     Shizu_State* state,
     Shizu_Object* object
   );
+
+/// @ingroup Object
+/// @brief
+/// Get the hash value of this Shizu_Object object.
+/// @param state
+/// A pointer to the Shizu_State object.
+/// @param self
+/// A pointer to this Shizu_Object object.
+/// @return
+/// The hash value of this Shizu_Object object.
+static inline Shizu_Integer32
+Shizu_Object_getHashValue
+  (
+    Shizu_State* state,
+    Shizu_Object* self
+  )
+{
+  Shizu_Object_Dispatch* dispatch = (Shizu_Object_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self);
+  if (!dispatch) {
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch is null\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
+  if (!dispatch->getHashValue) {
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch member is null\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
+  return dispatch->getHashValue(state, self);
+}
+
+/// @ingroup Object
+/// @brief
+/// Get if this Shizu_Object object is equal to another Shizu_Object object.
+/// @param state
+/// A pointer to the Shizu_State object.
+/// @param self
+/// A pointer to this Shizu_Object object.
+/// @param other
+/// A pointer to the other Shizu_Object object.
+/// @return
+/// @a true if this Shizu_Object ojbect is equal to the other Shizu_Object object.
+/// @a false otherwise.
+static inline Shizu_Boolean
+Shizu_Object_isEqualTo
+  (
+    Shizu_State* state,
+    Shizu_Object* self,
+    Shizu_Object* other
+  )
+{
+  Shizu_Object_Dispatch* dispatch = (Shizu_Object_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self);
+  if (!dispatch) {
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch is null\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
+  if (!dispatch->isEqualTo) {
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch member is null\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
+  return dispatch->isEqualTo(state, self, other);
+}
 
 /// @since 1.0
 /// Allocate an object of the specified size, in Bytes.

@@ -87,6 +87,28 @@ Shizu_Object_typeDestroyed
     Shizu_State1* state1
   );
 
+static Shizu_Integer32
+Shizu_Object_getHashValueImpl
+  (
+    Shizu_State* state,
+    Shizu_Object* self
+  );
+
+static Shizu_Boolean
+Shizu_Object_isEqualToImpl
+  (
+    Shizu_State* state,
+    Shizu_Object* self,
+    Shizu_Object* other
+  );
+
+static void
+Shizu_Object_initializeDispatch
+  (
+    Shizu_State1* state1,
+    Shizu_Object_Dispatch* self
+  );
+
 Shizu_TypeDescriptor const Shizu_Object_Type = {
   .staticInitialize = NULL,
   .staticFinalize = NULL,
@@ -95,7 +117,7 @@ Shizu_TypeDescriptor const Shizu_Object_Type = {
   .visit = NULL,
   .finalize = NULL,
   .dispatchSize = sizeof(Shizu_Object_Dispatch),
-  .dispatchInitialize = NULL,
+  .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)&Shizu_Object_initializeDispatch,
   .dispatchUninitialize = NULL,
 };
 
@@ -105,6 +127,34 @@ Shizu_Object_typeDestroyed
     Shizu_State1* state1
   )
 {/*Intentionally empty.*/}
+
+static Shizu_Integer32
+Shizu_Object_getHashValueImpl
+  ( 
+    Shizu_State* state,
+    Shizu_Object* self
+  )
+{ return (Shizu_Integer32)(intptr_t)self; }
+
+static Shizu_Boolean
+Shizu_Object_isEqualToImpl
+  (
+    Shizu_State* state,
+    Shizu_Object* self,
+    Shizu_Object* other
+  )
+{ return self == other; }
+
+static void
+Shizu_Object_initializeDispatch
+  (
+    Shizu_State1* state1,
+    Shizu_Object_Dispatch* self
+  )
+{
+  self->getHashValue = &Shizu_Object_getHashValueImpl;
+  self->isEqualTo = &Shizu_Object_isEqualToImpl;
+}
 
 Shizu_Type*
 Shizu_Object_getType

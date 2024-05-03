@@ -44,6 +44,28 @@ Shizu_String_finalize
     Shizu_String* self
   );
 
+static Shizu_Integer32
+Shizu_String_getHashValueImpl
+  (
+    Shizu_State* state,
+    Shizu_String* self
+  );
+
+static Shizu_Boolean
+Shizu_String_isEqualToImpl
+  (
+    Shizu_State* state,
+    Shizu_String* self,
+    Shizu_Object* other
+  );
+
+static void
+Shizu_String_initializeDispatch
+  (
+    Shizu_State1* state,
+    Shizu_String_Dispatch* self
+  );
+
 static Shizu_TypeDescriptor const Shizu_String_Type = {
   .staticInitialize = NULL,
   .staticFinalize = NULL,
@@ -52,7 +74,7 @@ static Shizu_TypeDescriptor const Shizu_String_Type = {
   .visit = NULL,
   .finalize = (Shizu_OnFinalizeCallback*)&Shizu_String_finalize,
   .dispatchSize = sizeof(Shizu_String_Dispatch),
-  .dispatchInitialize = NULL,
+  .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)Shizu_String_initializeDispatch,
   .dispatchUninitialize = NULL,
 };
 
@@ -69,6 +91,48 @@ Shizu_String_finalize
     free(self->bytes);
     self->bytes = NULL;
   }
+}
+
+static Shizu_Integer32
+Shizu_String_getHashValueImpl
+  (
+    Shizu_State* state,
+    Shizu_String* self
+  )
+{
+  return (Shizu_Integer32)self->hashValue;
+}
+
+static Shizu_Boolean
+Shizu_String_isEqualToImpl
+  (
+    Shizu_State* state,
+    Shizu_String* self,
+    Shizu_Object* other
+  )
+{
+  if (Shizu_State_isSubTypeOf(state, Shizu_String_getType(state), Shizu_State_getObjectType(state, other))) {
+    Shizu_String* x = self;
+    Shizu_String* y = (Shizu_String*)other;
+    if (x->hashValue == y->hashValue && x->numberOfBytes == y->numberOfBytes) {
+      return !memcmp(x->bytes, y->bytes, x->numberOfBytes);
+    } else {
+      return Shizu_Boolean_False;
+    }
+  } else {
+    return Shizu_Boolean_False;
+  }
+}
+
+static void
+Shizu_String_initializeDispatch
+  (
+    Shizu_State1* state,
+    Shizu_String_Dispatch* self
+  )
+{
+  ((Shizu_Object_Dispatch*)self)->getHashValue = (Shizu_Integer32 (*)(Shizu_State*, Shizu_Object*)) & Shizu_String_getHashValueImpl;
+  ((Shizu_Object_Dispatch*)self)->isEqualTo = (Shizu_Boolean (*)(Shizu_State*, Shizu_Object*, Shizu_Object*)) & Shizu_String_isEqualToImpl;
 }
 
 Shizu_String*
