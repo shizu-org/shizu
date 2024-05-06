@@ -15,25 +15,36 @@
 #endif
 
 Shizu_Module_Export void
-Shizu_Module_load
+Shizu_ModuleLibrary_load
   (
     Shizu_State* state
   )
-{ fprintf(stdout, "[Module : File System] loaded\n"); }
+{
+  fprintf(stdout, "[Module : File System] loaded\n");
+}
 
 Shizu_Module_Export void
-Shizu_Module_unload
+Shizu_ModuleLibrary_unload
   (
     Shizu_State* state
   )
-{ fprintf(stdout, "[Module : File System] unloaded\n"); }
+{
+  fprintf(stdout, "[Module : File System] unloaded\n");
+}
 
 Shizu_Module_Export char const*
-Shizu_Module_getName
+Shizu_ModuleLibrary_getName
   (
-    Shizu_State* state
+    Shizu_State1* state
   )
 {
   static const char* NAME = "Shizu Module File System";
   return NAME;
 }
+
+Shizu_Module_Export
+Shizu_ModuleLibrary_update
+  (
+    Shizu_State* state
+  )
+{ fprintf(stdout, "[Module : FileSystem] update\n"); }

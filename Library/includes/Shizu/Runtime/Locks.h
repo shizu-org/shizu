@@ -22,20 +22,25 @@
 #if !defined(SHIZU_RUNTIME_LOCKS_H_INCLUDED)
 #define SHIZU_RUNTIME_LOCKS_H_INCLUDED
 
-#include "Shizu/Runtime/State.h"
+/*#include "Shizu/Runtime/State.h"*/
 #include "Shizu/Runtime/Value.h"
+typedef struct Shizu_Locks Shizu_Locks;
+typedef struct Shizu_State1 Shizu_State1;
+
 
 void
 Shizu_Object_lock
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Locks* locks,
     Shizu_Object* self
   );
 
 void
 Shizu_Object_unlock
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Locks* locks,
     Shizu_Object* self
   );
 

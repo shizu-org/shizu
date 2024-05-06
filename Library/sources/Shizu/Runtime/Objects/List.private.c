@@ -31,18 +31,20 @@
 // malloc, realloc, free
 #include <malloc.h>
 
+#include "idlib/bit_scan.h"
+
 #include "Shizu/Runtime/State1.h"
 
 static void
-Shizu_List_staticInitialize
+Shizu_List_postCreateType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	);
 
 static void
-Shizu_List_staticFinalize
+Shizu_List_preDestroyType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	);
 
 static void
@@ -60,9 +62,9 @@ Shizu_List_finalize
   );
 
 static Shizu_TypeDescriptor const Shizu_List_Type = {
-	.staticInitialize = &Shizu_List_staticInitialize,
-	.staticFinalize = &Shizu_List_staticFinalize,
-	.staticVisit = NULL,
+	.postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_List_postCreateType,
+	.preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_List_preDestroyType,
+	.visitType = NULL,
 	.size = sizeof(Shizu_List),
   .visit = (Shizu_OnVisitCallback*) & Shizu_List_visit,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_List_finalize,
@@ -74,148 +76,40 @@ static Shizu_TypeDescriptor const Shizu_List_Type = {
 static const char* namedMemoryName = "Shizu.Lists.NamedMemory";
 
 typedef struct Lists {
-	size_t leadingZeroes256[256];
 	size_t minimumCapacity;
 	size_t maximumCapacity;
 } Lists;
 
-// Get the number of leading zeroes of an uint8_t value.
-// @param x The value.
-// @return The number of leading zeroes of the uint8_t value.
-static inline size_t
-idlib_count_leading_zeroes_u8
-	(
-		uint8_t x
-	)
-{
-	for (size_t i = 8; i > 0; --i) {
-		uint8_t mask = 1 << (i - 1);
-		if (x & mask) {
-			return 8 - i;
-		}
-	}
-	return 8;
-}
-
-// Get the number of leading zeroes of an uint16_t value.
-// @param x The value.
-// @return The number of leading zeroes of the uint16_t value.
-static inline size_t
-idlib_count_leading_zeroes_u16
-	(
-		uint16_t x
-	)
-{
-	for (size_t i = 16; i > 0; --i) {
-		uint16_t mask = 1 << (i - 1);
-		if (x & mask) {
-			return 16 - i;
-		}
-	}
-	return 16;
-}
-
-// Get the number of leading zeroes of an uint32_t value.
-// @param x The value.
-// @return The number of leading zeroes of the uint32_t value.
-static inline size_t
-idlib_count_leading_zeroes_u32
-	(
-		uint32_t x
-	)
-{
-	for (size_t i = 32; i > 0; --i) {
-		uint32_t mask = 1 << (i - 1);
-		if (x & mask) {
-			return 32 - i;
-		}
-	}
-	return 32;
-}
-
-// Get the number of leading zeroes of an uint64_t value.
-// @param x The value.
-// @return The number of leading zeroes of the uint64_t value.
-static inline size_t
-idlib_count_leading_zeroes_u64
-	(
-		uint64_t x
-	)
-{
-	for (size_t i = 64; i > 0; --i) {
-		uint64_t mask = 1 << (i - 1);
-		if (x & mask) {
-			return 64 - i;
-		}
-	}
-	return 64;
-}
-
-// Get the number of leading zeroes of an size_t value.
-// @param x The value.
-// @return The number of leading zeroes of the size_t value.
-static inline size_t
-idlib_count_leading_zeroes_sz
-	(
-		size_t x
-	)
-{
-	#if Shizu_Configuration_InstructionSetArchitecture_X64 == Shizu_Configuration_InstructionSetArchitecture
-		return idlib_count_leading_zeroes_u64((uint64_t)x);
-	#elif Shizu_Configuration_InstructionSetArchitecture_X32 == Shizu_Configuration_InstructionSetArchitecture
-		return idlib_count_leading_zeroes_u32((uint32_t)x);
-	#else
-		#error("operating system not (yet) supported")
-	#endif
-}
-
 static void
-Shizu_List_staticInitialize
+Shizu_List_postCreateType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	)
 {
-	if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(Lists))) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
+	if (Shizu_State1_allocateNamedStorage(state1, namedMemoryName, sizeof(Lists))) {
+		Shizu_State1_setStatus(state1, 1);
+		Shizu_State1_jump(state1);
 	}
 	Lists* g = NULL;
-	if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
-		Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
+	if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+		Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
+		Shizu_State1_setStatus(state1, 1);
+		Shizu_State1_jump(state1);
 	}
   g->minimumCapacity = 8;
   g->maximumCapacity = SIZE_MAX / sizeof(Shizu_Value);
   if (g->maximumCapacity > Shizu_Integer32_Maximum) {
     g->maximumCapacity = Shizu_Integer32_Maximum;
 	}
-
-	g->leadingZeroes256[0] = 8;
-	for (size_t i = 1; i < 256; ++i) {
-		g->leadingZeroes256[i] = idlib_count_leading_zeroes_u8(i);
-	}
-	if (g->leadingZeroes256[UINT8_MAX] != 0) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
-	}
-	if (g->leadingZeroes256[128] != 0) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
-	}
-	if (g->leadingZeroes256[127] != 1) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
-	}
 }
 
 static void
-Shizu_List_staticFinalize
+Shizu_List_preDestroyType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	)
 {
-	Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
+	Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
 }
 
 static void
@@ -226,7 +120,7 @@ Shizu_List_visit
   )
 {
 	for (size_t i = 0, n = self->size; i < n; ++i) {
-		Shizu_Gc_visitValue(state, self->elements + i);
+		Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), self->elements + i);
 	}
 }
 

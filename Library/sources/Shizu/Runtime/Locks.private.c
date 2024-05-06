@@ -23,6 +23,8 @@
 #include "Shizu/Runtime/Locks.private.h"
 
 #include "Shizu/Runtime/Gc.private.h"
+#include "Shizu/Runtime/Status.h"
+#include "Shizu/Runtime/State1.h"
 
 // malloc, free
 #include <malloc.h>
@@ -54,11 +56,11 @@ static Locks* g = NULL;
 void
 Shizu_Object_lock
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Locks* locks,
     Shizu_Object* self
   )
 {
-  Shizu_Locks* locks = Shizu_State_getLocks(state);
   size_t hashValue = (size_t)(uintptr_t)self;
   size_t hashIndex = hashValue % locks->capacity;
   LockNode* current = locks->buckets[hashIndex];
@@ -70,8 +72,8 @@ Shizu_Object_lock
     // Create the lock node if it does not exist.
     current = malloc(sizeof(LockNode));
     if (!current) {
-      Shizu_State_setStatus(state, Shizu_Status_AllocationFailed);
-      Shizu_State_jump(state);
+      Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
+      Shizu_State1_jump(state1);
     }
     current->next = locks->buckets[hashIndex];
     locks->buckets[hashIndex] = current;
@@ -81,8 +83,8 @@ Shizu_Object_lock
   }
   // Assert the number of locks does not overflow.
   if (current->count == Shizu_Integer32_Maximum) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
   // Increment the lock count.
   current->count++;
@@ -91,11 +93,11 @@ Shizu_Object_lock
 void
 Shizu_Object_unlock
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Locks* locks,
     Shizu_Object* self
   )
 {
-  Shizu_Locks* locks = Shizu_State_getLocks(state);
   size_t hashValue = (size_t)(uintptr_t)self;
   size_t hashIndex = hashValue % locks->capacity;
   LockNode* current = locks->buckets[hashIndex];
@@ -103,12 +105,12 @@ Shizu_Object_unlock
     current = current->next;
   }
   if (!current) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
   if (current->count == 0) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
   current->count--;
 }
@@ -116,13 +118,13 @@ Shizu_Object_unlock
 Shizu_Locks*
 Shizu_Locks_startup
   (
-    Shizu_State* state
+    Shizu_State1* state1
   )
 {
   Shizu_Locks* self = malloc(sizeof(Shizu_Locks));
   if (!self) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
   
   // (2)
@@ -134,8 +136,8 @@ Shizu_Locks_startup
   if (self->maximalCapacity < self->minimalCapacity) {
     free(self);
     self = NULL;
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
 
   // (3)
@@ -144,8 +146,8 @@ Shizu_Locks_startup
 	if (!self->buckets) {
 		free(self);
     self = NULL;
-		Shizu_State_setStatus(state, Shizu_Status_AllocationFailed);
-    Shizu_State_jump(state);
+		Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state1);
 	}
 	for (size_t i = 0, n = self->capacity; i < n; ++i) {
     self->buckets[i] = NULL;
@@ -160,7 +162,7 @@ Shizu_Locks_startup
 void
 Shizu_Locks_shutdown
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
     Shizu_Locks* self
   )
 {
@@ -187,17 +189,18 @@ Shizu_Locks_shutdown
 void
 Shizu_Locks_notifyPreMark
   (
-    Shizu_State* state
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_Locks* self
   )
 {
-  Shizu_Locks* locks = Shizu_State_getLocks(state);
   // Premark locks.
-  for (size_t i = 0, n = locks->capacity; i < n; ++i) {
-    LockNode* lockNode = locks->buckets[i];
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    LockNode* lockNode = self->buckets[i];
     while (lockNode) {
       if (lockNode->count > 0) {
         Shizu_Object* object = (Shizu_Object*)lockNode->object;
-        Shizu_Gc_visitObject(state, object);
+        Shizu_Gc_visitObject(state1, gc, object);
       }
       lockNode = lockNode->next;
     }
@@ -207,15 +210,15 @@ Shizu_Locks_notifyPreMark
 void
 Shizu_Locks_notifyDestroy
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Locks* self,
     Shizu_Object* object
   )
 {
-  Shizu_Locks* locks = Shizu_State_getLocks(state);
   size_t hashValue = (size_t)(uintptr_t)object;
-  size_t hashIndex = hashValue % locks->capacity;
-  LockNode** previous = &(locks->buckets[hashIndex]);
-  LockNode* current = locks->buckets[hashIndex];
+  size_t hashIndex = hashValue % self->capacity;
+  LockNode** previous = &(self->buckets[hashIndex]);
+  LockNode* current = self->buckets[hashIndex];
   // Find the lock node if it exists.
   while (current != NULL && current->object != object) {
     previous = &current->next;

@@ -56,6 +56,9 @@ list(APPEND ${name}.header_files includes/Shizu/Runtime/State.h)
 list(APPEND ${name}.source_files sources/Shizu/Runtime/State1.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/State1.h)
 
+list(APPEND ${name}.source_files sources/Shizu/Runtime/State2.c)
+list(APPEND ${name}.header_files includes/Shizu/Runtime/State2.h)
+
 list(APPEND ${name}.source_files sources/Shizu/Runtime/JumpTarget.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/JumpTarget.h)
 
@@ -102,6 +105,9 @@ list(APPEND ${name}.header_files includes/Shizu/Runtime/getWorkingDirectory.h)
 list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/Environment.private.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.private.h)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.h)
+
+list(APPEND ${name}.source_files sources/Shizu/Runtime/Module.c)
+list(APPEND ${name}.header_files includes/Shizu/Runtime/Module.h)
 
 # Configuration variables for 'Configure.h.in'.
 if (${${name}.operating_system} STREQUAL ${${name}.operating_system_windows})

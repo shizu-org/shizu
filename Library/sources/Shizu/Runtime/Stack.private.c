@@ -22,6 +22,8 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Stack.private.h"
 
+#include "Shizu/Runtime/Gc.h"
+
 // malloc, free
 #include <malloc.h>
 
@@ -91,12 +93,13 @@ Shizu_Stack_shutdown
 void
 Shizu_Stack_notifyPreMark
   (
-    Shizu_State* state
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_Stack* self
   )
 {
-  Shizu_Stack* stack = Shizu_State_getStack(state);
-  for (size_t i = 0, n = stack->size; i < n; ++i) {
-    Shizu_Gc_visitValue(state, stack->elements + i);
+  for (size_t i = 0, n = self->size; i < n; ++i) {
+    Shizu_Gc_visitValue(state1, gc, self->elements + i);
   }
 }
 

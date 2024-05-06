@@ -26,6 +26,7 @@
   #error("Do not include `Shizu/Runtime/Locks.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Locks.h"
+typedef struct Shizu_Gc Shizu_Gc;
 
 /// @since 1.0
 /// Startup the "locks" module.
@@ -35,7 +36,7 @@
 Shizu_Locks*
 Shizu_Locks_startup
   ( 
-    Shizu_State* state
+    Shizu_State1* state1
   );
 
 /// @since 1.0
@@ -44,23 +45,26 @@ Shizu_Locks_startup
 void
 Shizu_Locks_shutdown
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
     Shizu_Locks* self
   );
 
 /// @since 1.0
 /// @brief Invoked to notify the "locks" module to perform pre-marking.
-/// @param state A pointer to the Shizu_State object. 
+/// @param state1 A pointer to the Shizu_State1 object. 
 void
 Shizu_Locks_notifyPreMark
   (
-    Shizu_State* state
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_Locks* self
   );
 
 void
 Shizu_Locks_notifyDestroy
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Locks* self,
     Shizu_Object* object
   );
 

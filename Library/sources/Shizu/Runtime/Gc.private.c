@@ -56,13 +56,13 @@ typedef struct Gc {
 Shizu_Gc*
 Shizu_Gc_startup
   (
-    Shizu_State* state
+    Shizu_State1* state1
   )
 {
   Shizu_Gc* self = malloc(sizeof(Gc));
   if (!self) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
   self->all = NULL;
   self->gray = NULL;
@@ -73,7 +73,7 @@ Shizu_Gc_startup
 void
 Shizu_Gc_shutdown
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
     Shizu_Gc* gc
   )
 {
@@ -110,9 +110,9 @@ Shizu_Object_initializeDispatch
   );
 
 Shizu_TypeDescriptor const Shizu_Object_Type = {
-  .staticInitialize = NULL,
-  .staticFinalize = NULL,
-  .staticVisit = NULL,
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
   .size = sizeof(Shizu_Object),
   .visit = NULL,
   .finalize = NULL,
@@ -162,9 +162,17 @@ Shizu_Object_getType
     Shizu_State* state
   )
 {
-  Shizu_Type* type = Shizu_State_getTypeByName(state, "Shizu_Object");
+  Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State_getState1(state),
+                                               Shizu_State_getTypes(state),
+                                               "Shizu_Object");
   if (!type) {
-    type = Shizu_State_createType(state, "Shizu_Object", NULL, NULL, &Shizu_Object_typeDestroyed, &Shizu_Object_Type);
+    type = Shizu_Types_createType(Shizu_State_getState1(state),
+                                  Shizu_State_getTypes(state),
+                                  "Shizu_Object",
+                                  NULL,
+                                  NULL,
+                                  &Shizu_Object_typeDestroyed,
+                                  &Shizu_Object_Type);
   }
   return type;
 }
@@ -254,8 +262,13 @@ Shizu_Gc_run
   Shizu_Gc* gc = Shizu_State_getGc(state);
   Shizu_debugAssert(NULL == gc->gray);
   // Premark.
-  Shizu_Locks_notifyPreMark(state);
-  Shizu_Stack_notifyPreMark(state);
+  // @todo We should have them register for premark and finalization themselves.
+  if (Shizu_State_getLocks(state)) {
+    Shizu_Locks_notifyPreMark(Shizu_State_getState1(state), gc, Shizu_State_getLocks(state));
+  }
+  if (Shizu_State_getStack(state)) {
+    Shizu_Stack_notifyPreMark(Shizu_State_getState1(state), gc, Shizu_State_getStack(state));
+  }
   // Mark.
   while (gc->gray) {
     Shizu_Object* object = gc->gray;
@@ -280,8 +293,8 @@ Shizu_Gc_run
       current = current->next;
       // TODO: Shizu_Locks_notifyDestroy as well as Shizu_WeakReferences_notifyDestroy perform an object address hash lookup.
       //       Investigage if there is a relevant performance gain when only one hash table is used?
-      Shizu_Locks_notifyDestroy(state, object);
-      Shizu_WeakReferences_notifyDestroy(state, object);
+      Shizu_Locks_notifyDestroy(Shizu_State_getState1(state), Shizu_State_getLocks(state), object);
+      Shizu_WeakReferences_notifyDestroy(Shizu_State_getState1(state), object);
       while (object->type) {
         if (object->type->descriptor->finalize) {
           object->type->descriptor->finalize(state, object);
@@ -304,7 +317,8 @@ Shizu_Gc_run
 void
 Shizu_Gc_visitObject
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
     Shizu_Object* object
   )
 {
@@ -313,7 +327,6 @@ Shizu_Gc_visitObject
       // If there is a visit function, put the object in the gray list and color it gray.
       Shizu_Object_setGray(object);
       Shizu_debugAssert(NULL == object->gray);
-      Shizu_Gc* gc = Shizu_State_getGc(state);
       object->gray = gc->gray;
       gc->gray = object;
     } else {
@@ -326,13 +339,14 @@ Shizu_Gc_visitObject
 void
 Shizu_Gc_visitValue
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
     Shizu_Value* value
   )
 {
   switch (value->tag) {
     case Shizu_Value_Tag_Object: {
-      Shizu_Gc_visitObject(state, (Shizu_Object*)Shizu_Value_getObject(value));
+      Shizu_Gc_visitObject(state1, gc, (Shizu_Object*)Shizu_Value_getObject(value));
     } break;
     default: {
       /* Intentionally empty. */

@@ -31,14 +31,14 @@
 /// @since 1.0
 /// @internal
 /// @brief Notify the weak references on an "Shizu.Object Destroyed" event.
-/// @param state A pointer to the Shizu_State value.
+/// @param stat1e A pointer to the Shizu_State1 value.
 /// @param reference A pointer to the Shizu_Object value that was destroyed.
 /// @remarks This will search the bucket where the WeakReference nodes for this reference reside.
 /// Next it sets any reference in all nodes refering to that object to null.
 void
 Shizu_WeakReferences_notifyDestroy
 	(
-		Shizu_State* state,
+		Shizu_State1* state1,
 		Shizu_Object* reference
 	);
 

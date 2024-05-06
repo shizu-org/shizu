@@ -25,9 +25,10 @@
 #include "Shizu/Runtime/Type.private.h"
 
 bool
-Shizu_State_isSubTypeOf
+Shizu_Types_isSubTypeOf
   (
-    Shizu_State* self,
+    Shizu_State1* state1,
+    Shizu_Types* self,
     Shizu_Type const* x,
     Shizu_Type const* y
   )
@@ -43,9 +44,10 @@ Shizu_State_isSubTypeOf
 }
 
 bool
-Shizu_Type_isTrueSubTypeOf
+Shizu_Types_isTrueSubTypeOf
   (
-    Shizu_State* self,
+    Shizu_State1* state1,
+    Shizu_Types* self,
     Shizu_Type const* x,
     Shizu_Type const* y
   )

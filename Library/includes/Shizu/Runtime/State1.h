@@ -24,61 +24,23 @@
 
 #include "Shizu/Runtime/JumpTarget.h"
 #include "Shizu/Runtime/Status.h"
+#include "Shizu/Runtime/NoReturn.h"
 
 // bool
 #include <stdbool.h>
 
 #if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
 
-  #define WIN32_LEAN_AND_MEAN
-  #include <Windows.h>
-
-  typedef HMODULE Shizu_OperatingSystem_DlHandle;
-  #define Shizu_OperatingSystem_DlHandle_Invalid (NULL)
+  #define Shizu_OperatingSystem_DlExtension ".dll"
+  #define Shizu_OperatingSystem_DirectorySeparator "\\"
 
 #elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem || Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
 
   // NULL
   #include <stddef.h>
 
-  // dlopen, dlclose, dlsym, dladdr
-  #define _GNU_SOURCE
-  #include <dlfcn.h>
-
-  // fprintf, stderr
-  #include <stdio.h>
-
-  typedef void* Shizu_OperatingSystem_DlHandle;
-  #define Shizu_OperatingSystem_DlHandle_Invalid (NULL)
-
-#else
-
-  #error("operating system not (yet) supported")
-
-#endif
-
-#if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem || \
-    Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem   || \
-    Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
-
-  Shizu_OperatingSystem_DlHandle
-  Shizu_OperatingSystem_loadDl
-    (
-      char const* path
-    );
-
-  void
-  Shizu_OperatingSystem_unloadDl
-    (
-      Shizu_OperatingSystem_DlHandle handle
-    );
-
-  void*
-  Shizu_OperatingSystem_getDlSymbol
-    (
-      Shizu_OperatingSystem_DlHandle dlHandle,
-      char const* symbolName
-    );
+  #define Shizu_OperatingSystem_DlExtension ".so"
+  #define Shizu_OperatingSystem_DirectorySeparator "/"
 
 #else
 
@@ -119,14 +81,14 @@ Shizu_State1_acquire
 /**
  * @since 1.0
  * @brief Relinquish a refeference to the tier 1 state.
- * @param state A pointer to a <code>Shizu_State1</code> value.
+ * @param self A pointer to a <code>Shizu_State1</code> value.
  * @return @a 0 on success. A non-zero value on failure.
  * @success The caller relinquished his reference to the <code>Shizu_State1</code> value.
  */
 int
 Shizu_State1_relinquish
   (
-    Shizu_State1* state
+    Shizu_State1* self
   );
 
 /**
@@ -153,20 +115,6 @@ Shizu_State1_popJumpTarget
   (
     Shizu_State1* state
   );
-
-#if !defined(Shizu_NoReturn)
-
-  #if Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
-
-    #define Shizu_NoReturn() __declspec(noreturn)
-
-  #else
-
-    #define Shizu_NoReturn()
-
-  #endif
-
-#endif
 
 /**
  * @since 1.0

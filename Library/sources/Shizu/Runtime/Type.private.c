@@ -31,6 +31,41 @@
 // fprintf, stderr
 #include <stdio.h>
 
+Shizu_Types*
+Shizu_Types_startup
+  (
+    Shizu_State1* state1
+  )
+{
+  Shizu_Types* self = malloc(sizeof(Shizu_Types));
+  if (!self) {
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
+  }
+  Shizu_JumpTarget jumpTarget;
+  Shizu_State1_pushJumpTarget(state1, &jumpTarget);
+  if (!setjmp(jumpTarget.environment)) {
+    Shizu_Types_initialize(state1, self);
+    Shizu_State1_popJumpTarget(state1);
+  } else {
+    Shizu_State1_popJumpTarget(state1);
+    free(self);
+    Shizu_State1_jump(state1);
+  }
+  return self;
+}
+
+void
+Shizu_Types_shutdown
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self
+  )
+{
+  Shizu_Types_uninitialize(state1, self);
+  free(self);
+}
+
 void
 Shizu_Types_initialize
   ( 
@@ -48,6 +83,87 @@ Shizu_Types_initialize
   }
   self->size = 0;
   self->capacity = 8;
+}
+
+void
+Shizu_Types_uninitialize
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self
+  )
+{
+  // Uninitialize all dispatches such that
+  // the dispatch of a child type is uninitialized before the dispatch of its parent type.
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    Shizu_Type* type = self->elements[i];
+    while (type) {
+      Shizu_Types_ensureDispatchUninitialized(state1, self, type);
+      type = type->next;
+    }
+  }
+  while (self->size) {
+    // Worst-case is k^n where n is the number of types and k is the capacity.
+    // Do *no*u use this in performance critical code.
+    for (size_t i = 0, n = self->capacity; i < n; ++i) {
+      Shizu_Type** previous = &(self->elements[i]);
+      Shizu_Type* current = self->elements[i];
+      while (current) {
+        if (!Shizu_Types_getTypeChildCount(state1, self, current)) {
+          if (0 != (Shizu_TypeFlags_DispatchInitialized & current->flags)) {
+            fprintf(stderr, "%s:%d: unreachable code reached\n", __FILE__, __LINE__);
+          }
+          Shizu_Type* type = current;
+          *previous = current->next;
+          current = current->next;
+          self->size--;
+          if (type->typeDestroyed) {
+            type->typeDestroyed(state1);
+          }
+          Shizu_Type_destroy(state1, self, type);
+        } else {
+          previous = &current->next;
+          current = current->next;
+        }
+      }
+    }
+  }
+}
+
+void
+Shizu_Types_onPostCreateType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* type
+  )
+{
+  Shizu_JumpTarget jumpTarget;
+  Shizu_State1_pushJumpTarget(state1, &jumpTarget);
+  if (!setjmp(jumpTarget.environment)) {
+    if (type->descriptor->postCreateType) {
+      type->descriptor->postCreateType(state1);
+    }
+    type->flags |= Shizu_TypeFlags_PostTypeCreationInvoked;
+    Shizu_Types_ensureDispatchInitialized(state1, self, type);
+  }
+  Shizu_State1_popJumpTarget(state1);
+}
+
+void
+Shizu_Types_onPreDestroyType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* type
+  )
+{
+  // Invoke the finalizer.
+  if (Shizu_TypeFlags_PostTypeCreationInvoked == (Shizu_TypeFlags_PostTypeCreationInvoked & type->flags)) {
+    if (type->descriptor->preDestroyType) {
+      type->descriptor->preDestroyType(state1);
+    }
+    type->flags = type->flags & ~Shizu_TypeFlags_PostTypeCreationInvoked;
+  }
 }
 
 void
@@ -122,18 +238,12 @@ Shizu_Types_ensureDispatchInitialized
 void
 Shizu_Type_destroy
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
     Shizu_Types* self,
     Shizu_Type* type
   )
 {
-  // Invoke the finalizer.
-  if (Shizu_TypeFlags_StaticallyInitialized == (Shizu_TypeFlags_StaticallyInitialized & type->flags)) {
-    if (type->descriptor->staticFinalize) {
-      type->descriptor->staticFinalize(state);
-    }
-    type->flags = type->flags & ~Shizu_TypeFlags_StaticallyInitialized;
-  }
+  Shizu_Types_onPreDestroyType(state1, self, type);
   // Remove this type from the array of references to child types of its parent type.
   if (type->parentType) {
     SmallTypeArray_ensureRemoved(&type->parentType->children, type);
@@ -145,7 +255,7 @@ Shizu_Type_destroy
   type->name.bytes = NULL;
   //
   if (type->dl) {
-    Shizu_Dl_unref(state, type->dl);
+    Shizu_State1_unrefDl(state1, type->dl);
     type->dl = NULL;
   }
   // Deallocate the value.
@@ -259,5 +369,8 @@ Shizu_Types_createType
   type->next = self->elements[hashIndex];
   self->elements[hashIndex] = type;
   self->size++;
+
+  Shizu_Types_onPostCreateType(state1, self, type);
+
   return type;
 }

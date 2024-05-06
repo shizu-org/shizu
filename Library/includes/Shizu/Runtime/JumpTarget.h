@@ -6,6 +6,7 @@
 
 #define _GNU_SOURCE
 
+// setjmp, jmp_buf, longjmp
 #include <setjmp.h>
 
 typedef struct Shizu_JumpTarget Shizu_JumpTarget;

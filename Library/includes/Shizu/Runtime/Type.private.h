@@ -25,14 +25,14 @@
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
   #error("Do not include `Shizu/Runtime/Type.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
-#include "Shizu/Runtime/State.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.private.h"
 #include "Shizu/Runtime/Types/_SmallTypeArray.h"
 
-// This flag is set after a successful call to the Shizu_OnStaticInitialize function of the type. If the call is not successful, the flag is not set.
-// A successful call to Shizu_OnStaticUninitialize clears the flag.
-#define Shizu_TypeFlags_StaticallyInitialized (1)
+/// This flag is set after a succesfull call to Shizu_OnPostCreateTypeCallback function for a type.
+/// If the call is not successful, this flag is not set in that type.
+/// If this flag is set in a type before that type is destroyed, the Shizu_OnPreDestroyTypeCallback function (if any) is invoked and this flag is cleared for that type.
+#define Shizu_TypeFlags_PostTypeCreationInvoked (4)
 
 // This flag is set after a successful call to the Shizu_OnDispatchInitialize function of the type. If the call is not successful, the flag is not set.
 // A successful call to Shizu_OnDispatchUninitialize clears the flag.
@@ -70,6 +70,19 @@ struct Shizu_Types{
   size_t capacity;
 };
 
+Shizu_Types*
+Shizu_Types_startup
+  (
+    Shizu_State1* state1
+  );
+
+void
+Shizu_Types_shutdown
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self
+  );
+
 void
 Shizu_Types_initialize
   (
@@ -80,7 +93,30 @@ Shizu_Types_initialize
 void
 Shizu_Types_uninitialize
   (
-    Shizu_State* self
+    Shizu_State1* state1,
+    Shizu_Types* self
+  );
+
+// Ensure the type scoped data is initialized.
+// If the Shizu_TypeFlags_PostCreateTypeInvoked flag is not set, then this function will invoke the Shizu_OnPostcreateTypeCallback if it exists.
+// If this function does not exist or the call to this function succeeds, it will set the Shizu_TypeFlags_PostCreateTypeInvoked flag.
+void
+Shizu_Types_onPostCreateType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* type
+  );
+
+// Ensure the type scoped data is uninitialized.
+// If the Shizu_TypeFlags_PostCreateTypeInvoked is set, this function invokes the Shizu_OnPreDestroyTypeCallback if it exists.
+// If this function does not exist or the call to this function succeeds, it will set clear the Shizu_TypeFlags_PostCreateTypeInvoked flag.  
+void
+Shizu_Types_onPreDestroyType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* type
   );
 
 // This ensure that the dispatch of a type is initialized.
@@ -107,7 +143,7 @@ Shizu_Types_ensureDispatchUninitialized
 void
 Shizu_Type_destroy
   (  
-    Shizu_State* state,
+    Shizu_State1* state1,
     Shizu_Types* self,
     Shizu_Type* type
   );

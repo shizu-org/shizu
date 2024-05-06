@@ -44,6 +44,65 @@
 
 #if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
 
+  #define WIN32_LEAN_AND_MEAN
+  #include <Windows.h>
+
+  typedef HMODULE Shizu_OperatingSystem_DlHandle;
+  #define Shizu_OperatingSystem_DlHandle_Invalid (NULL)
+
+#elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem || \
+      Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
+
+  // NULL
+  #include <stddef.h>
+
+  // dlopen, dlclose, dlsym, dladdr
+  #define _GNU_SOURCE
+  #include <dlfcn.h>
+
+  // fprintf, stderr
+  #include <stdio.h>
+
+  typedef void* Shizu_OperatingSystem_DlHandle;
+  #define Shizu_OperatingSystem_DlHandle_Invalid (NULL)
+
+#else
+
+  #error("operating system not (yet) supported")
+
+#endif
+
+#if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem || \
+    Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem   || \
+    Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
+
+  Shizu_OperatingSystem_DlHandle
+  Shizu_OperatingSystem_loadDl
+    (
+      char const* path
+    );
+
+  void
+  Shizu_OperatingSystem_unloadDl
+    (
+      Shizu_OperatingSystem_DlHandle handle
+    );
+
+  void*
+  Shizu_OperatingSystem_getDlSymbol
+    (
+      Shizu_OperatingSystem_DlHandle dlHandle,
+      char const* symbolName
+    );
+
+#else
+
+  #error("operating system not (yet) supported")
+
+#endif
+
+#if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
+
   Shizu_OperatingSystem_DlHandle
   Shizu_OperatingSystem_loadDl
     (
@@ -186,7 +245,6 @@ Shizu_State1_acquire
   if (idlib_process_acquire(&process)) {
     return 1;
   }
-
   Shizu_State1* self = NULL;
   int result = idlib_get_global(process, NAME, strlen(NAME), (void**) & self);
   if (result != IDLIB_SUCCESS && result != IDLIB_NOT_EXISTS) {
@@ -221,7 +279,6 @@ Shizu_State1_acquire
     idlib_process_relinquish(process);
     process = NULL;
   }
-
   self->referenceCount++;
   *RETURN = self;
   return 0;
@@ -351,13 +408,13 @@ Shizu_State1_getOrLoadDl
   if (!handle) {
     return NULL;
   }
-  char const* (*getName)() = Shizu_OperatingSystem_getDlSymbol(handle, "Shizu_Module_getName");
+  char const* (*getName)(Shizu_State1*) = Shizu_OperatingSystem_getDlSymbol(handle, "Shizu_ModuleLibrary_getName");
   if (!getName) {
     Shizu_OperatingSystem_unloadDl(handle);
     handle = Shizu_OperatingSystem_DlHandle_Invalid;
     return NULL;
   }
-  char* name1 = strdup(getName());
+  char* name1 = strdup(getName(state));
   if (!name1) {
     Shizu_OperatingSystem_unloadDl(handle);
     handle = Shizu_OperatingSystem_DlHandle_Invalid;

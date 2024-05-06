@@ -22,8 +22,10 @@
 #if !defined(SHIZU_RUNTIME_GC_H_INCLUDED)
 #define SHIZU_RUNTIME_GC_H_INCLUDED
 
-#include "Shizu/Runtime/State.h"
 #include "Shizu/Runtime/Value.h"
+#include "Shizu/Runtime/Gc.private.h"
+#include "Shizu/Runtime/Type.h"
+typedef struct Shizu_Gc Shizu_Gc;
 
 // exit, EXIT_FAILURE
 #include <stdlib.h>
@@ -150,14 +152,16 @@ Shizu_Gc_allocate
 void
 Shizu_Gc_visitObject
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
     Shizu_Object* object
   );
 
 void
 Shizu_Gc_visitValue
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
     Shizu_Value* value
   );
 

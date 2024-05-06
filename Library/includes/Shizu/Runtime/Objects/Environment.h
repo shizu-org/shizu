@@ -74,7 +74,7 @@ Shizu_Environment_define
 /// @return @a Shizu_Boolean_True if the variable is defined in this environment. @a Shizu_Boolean_False otherwise.
 /// @undefined @a state does not point to a Shizu_State value.
 Shizu_Boolean
-Shizu_Environment_ísDefined
+Shizu_Environment_isDefined
   (
     Shizu_State* state,
     Shizu_Environment* self,

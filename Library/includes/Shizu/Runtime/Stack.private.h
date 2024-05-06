@@ -26,7 +26,7 @@
   #error("Do not include `Shizu/Runtime/Stack.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Stack.h"
-#include "Shizu/Runtime/Gc.private.h"
+typedef struct Shizu_Gc Shizu_Gc;
 
 /// @since 1.0
 /// Startup the "stack" module.
@@ -55,7 +55,9 @@ Shizu_Stack_shutdown
 void
 Shizu_Stack_notifyPreMark
   (
-    Shizu_State* state
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_Stack* self
   );
 
 #endif // SHIZU_RUNTIME_STACK_PRIVATE_H_INCLUDED

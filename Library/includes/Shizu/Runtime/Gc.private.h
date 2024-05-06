@@ -26,6 +26,7 @@
   #error("Do not include `Shizu/Runtime/Gc.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Gc.h"
+typedef struct Shizu_State1 Shizu_State1;
 
 typedef struct Shizu_Gc {
   int referenceCount;
@@ -41,7 +42,7 @@ typedef struct Shizu_Gc {
 Shizu_Gc*
 Shizu_Gc_startup
   (
-    Shizu_State* state
+    Shizu_State1* state1
   );
 
 /// @since 1.0
@@ -50,7 +51,7 @@ Shizu_Gc_startup
 void
 Shizu_Gc_shutdown
   (
-    Shizu_State* state,
+    Shizu_State1* state1,
     Shizu_Gc* gc
   );
 

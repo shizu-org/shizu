@@ -22,6 +22,8 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/ByteArray.private.h"
 
+#include "Shizu/Runtime/State1.h"
+
 // fprintf, stderr
 #include <stdio.h>
 
@@ -42,15 +44,15 @@ getNewBestCapacity
 	);
 
 static void
-Shizu_ByteArray_staticInitialize
+Shizu_ByteArray_postCreateType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	);
 
 static void
-Shizu_ByteArray_staticFinalize
+Shizu_ByteArray_preDestroyType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	);
 
 static void
@@ -68,9 +70,9 @@ Shizu_ByteArray_finalize
   );
 
 static Shizu_TypeDescriptor const Shizu_ByteArray_Type = {
-	.staticInitialize = &Shizu_ByteArray_staticInitialize,
-	.staticFinalize = &Shizu_ByteArray_staticFinalize,
-	.staticVisit = NULL,
+	.postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_ByteArray_postCreateType,
+	.preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_ByteArray_preDestroyType,
+	.visitType = NULL,
 	.size = sizeof(Shizu_ByteArray),
   .visit = (Shizu_OnVisitCallback*) & Shizu_ByteArray_visit,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_ByteArray_finalize,
@@ -123,20 +125,20 @@ getNewBestCapacity
 }
 
 static void
-Shizu_ByteArray_staticInitialize
+Shizu_ByteArray_postCreateType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	)
 {
-	if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(ByteArrays))) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
+	if (Shizu_State1_allocateNamedStorage(state1, namedMemoryName, sizeof(ByteArrays))) {
+		Shizu_State1_setStatus(state1, 1);
+		Shizu_State1_jump(state1);
 	}
 	ByteArrays* g = NULL;
-	if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
-		Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
+	if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+		Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
+		Shizu_State1_setStatus(state1, 1);
+		Shizu_State1_jump(state1);
 	}
   g->minimumCapacity = 8;
 	g->maximumPowerOfTwoInteger32 = Shizu_Integer32_Maximum & ~(Shizu_Integer32_Maximum - 1);
@@ -146,12 +148,12 @@ Shizu_ByteArray_staticInitialize
 }
 
 static void
-Shizu_ByteArray_staticFinalize
+Shizu_ByteArray_preDestroyType
 	(
-		Shizu_State* state
+		Shizu_State1* state1
 	)
 {
-	Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
+	Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
 }
 
 static void

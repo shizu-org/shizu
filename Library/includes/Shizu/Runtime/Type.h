@@ -27,8 +27,7 @@
 // bool
 #include <stdbool.h>
 
-#include "Shizu/Runtime/State1.h"
-
+typedef struct Shizu_State1 Shizu_State1;
 typedef struct Shizu_Dl Shizu_Dl;
 typedef struct Shizu_State Shizu_State;
 typedef struct Shizu_Object Shizu_Object;
@@ -43,16 +42,28 @@ typedef struct Shizu_Types Shizu_Types;
 #endif
 
 /// @since 1.0
-/// The type of an "onStaticInitialize" callback function.
-typedef void (Shizu_OnStaticInitializeCallback)(Shizu_State* state);
+/// @brief The type of an "PostCreateTypeCallback" callback function.
+/// Such a function may be supplied for a Shizu.Type object (at its creation).
+/// It is then invoked
+/// - multiple times until it succeeds for the first time or the type is destroyed
+/// (It is considered as a successful call to a "PostCreateTypeCallback" and "PreDestroyTypeCallback" functions if no such function is provided.)
+/// @param state1 A pointer to the Shizu_State1 object.
+typedef void (Shizu_PostCreateTypeCallback)(Shizu_State1* state1);
 
 /// @since 1.0
-/// The type of an "onStaticUninitialize" callback function.
-typedef void (Shizu_OnStaticFinalizeCallback)(Shizu_State* state);
+/// @brief The type of an "PreDestroyTypeCallback" callback function.
+/// Such a function may be supplied for a Shizu.Type object (at its creation).
+/// It is then invoked
+/// - exactly once before the type is destroyed
+/// - if it was preceeded by a successful call to a "PostCreateTypeCallback" function.
+/// (It is considered as a successful call to a "PostCreateTypeCallback" and "PreDestroyTypeCallback" functions if no such function is provided.)
+/// @param state1 A pointer to the Shizu_State1 object.
+typedef void (Shizu_PreDestroyTypeCallback)(Shizu_State1* state1);
 
 /// @since 1.0
-/// The type of an "onStaticVisit" callback function.
-typedef void (Shizu_OnStaticVisitCallback)(Shizu_State* state);
+/// @brief The type of a "VisitTypeCallback" callback function.
+/// @param state1 A pointer to the Shizu_State1 object.
+typedef void (Shizu_VisitTypeCallback)(Shizu_State1* state1);
 
 /// @since 1.0
 /// The type of a "onVisit" callback function.
@@ -75,9 +86,9 @@ typedef void (Shizu_OnDispatchInitializeCallback)(Shizu_State1* state1, void*);
 typedef void (Shizu_OnDispatchUninitializeCallback)(Shizu_State1* state1, void*);
 
 struct Shizu_TypeDescriptor {
-  Shizu_OnStaticInitializeCallback* staticInitialize;
-  Shizu_OnStaticFinalizeCallback* staticFinalize;
-  Shizu_OnStaticVisitCallback* staticVisit;
+  Shizu_PostCreateTypeCallback* postCreateType;
+  Shizu_PreDestroyTypeCallback* preDestroyType;
+  Shizu_VisitTypeCallback* visitType;
   size_t size;
   Shizu_OnVisitCallback* visit;
   Shizu_OnFinalizeCallback* finalize;
@@ -98,9 +109,10 @@ struct Shizu_TypeDescriptor {
  * @return @a true if @a x is a sub-type of @a y. @a false otherwise.
  */
 bool
-Shizu_State_isSubTypeOf
+Shizu_Types_isSubTypeOf
   (
-    Shizu_State* self,
+    Shizu_State1* state1,
+    Shizu_Types* self,
     Shizu_Type const* x,
     Shizu_Type const* y
   );
@@ -117,9 +129,10 @@ Shizu_State_isSubTypeOf
  * @return @a true if @a x is a true sub-type of @a y. @a false otherwise.
  */
 bool
-Shizu_Type_isTrueSubTypeOf
+Shizu_Types_isTrueSubTypeOf
   (
-    Shizu_State* self,
+    Shizu_State1* state1,
+    Shizu_Types* self,
     Shizu_Type const* x,
     Shizu_Type const* y
   );

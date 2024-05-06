@@ -24,48 +24,14 @@
 
 
 
-#define _GNU_SOURCE
-
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
-
-// bool
-#include <stdbool.h>
-
-
-
 // Shizu includes.
+#include "Shizu/Runtime/State1.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Configure.h"
-#include "Shizu/Runtime/JumpTarget.h"
-#include "Shizu/Runtime/NoReturn.h"
-#include "Shizu/Runtime/Status.h"
 #include "Shizu/Runtime/Type.h"
 
-// Shizu forward declaration.
-typedef struct Shizu_Dl Shizu_Dl;
-
-
-
-#if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
-
-  #define Shizu_OperatingSystem_DlExtension ".dll"
-  #define Shizu_OperatingSystem_DirectorySeparator "\\"
-
-#elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem || Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
-
-  // NULL
-  #include <stddef.h>
-
-  #define Shizu_OperatingSystem_DlExtension ".so"
-  #define Shizu_OperatingSystem_DirectorySeparator "/"
-
-#else
-
-  #error("operating system not (yet) supported")
-
-#endif
-
-
+// Shizu forward declarations.
+typedef struct Shizu_Environment Shizu_Environment;
 
 typedef struct Shizu_Object Shizu_Object;
 
@@ -214,6 +180,18 @@ Shizu_State_ensureModulesLoaded
 
 Shizu_State1*
 Shizu_State_getState1
+  (
+    Shizu_State* self
+  );
+
+Shizu_State2*
+Shizu_State_getState2
+  (
+    Shizu_State* self
+  );
+
+Shizu_Environment*
+Shizu_State_getGlobals
   (
     Shizu_State* state
   );

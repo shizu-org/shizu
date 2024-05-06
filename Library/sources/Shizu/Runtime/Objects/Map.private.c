@@ -22,6 +22,8 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/Map.private.h"
 
+#include "Shizu/Runtime/State1.h"
+
 // fprintf, stderr
 #include <stdio.h>
 
@@ -32,15 +34,15 @@
 #include <stdlib.h>
 
 static void
-Shizu_Map_staticInitialize
+Shizu_Map_postCreateType
   (
-    Shizu_State* state
+    Shizu_State1* state1
   );
 
 static void
-Shizu_Map_staticFinalize
+Shizu_Map_preDestroyType
   ( 
-    Shizu_State* state
+    Shizu_State1* state1
   );
   
 static void
@@ -58,9 +60,9 @@ Shizu_Map_finalize
   );
 
 static Shizu_TypeDescriptor const Shizu_Map_Type = {
-  .staticInitialize = &Shizu_Map_staticInitialize,
-  .staticFinalize = &Shizu_Map_staticFinalize,
-  .staticVisit = NULL,
+  .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_Map_postCreateType,
+  .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_Map_preDestroyType,
+  .visitType = NULL,
   .size = sizeof(Shizu_Map),
   .visit = (Shizu_OnVisitCallback*) & Shizu_Map_visit,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_Map_finalize,
@@ -77,20 +79,20 @@ typedef struct Maps {
 } Maps;
 
 static void
-Shizu_Map_staticInitialize
+Shizu_Map_postCreateType
   (
-    Shizu_State* state
+    Shizu_State1* state1
   )
 {
-  if (Shizu_State1_allocateNamedStorage(Shizu_State_getState1(state), namedMemoryName, sizeof(Maps))) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+  if (Shizu_State1_allocateNamedStorage(state1, namedMemoryName, sizeof(Maps))) {
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
   Maps* g = NULL;
-  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
-    Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
   g->minimumCapacity = 8;
   g->maximumCapacity = SIZE_MAX / sizeof(Shizu_Map_Node*);
@@ -100,12 +102,12 @@ Shizu_Map_staticInitialize
 }
 
 static void
-Shizu_Map_staticFinalize
+Shizu_Map_preDestroyType
   (
-    Shizu_State* state
+    Shizu_State1* state1
   )
 {
-  Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
+  Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
 }
 
 static void
@@ -118,8 +120,8 @@ Shizu_Map_visit
 	for (size_t i = 0, n = self->capacity; i < n; ++i) {
 		Shizu_Map_Node* node = self->buckets[i];
 		while (node) {
-			Shizu_Gc_visitValue(state, &node->key);
-			Shizu_Gc_visitValue(state, &node->value);
+			Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), &node->key);
+			Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), &node->value);
 			node = node->next;
 		}
 	}

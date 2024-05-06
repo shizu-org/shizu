@@ -58,7 +58,7 @@ test1
     Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State_jump(state);
   }
-  if (!Shizu_Type_isTrueSubTypeOf(state, byteArrayType, objectType)) {
+  if (!Shizu_Types_isTrueSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), byteArrayType, objectType)) {
     Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State_jump(state);
   }

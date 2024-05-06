@@ -67,9 +67,9 @@ Shizu_String_initializeDispatch
   );
 
 static Shizu_TypeDescriptor const Shizu_String_Type = {
-  .staticInitialize = NULL,
-  .staticFinalize = NULL,
-  .staticVisit = NULL,
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
   .size = sizeof(Shizu_String),
   .visit = NULL,
   .finalize = (Shizu_OnFinalizeCallback*)&Shizu_String_finalize,
@@ -111,7 +111,7 @@ Shizu_String_isEqualToImpl
     Shizu_Object* other
   )
 {
-  if (Shizu_State_isSubTypeOf(state, Shizu_String_getType(state), Shizu_State_getObjectType(state, other))) {
+  if (Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_String_getType(state), Shizu_State_getObjectType(state, other))) {
     Shizu_String* x = self;
     Shizu_String* y = (Shizu_String*)other;
     if (x->hashValue == y->hashValue && x->numberOfBytes == y->numberOfBytes) {
