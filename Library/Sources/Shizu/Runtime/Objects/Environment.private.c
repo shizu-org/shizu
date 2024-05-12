@@ -155,7 +155,7 @@ Shizu_Environment_create
   )
 {
   Shizu_Type* TYPE = Shizu_Environment_getType(state);
-  Shizu_Environment* self = (Shizu_Environment*)Shizu_Gc_allocate(state, sizeof(Shizu_Environment));
+  Shizu_Environment* self = (Shizu_Environment*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Environment));
   self->buckets = malloc(sizeof(Shizu_Environment_Node*) * 8);
   if (!self->buckets) {
     Shizu_State_setStatus(state, 1);

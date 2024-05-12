@@ -220,7 +220,7 @@ Shizu_Object_isBlack
 { return Shizu_Object_Flags_Black == (Shizu_Object_Flags_Gray & object->flags); }
 
 Shizu_Object*
-Shizu_Gc_allocate
+Shizu_Gc_allocateObject
   (
     Shizu_State* state,
     size_t size

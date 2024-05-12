@@ -144,7 +144,7 @@ Shizu_String_create
   )
 {
   Shizu_Type* TYPE = Shizu_String_getType(state);
-  Shizu_String* self = (Shizu_String*)Shizu_Gc_allocate(state, sizeof(Shizu_String));
+  Shizu_String* self = (Shizu_String*)Shizu_Gc_allocateObject(state, sizeof(Shizu_String));
   self->bytes = malloc(numberOfBytes > 0 ? numberOfBytes : 1);
   if (!self->bytes) {
     fprintf(stderr, "%s:%d: unable to allocate `%zu` Bytes\n", __FILE__, __LINE__, numberOfBytes > 0 ? numberOfBytes : 1);
@@ -183,7 +183,7 @@ Shizu_String_concatenate
 		hashValue = (hashValue << 5) ^ (hashValue >> 3) | (size_t)other->bytes[i];
 	}
   Shizu_Type* TYPE = Shizu_String_getType(state);
-  Shizu_String* new = (Shizu_String*)Shizu_Gc_allocate(state, sizeof(Shizu_String));
+  Shizu_String* new = (Shizu_String*)Shizu_Gc_allocateObject(state, sizeof(Shizu_String));
   size_t numberOfBytes = self->numberOfBytes + other->numberOfBytes;
   new->bytes = malloc(numberOfBytes > 0 ?  numberOfBytes : 1);
   if (!new->bytes) {

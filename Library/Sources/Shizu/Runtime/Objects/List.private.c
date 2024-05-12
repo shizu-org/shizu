@@ -146,7 +146,7 @@ Shizu_List_create
   )
 {
   Shizu_Type* TYPE = Shizu_List_getType(state);
-  Shizu_List* self = (Shizu_List*)Shizu_Gc_allocate(state, sizeof(Shizu_List));
+  Shizu_List* self = (Shizu_List*)Shizu_Gc_allocateObject(state, sizeof(Shizu_List));
 	self->elements = malloc(8 * sizeof(Shizu_Value));
 	if (!self->elements) {
 		Shizu_State_setStatus(state, 1);

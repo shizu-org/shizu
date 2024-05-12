@@ -106,6 +106,9 @@ list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/Environment.priva
 list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.private.h)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.h)
 
+list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/CxxProcedure.c)
+list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/CxxProcedure.h)
+
 list(APPEND ${name}.source_files sources/Shizu/Runtime/Module.c)
 list(APPEND ${name}.header_files includes/Shizu/Runtime/Module.h)
 

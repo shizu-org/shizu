@@ -186,7 +186,7 @@ Shizu_ByteArray_create
   )
 {
   Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
-  Shizu_ByteArray* self = (Shizu_ByteArray*)Shizu_Gc_allocate(state, sizeof(Shizu_ByteArray));
+  Shizu_ByteArray* self = (Shizu_ByteArray*)Shizu_Gc_allocateObject(state, sizeof(Shizu_ByteArray));
 	self->elements = malloc(8);
 	if (!self->elements) {
 		Shizu_State_setStatus(state, 1);

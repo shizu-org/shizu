@@ -155,7 +155,7 @@ Shizu_Map_create
   )
 {
   Shizu_Type* TYPE = Shizu_Map_getType(state);
-  Shizu_Map* self = (Shizu_Map*)Shizu_Gc_allocate(state, sizeof(Shizu_Map));
+  Shizu_Map* self = (Shizu_Map*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Map));
   self->buckets = malloc(sizeof(Shizu_Map_Node*) * 8);
   if (!self->buckets) {
     Shizu_State_setStatus(state, 1);

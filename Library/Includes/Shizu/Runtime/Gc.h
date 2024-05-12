@@ -143,7 +143,7 @@ Shizu_Object_isEqualTo
 /// Allocate an object of the specified size, in Bytes.
 /// The object has the type "Shizu.Object" from which all other types are derived from.
 Shizu_Object*
-Shizu_Gc_allocate
+Shizu_Gc_allocateObject
   (
     Shizu_State* state,
     size_t size

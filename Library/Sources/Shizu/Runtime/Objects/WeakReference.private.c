@@ -239,7 +239,7 @@ Shizu_WeakReference_create
     Shizu_State_jump(state);
   }
 
-  Shizu_WeakReference* self = (Shizu_WeakReference*)Shizu_Gc_allocate(state, sizeof(Shizu_WeakReference));
+  Shizu_WeakReference* self = (Shizu_WeakReference*)Shizu_Gc_allocateObject(state, sizeof(Shizu_WeakReference));
 
   // Add the weak reference to the hash table.
 	size_t hashValue = hashPointer(reference);

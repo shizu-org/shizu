@@ -128,7 +128,7 @@ Shizu_Module_create
     Shizu_String* path
   )
 {
-  Shizu_Module* self = (Shizu_Module*)Shizu_Gc_allocate(state, sizeof(Shizu_Module));
+  Shizu_Module* self = (Shizu_Module*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Module));
   self->path = path;
   self->dl = NULL;
   ((Shizu_Object*)self)->type = Shizu_Module_getType(state);
