@@ -343,3 +343,19 @@ Shizu_ByteArray_apppendRawBytes
 {
 	Shizu_ByteArray_insertRawBytes(state, self, self->size, p, n);
 }
+
+void*
+Shizu_ByteArray_getRawBytes
+	(	
+		Shizu_State* state,
+		Shizu_ByteArray* self
+	)
+{ return self->elements; }
+
+size_t
+Shizu_ByteArray_getNumberOfRawBytes
+	(
+		Shizu_State* state,
+		Shizu_ByteArray* self
+	)
+{ return self->size; }

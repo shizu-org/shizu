@@ -150,7 +150,7 @@ define_property(TARGET PROPERTY modules
 
 set_target_properties(Shizu.Runtime PROPERTIES modules "")
 
-target_link_libraries(${name} idlib-file-system idlib-bit-scan idlib-process)
+target_link_libraries(${name} idlib-file-system idlib-bit-scan idlib-byte-sequence idlib-process)
 
 source_group(TREE ${CMAKE_CURRENT_BINARY_DIR} FILES ${${name}.configuration_files})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.header_files})

@@ -62,7 +62,6 @@ set(idlib-process.binary-dir CACHE STRING "IdLib Process: Path to the build dire
 if (NOT idlib-process.binary-dir)
   set(idlib-process.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-process-1.6-bld")
 endif()
-
                     
 #######################################################################################################################
 
@@ -119,10 +118,66 @@ FetchContent_Declare(idlib-file-system
                      GIT_TAG ${idlib-file-system.tag}
                      SOURCE_DIR ${idlib-file-system.source-dir}
                      BINARY_DIR ${idlib-file-system.binary-dir})
+                     
+#######################################################################################################################
+
+set(idlib-math.repository CACHE STRING "IdLib Math: The Git repository to check out")
+if (NOT idlib-math.repository)
+  set(idlib-math.repository https://github.com/michaelheilmann/idlib-math.git)
+endif()
+
+set(idlib-math.tag CACHE STRING "IdLib Math: The Git tag to check out")
+if (NOT idlib-math.tag)
+  set(idlib-math.tag 1.6)
+endif()
+
+set(idlib-math.source-dir CACHE STRING "IdLib Math: Path to the source directory")
+if (NOT idlib-math.source-dir)
+  set(idlib-math.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-math-1.6-src")
+endif()
+
+set(idlib-math.binary-dir CACHE STRING "IdLib Math: Path to the build directory")
+if (NOT idlib-math.binary-dir)
+  set(idlib-math.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-math-1.6-bld")
+endif()
+
+FetchContent_Declare(idlib-math
+                     GIT_REPOSITORY ${idlib-math.repository}
+                     GIT_TAG ${idlib-math.tag}
+                     SOURCE_DIR ${idlib-math.source-dir}
+                     BINARY_DIR ${idlib-math.binary-dir})
 
 #######################################################################################################################
 
-FetchContent_MakeAvailable(idlib-bit-scan idlib-file-system)
+set(idlib-byte-sequence.repository CACHE STRING "IdLib Byte Sequence: The Git repository to check out")
+if (NOT idlib-byte-sequence.repository)
+  set(idlib-byte-sequence.repository https://github.com/michaelheilmann/idlib-byte-sequence.git)
+endif()
+
+set(idlib-byte-sequence.tag CACHE STRING "IdLib Byte Sequence: The Git tag to check out")
+if (NOT idlib-byte-sequence.tag)
+  set(idlib-byte-sequence.tag 1.1)
+endif()
+
+set(idlib-byte-sequence.source-dir CACHE STRING "IdLib Byte Sequence: Path to the source directory")
+if (NOT idlib-byte-sequence.source-dir)
+  set(idlib-byte-sequence.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-byte-sequence-1.1-src")
+endif()
+
+set(idlib-byte-sequence.binary-dir CACHE STRING "IdLib Byte Sequence: Path to the build directory")
+if (NOT idlib-byte-sequence.binary-dir)
+  set(idlib-byte-sequence.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-byte-sequence-1.1-bld")
+endif()
+
+FetchContent_Declare(idlib-byte-sequence
+                     GIT_REPOSITORY ${idlib-byte-sequence.repository}
+                     GIT_TAG ${idlib-byte-sequence.tag}
+                     SOURCE_DIR ${idlib-byte-sequence.source-dir}
+                     BINARY_DIR ${idlib-byte-sequence.binary-dir})
+
+#######################################################################################################################
+
+FetchContent_MakeAvailable(idlib-bit-scan idlib-byte-sequence idlib-file-system idlib-math)
                                                                                                                        
 #######################################################################################################################
 

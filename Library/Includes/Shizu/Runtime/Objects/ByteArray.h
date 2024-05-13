@@ -28,6 +28,7 @@
 #include "Shizu/Runtime/State.h"
 #include "Shizu/Runtime/Value.h"
 
+/// Shizu_ByteArray is ued to transfer Bytes between the managed and the environment.
 Shizu_declareType(Shizu_ByteArray);
 
 /// @since 1.0
@@ -107,6 +108,20 @@ Shizu_ByteArray_apppendRawBytes
     Shizu_ByteArray* self,
     void const* p,
     size_t n
+  );
+
+void*
+Shizu_ByteArray_getRawBytes
+  (
+    Shizu_State* state,
+    Shizu_ByteArray* self
+  );
+
+size_t
+Shizu_ByteArray_getNumberOfRawBytes
+  (
+    Shizu_State* state,
+    Shizu_ByteArray* self
   );
 
 #endif // SHIZU_RUNTIME_OBJECTS_BYTEARRAY_H_INCLUDED
