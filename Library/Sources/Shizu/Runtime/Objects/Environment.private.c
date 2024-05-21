@@ -148,14 +148,15 @@ Shizu_Environment_finalize
 
 Shizu_defineType(Shizu_Environment, Shizu_Object);
 
-Shizu_Environment*
-Shizu_Environment_create
+void
+Shizu_Environment_construct
   (
-    Shizu_State* state
+    Shizu_State* state,
+    Shizu_Environment* self
   )
 {
   Shizu_Type* TYPE = Shizu_Environment_getType(state);
-  Shizu_Environment* self = (Shizu_Environment*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Environment));
+  Shizu_Object_construct(state, (Shizu_Object*)self);
   self->buckets = malloc(sizeof(Shizu_Environment_Node*) * 8);
   if (!self->buckets) {
     Shizu_State_setStatus(state, 1);
@@ -167,6 +168,17 @@ Shizu_Environment_create
   self->size = 0;
   self->capacity = 8;
   ((Shizu_Object*)self)->type = TYPE;
+}
+
+Shizu_Environment*
+Shizu_Environment_create
+  (
+    Shizu_State* state
+  )
+{
+  Shizu_Type* TYPE = Shizu_Environment_getType(state);
+  Shizu_Environment* self = (Shizu_Environment*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Environment));
+  Shizu_Environment_construct(state, self);
   return self;
 }
 

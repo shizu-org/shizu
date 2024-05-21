@@ -139,6 +139,25 @@ Shizu_List_finalize
 
 Shizu_defineType(Shizu_List, Shizu_Object);
 
+void
+Shizu_List_construct
+	(
+		Shizu_State* state,
+		Shizu_List* self
+	)
+{
+	Shizu_Type* TYPE = Shizu_List_getType(state);
+	Shizu_Object_construct(state, (Shizu_Object*)self);
+	self->elements = malloc(8 * sizeof(Shizu_Value));
+	if (!self->elements) {
+		Shizu_State_setStatus(state, 1);
+		Shizu_State_jump(state);
+	}
+	self->size = 0;
+	self->capacity = 8;
+	((Shizu_Object*)self)->type = TYPE;
+}
+
 Shizu_List*
 Shizu_List_create
   (
@@ -147,14 +166,7 @@ Shizu_List_create
 {
   Shizu_Type* TYPE = Shizu_List_getType(state);
   Shizu_List* self = (Shizu_List*)Shizu_Gc_allocateObject(state, sizeof(Shizu_List));
-	self->elements = malloc(8 * sizeof(Shizu_Value));
-	if (!self->elements) {
-		Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
-	}
-	self->size = 0;
-	self->capacity = 8;
-  ((Shizu_Object*)self)->type = TYPE;
+	Shizu_List_construct(state, self);
   return self;
 }
 

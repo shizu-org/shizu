@@ -79,6 +79,48 @@ Shizu_State_getObjectDispatch
     Shizu_Object* object
   );
 
+/// @since 1.0
+/// Allocate an object of the specified size, in Bytes.
+/// The object has the type "Shizu.Object" from which all other types are derived from.
+Shizu_Object*
+Shizu_Gc_allocateObject
+  (
+    Shizu_State* state,
+    size_t size
+  );
+
+void
+Shizu_Gc_visitObject
+  (
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_Object* object
+  );
+
+void
+Shizu_Gc_visitValue
+  (
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_Value* value
+  );
+
+void
+Shizu_Gc_run
+  (
+    Shizu_State* state
+  );
+
+/// @brief Construct this Shizu_Object value.
+/// @param state A pointer to the Shizu_State object.
+/// @param self A pointer to this Shizu_Object.
+void
+Shizu_Object_construct
+  (
+    Shizu_State* state,
+    Shizu_Object* self
+  );
+
 /// @ingroup Object
 /// @brief
 /// Get the hash value of this Shizu_Object object.
@@ -138,37 +180,5 @@ Shizu_Object_isEqualTo
   }
   return dispatch->isEqualTo(state, self, other);
 }
-
-/// @since 1.0
-/// Allocate an object of the specified size, in Bytes.
-/// The object has the type "Shizu.Object" from which all other types are derived from.
-Shizu_Object*
-Shizu_Gc_allocateObject
-  (
-    Shizu_State* state,
-    size_t size
-  );
-
-void
-Shizu_Gc_visitObject
-  (
-    Shizu_State1* state1,
-    Shizu_Gc* gc,
-    Shizu_Object* object
-  );
-
-void
-Shizu_Gc_visitValue
-  (
-    Shizu_State1* state1,
-    Shizu_Gc* gc,
-    Shizu_Value* value
-  );
-
-void
-Shizu_Gc_run
-  (
-    Shizu_State* state
-  );
 
 #endif // SHIZU_RUNTIME_GC_H_INCLUDED

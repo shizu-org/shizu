@@ -225,6 +225,31 @@ hashPointer
   )
 { return (size_t)(uintptr_t)p; }
 
+void
+Shizu_WeakReference_construct
+  (
+    Shizu_State* state,
+    Shizu_WeakReference* self,
+    Shizu_Object* reference
+  )
+{
+  Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  WeakReferences* g = NULL;
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+    Shizu_State_setStatus(state, 1);
+    Shizu_State_jump(state);
+  }
+  // Add the weak reference to the hash table.
+  size_t hashValue = hashPointer(reference);
+  size_t hashIndex = hashValue % g->capacity;
+  self->reference = reference;
+  self->next = g->buckets[hashIndex];
+  g->buckets[hashIndex] = self;
+  g->size++;
+  ((Shizu_Object*)self)->type = TYPE;
+}
+
 Shizu_WeakReference*
 Shizu_WeakReference_create
   (
@@ -233,23 +258,8 @@ Shizu_WeakReference_create
   )
 {
   Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
-  WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
-  }
-
   Shizu_WeakReference* self = (Shizu_WeakReference*)Shizu_Gc_allocateObject(state, sizeof(Shizu_WeakReference));
-
-  // Add the weak reference to the hash table.
-	size_t hashValue = hashPointer(reference);
-	size_t hashIndex = hashValue % g->capacity;
-  self->reference = reference;
-  self->next = g->buckets[hashIndex];
-  g->buckets[hashIndex] = self;
-  g->size++;
-
-  ((Shizu_Object*)self)->type = TYPE;
+  Shizu_WeakReference_construct(state, self, reference);
   return self;
 }
 

@@ -25,6 +25,16 @@
 #include "Shizu/Runtime/DebugAssert.h"
 #include "Shizu/Runtime/Type.private.h"
 
+void
+Shizu_Object_construct
+  (
+    Shizu_State* state,
+    Shizu_Object* self
+  )
+{
+  self->type = Shizu_Object_getType(state);
+}
+
 Shizu_Type*
 Shizu_State_getObjectType
   (

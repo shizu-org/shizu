@@ -179,6 +179,25 @@ Shizu_ByteArray_finalize
 
 Shizu_defineType(Shizu_ByteArray, Shizu_Object);
 
+void
+Shizu_ByteArray_construct
+	(
+		Shizu_State* state,
+		Shizu_ByteArray* self
+	)
+{
+	Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
+	Shizu_Object_construct(state, (Shizu_Object*)self);
+	self->elements = malloc(8);
+	if (!self->elements) {
+		Shizu_State_setStatus(state, 1);
+		Shizu_State_jump(state);
+	}
+	self->size = 0;
+	self->capacity = 8;
+	((Shizu_Object*)self)->type = TYPE;
+}
+
 Shizu_ByteArray*
 Shizu_ByteArray_create
   (
@@ -187,14 +206,7 @@ Shizu_ByteArray_create
 {
   Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
   Shizu_ByteArray* self = (Shizu_ByteArray*)Shizu_Gc_allocateObject(state, sizeof(Shizu_ByteArray));
-	self->elements = malloc(8);
-	if (!self->elements) {
-		Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
-	}
-	self->size = 0;
-	self->capacity = 8;
-  ((Shizu_Object*)self)->type = TYPE;
+	Shizu_ByteArray_construct(state, self);
   return self;
 }
 

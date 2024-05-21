@@ -135,16 +135,17 @@ Shizu_String_initializeDispatch
   ((Shizu_Object_Dispatch*)self)->isEqualTo = (Shizu_Boolean (*)(Shizu_State*, Shizu_Object*, Shizu_Object*)) & Shizu_String_isEqualToImpl;
 }
 
-Shizu_String*
-Shizu_String_create
+void
+Shizu_String_construct
   (
     Shizu_State* state,
+    Shizu_String* self,
     char const* bytes,
     size_t numberOfBytes
   )
 {
   Shizu_Type* TYPE = Shizu_String_getType(state);
-  Shizu_String* self = (Shizu_String*)Shizu_Gc_allocateObject(state, sizeof(Shizu_String));
+  Shizu_Object_construct(state, (Shizu_Object*)self);
   self->bytes = malloc(numberOfBytes > 0 ? numberOfBytes : 1);
   if (!self->bytes) {
     fprintf(stderr, "%s:%d: unable to allocate `%zu` Bytes\n", __FILE__, __LINE__, numberOfBytes > 0 ? numberOfBytes : 1);
@@ -159,6 +160,19 @@ Shizu_String_create
   self->numberOfBytes = numberOfBytes;
   memcpy(self->bytes, bytes, numberOfBytes);
   ((Shizu_Object*)self)->type = TYPE;
+}
+
+Shizu_String*
+Shizu_String_create
+  (
+    Shizu_State* state,
+    char const* bytes,
+    size_t numberOfBytes
+  )
+{
+  Shizu_Type* TYPE = Shizu_String_getType(state);
+  Shizu_String* self = (Shizu_String*)Shizu_Gc_allocateObject(state, sizeof(Shizu_String));
+  Shizu_String_construct(state, self, bytes, numberOfBytes);
   return self;
 }
 
