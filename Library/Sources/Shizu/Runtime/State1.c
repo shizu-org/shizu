@@ -546,7 +546,7 @@ Shizu_State1_getDlByAdr
 
 #endif
 
-  char const* (*getDlName)() = Shizu_OperatingSystem_getDlSymbol(handle, "Shizu_getDlName");
+  char const* (*getDlName)() = Shizu_OperatingSystem_getDlSymbol(handle, "Shizu_ModuleLibrary_getName");
   if (!getDlName) {
     return NULL;
   }

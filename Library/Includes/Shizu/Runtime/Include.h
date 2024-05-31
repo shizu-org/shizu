@@ -31,6 +31,8 @@
 #include "Shizu/Runtime/Value.h"
 
 #include "Shizu/Runtime/Objects/ByteArray.h"
+#include "Shizu/Runtime/Objects/CxxProcedure.h"
+#include "Shizu/Runtime/Objects/Environment.h"
 #include "Shizu/Runtime/Objects/List.h"
 #include "Shizu/Runtime/Objects/Map.h"
 #include "Shizu/Runtime/Objects/String.h"

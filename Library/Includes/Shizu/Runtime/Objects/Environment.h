@@ -57,6 +57,8 @@ Shizu_Environment_getSize
 /// @since 1.0
 /// @brief Define a variable in this environment.
 /// @param state A pointer to a Shizu_State value.
+/// @param key The key.
+/// @param value The value.
 /// @success The variable is defined in this environment.
 /// @error The variable is already defined in this environment.
 /// @undefined @a state does not point to a Shizu_State value.
@@ -65,7 +67,8 @@ Shizu_Environment_define
   (
     Shizu_State* state,
     Shizu_Environment* self,
-    Shizu_String* key
+    Shizu_String* key,
+    Shizu_Value* value
   );
 
 /// @since 1.0

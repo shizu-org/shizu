@@ -197,15 +197,17 @@ Shizu_Environment_define
   (
     Shizu_State* state,
     Shizu_Environment* self,
-    Shizu_String* key
+    Shizu_String* key,
+    Shizu_Value* value
   )
 {
   size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)key);
   size_t hashIndex = hashValue % self->capacity;
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
     if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->key, (Shizu_Object*)key)) {
-      Shizu_State_setStatus(state, Shizu_Status_Exists);
-      Shizu_State_jump(state);
+      node->key = key;
+      node->value = *value;
+      return;
     }
   }
   Shizu_Environment_Node* node = malloc(sizeof(Shizu_Environment_Node));
@@ -214,7 +216,7 @@ Shizu_Environment_define
     Shizu_State_jump(state);
   }
   node->key = key;
-  Shizu_Value_setVoid(&node->value, Shizu_Void_Void);
+  node->value = *value;
   node->next = self->buckets[hashIndex];
   self->buckets[hashIndex] = node;
   self->size++;
