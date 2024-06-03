@@ -19,28 +19,21 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "FileSystem/setFileContents.h"
+#if !defined(FILESYSTEM_DELETEFILE_H_INCLUDED)
+#define FILESYSTEM_DELETEFILE_H_INCLUDED
 
-#include "FileSystem/Utilities.h"
-#include "idlib/file_system.h"
+#include "Shizu/Runtime/Include.h"
 
+/// @code
+/// deleteFile(path : String) : Boolean
+/// @endcode
 void
-setFileContents
+deleteFile
   (
     Shizu_State* state,
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
-  )
-{
-  if (!returnValue || 2 != numberOfArgumentValues) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
-  }
-  Shizu_String* path = Shizu_Value_getStringArgument(state, argumentValues + 0);
-  path = Shizu_toNativePath(state, path);
-  Shizu_ByteArray* byteArray = Shizu_Value_getByteArrayArgument(state, argumentValues + 1);
-  Shizu_Value value = Shizu_ByteArray_getSize(state, byteArray);
-  idlib_set_file_contents_memory_mapped(Shizu_String_getBytes(state, path), Shizu_ByteArray_getRawBytes(state, byteArray), Shizu_ByteArray_getNumberOfRawBytes(state, byteArray));
-  Shizu_Value_setVoid(returnValue, Shizu_Void_Void);
-}
+  );
+
+#endif // FILESYSTEM_DELETEFILE_H_INCLUDED

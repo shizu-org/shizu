@@ -56,7 +56,12 @@ Shizu_Value_getStringArgument
     Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
     Shizu_State_jump(state);
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_State_getObjectType(state, Shizu_Value_getObject(value)), type)) {
+  if (!Shizu_Value_isObject(value)) {
+    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State_jump(state);
+  }
+  Shizu_Object* object = Shizu_Value_getObject(value);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_State_getObjectType(state, object), type)) {
     Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
     Shizu_State_jump(state);
   }

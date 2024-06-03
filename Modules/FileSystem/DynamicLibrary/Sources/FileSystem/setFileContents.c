@@ -41,6 +41,11 @@ setFileContents
   path = Shizu_toNativePath(state, path);
   Shizu_ByteArray* byteArray = Shizu_Value_getByteArrayArgument(state, argumentValues + 1);
   Shizu_Value value = Shizu_ByteArray_getSize(state, byteArray);
-  idlib_set_file_contents_memory_mapped(Shizu_String_getBytes(state, path), Shizu_ByteArray_getRawBytes(state, byteArray), Shizu_ByteArray_getNumberOfRawBytes(state, byteArray));
+  idlib_status status = idlib_set_file_contents_memory_mapped(Shizu_String_getBytes(state, path), Shizu_ByteArray_getRawBytes(state, byteArray), Shizu_ByteArray_getNumberOfRawBytes(state, byteArray));
+  if (status) {
+    fprintf(stderr, "%s:%d: %s failed with %"PRIu32"\n", __FILE__, __LINE__, "idlib_set_file_contents_memory_mapped", status);
+    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State_jump(state);
+  }
   Shizu_Value_setVoid(returnValue, Shizu_Void_Void);
 }

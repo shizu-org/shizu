@@ -19,35 +19,13 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "FileSystem/getWorkingDirectory.h"
+#include "FileSystem/deleteFile.h"
 
-#include "Shizu/Runtime/Include.h"
+#include "FileSystem/Utilities.h"
 #include "idlib/file_system.h"
 
-typedef struct Context {
-  Shizu_State* state;
-  Shizu_String* path;
-} Context;
-
-static bool
-callback
-  (
-    Context* context,
-    void const* bytes,
-    size_t numberOfBytes
-  )
-{
-  Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(context->state, &jumpTarget);
-  if (!setjmp(jumpTarget.environment)) {
-    context->path = Shizu_String_create(context->state, bytes, numberOfBytes);
-  }
-  Shizu_State_popJumpTarget(context->state);
-  return true;
-}
-
 void
-getWorkingDirectory
+deleteFile
   (
     Shizu_State* state,
     Shizu_Value* returnValue,
@@ -55,17 +33,18 @@ getWorkingDirectory
     Shizu_Value* argumentValues
   )
 {
-  if (!returnValue || !argumentValues || 0 != numberOfArgumentValues) {
+  if (!returnValue || !argumentValues || 1 != numberOfArgumentValues) {
     Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
     Shizu_State_jump(state);
   }
-  Context context = {
-    .state = state,
-    .path = NULL,
-  };
-  if (idlib_get_working_directory(&context, &callback)) {
+  Shizu_String* path = Shizu_Value_getStringArgument(state, argumentValues + 0);
+  path = Shizu_toNativePath(state, path);
+  idlib_status status = idlib_delete_file(Shizu_String_getBytes(state, path));
+  if (IDLIB_SUCCESS != status && IDLIB_FILE_NOT_FOUND != status) {
+    fprintf(stderr, "%s:%d: %s failed with %"PRIu32"\n", __FILE__, __LINE__, "idlib_delete_file", status);
     Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State_jump(state);
   }
-  Shizu_Value_setObject(returnValue, (Shizu_Object*)context.path);
+  // Return true if the file was deleted, return false if the file was not found.
+  Shizu_Value_setBoolean(returnValue, IDLIB_SUCCESS == status);
 }

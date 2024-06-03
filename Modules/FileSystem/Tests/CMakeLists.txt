@@ -23,36 +23,38 @@ cmake_minimum_required(VERSION 3.20)
 
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
-set(name Shizu.Runtime.Modules.FileSystem)
-Shizu_beginDynamicLibrary()
+set(name Shizu.Runtime.Modules.FileSystem.Tests)
+Shizu_beginExecutable()
 
 list(APPEND ${name}.source_files Sources/Main.c)
 
-list(APPEND ${name}.source_files Sources/FileSystem.c)
-list(APPEND ${name}.header_files Includes/FileSystem.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/getWorkingDirectory.c)
-list(APPEND ${name}.header_files Includes/FileSystem/getWorkingDirectory.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/setFileContents.c)
-list(APPEND ${name}.header_files Includes/FileSystem/setFileContents.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/getFileContents.c)
-list(APPEND ${name}.header_files Includes/FileSystem/getFileContents.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/deleteFile.c)
-list(APPEND ${name}.header_files Includes/FileSystem/deleteFile.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/Utilities.c)
-list(APPEND ${name}.header_files Includes/FileSystem/Utilities.h)
-
-Shizu_endDynamicLibrary()
+Shizu_endExecutable()
 
 target_link_libraries(${name} Shizu.Runtime)
 add_dependencies(${name} Shizu.Runtime)
 
-# For each MyTarget in this list and your executable target YourTarget you need to copy <$TARGET_FILE:MyTarget> to <TARGET_FILE_DIR:YourTarget>.
+add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
+
 set(modules "")
 get_target_property(modules Shizu.Runtime modules)
-list(APPEND modules ${name})
-set_target_properties(Shizu.Runtime PROPERTIES modules ${modules})
+foreach (module ${modules})
+  add_dependencies(${name} ${module})
+endforeach()
+
+foreach (module ${modules})
+  copy_plugin(${name} ${module})
+endforeach()
+
+get_target_property(source_dir ${name} SOURCE_DIR)
+message(STATUS " - ${name} source dir: ${source_dir}")
+file(GLOB_RECURSE assets_to_copy RELATIVE ${source_dir}/Assets ${source_dir}/Assets/*.* )
+message(STATUS " - ${name} assets: ${assets_to_copy}")
+foreach (asset_to_copy ${assets_to_copy})
+    add_custom_command(
+    TARGET ${name} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${name}>/Assets
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different                                     # which executes "cmake - E copy_if_different..."
+            ${source_dir}/Assets/${asset_to_copy}                                     # file to copy
+            $<TARGET_FILE_DIR:${name}>/Assets/${asset_to_copy}
+    )
+endforeach()

@@ -20,3 +20,4 @@
 #
 
 add_subdirectory(FileSystem/DynamicLibrary)
+add_subdirectory(FileSystem/Tests)
