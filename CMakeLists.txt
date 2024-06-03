@@ -39,6 +39,11 @@ macro(copy_plugin target module)
   )
 endmacro()
 
+macro(copy_assets target module)
+  file(GLOB_RECURSE assets_to_copy RELATIVE $<SOURCE_DIR:${module}>/Assets $<SOURCE_DIR:${module}>/Assets/*.* )
+  message(STATUS " - ${module} assets: ${assets_to_copy}")
+endmacro()
+
 include(FetchContent)
 
 #######################################################################################################################
@@ -183,6 +188,7 @@ FetchContent_MakeAvailable(idlib-bit-scan idlib-byte-sequence idlib-file-system 
 
 # Include the cmake library.
 include(${idlib-process.source-dir}/cmake/all.cmake)
+include(CMake/all.cmake)
 
 # Enable testing.
 enable_testing()

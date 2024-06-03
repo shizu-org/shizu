@@ -1,6 +1,6 @@
 #
 # Shizu Runtime
-# Copyright (C) 2024 Michael Heilmann. All rights reserved.
+# Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the authors be held liable for any damages
@@ -19,28 +19,8 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-cmake_minimum_required(VERSION 3.20)
-
-set(name ${Shizu.Runtime.project-name}.Runtime.Test.Fundamental)
-
-Shizu_beginExecutable()
-
-list(APPEND ${name}.source_files Sources/Shizu.Runtime.Test.Fundamental/Main.c)
-
-Shizu_endExecutable()
-
-target_link_libraries(${name} PRIVATE ${Shizu.Runtime.project-name})
-
-add_dependencies(${name} Shizu.Runtime.Modules.FileSystem)
-
-add_test(NAME ${name} COMMAND ${name})
-
-set(modules "")
-get_target_property(modules Shizu.Runtime modules)
-foreach (module ${modules})
-  add_dependencies(${name} ${module})
-endforeach()
-
-foreach (module ${modules})
-  copy_plugin(${name} ${module})
-endforeach()
+# Macro to define ${target}.sizeof_void_pointer.
+# @param target The target.
+macro(Shizu_defineVoidPointerSize target)
+  set(${target}.sizeof_void_pointer ${CMAKE_SIZEOF_VOID_P})
+endmacro()

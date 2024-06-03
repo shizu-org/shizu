@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.20)
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
 set(name Shizu.Runtime.Modules.FileSystem)
-begin_plugin_library()
+Shizu_beginDynamicLibrary()
 
 list(APPEND ${name}.source_files Sources/Main.c)
 
@@ -43,14 +43,10 @@ list(APPEND ${name}.header_files Includes/FileSystem/getFileContents.h)
 list(APPEND ${name}.source_files Sources/FileSystem/Utilities.c)
 list(APPEND ${name}.header_files Includes/FileSystem/Utilities.h)
 
-end_plugin_library()
+Shizu_endDynamicLibrary()
 
 target_link_libraries(${name} Shizu.Runtime)
 add_dependencies(${name} Shizu.Runtime)
-
-source_group(TREE ${CMAKE_CURRENT_BINARY_DIR} FILES ${${name}.configuration_files})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.header_files})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.source_files})
 
 # For each MyTarget in this list and your executable target YourTarget you need to copy <$TARGET_FILE:MyTarget> to <TARGET_FILE_DIR:YourTarget>.
 set(modules "")

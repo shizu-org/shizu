@@ -23,94 +23,94 @@ cmake_minimum_required(VERSION 3.20)
 
 set(name ${Shizu.Runtime.project-name})
 
-begin_library()
+Shizu_beginLibrary()
 
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Configure.h.in)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Configure.h.in)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Include.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Include.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Include.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Include.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Gc.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Gc.private.h)
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Gc.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Gc.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Gc.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Gc.private.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Gc.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Gc.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Value.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Value.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Value.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Value.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Type.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Type.h)
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Type.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Type.private.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Type.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Type.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Type.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Type.private.h)
 
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Types/_SmallTypeArray.h)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Types/_SmallTypeArray.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Stack.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Stack.private.h)
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Stack.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Stack.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Stack.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Stack.private.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Stack.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Stack.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/State.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/State.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/State.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/State.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/State1.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/State1.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/State1.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/State1.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/State2.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/State2.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/State2.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/State2.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/JumpTarget.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/JumpTarget.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/JumpTarget.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/JumpTarget.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Locks.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Locks.h)
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Locks.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Locks.private.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Locks.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Locks.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Locks.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Locks.private.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/List.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/List.private.h)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/List.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/List.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/List.private.h)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/List.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/Map.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Map.private.h)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Map.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/Map.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Map.private.h)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Map.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/String.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/String.private.h)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/String.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/String.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/String.private.h)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/String.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/WeakReference.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/WeakReference.private.h)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/WeakReference.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/WeakReference.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/WeakReference.private.h)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/WeakReference.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/ByteArray.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/ByteArray.private.h)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/ByteArray.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/ByteArray.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/ByteArray.private.h)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/ByteArray.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Status.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Status.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Status.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Status.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/DebugAssert.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/DebugAssert.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/DebugAssert.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/DebugAssert.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/StaticAssert.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/StaticAssert.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/StaticAssert.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/StaticAssert.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/NoReturn.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/NoReturn.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/NoReturn.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/NoReturn.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/getWorkingDirectory.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/getWorkingDirectory.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/getWorkingDirectory.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/getWorkingDirectory.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/Environment.private.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.private.h)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/Environment.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/Environment.private.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Environment.private.h)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Environment.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Objects/CxxProcedure.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Objects/CxxProcedure.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/CxxProcedure.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/CxxProcedure.h)
 
-list(APPEND ${name}.source_files sources/Shizu/Runtime/Module.c)
-list(APPEND ${name}.header_files includes/Shizu/Runtime/Module.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Module.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
 
 # Configuration variables for 'Configure.h.in'.
 if (${${name}.operating_system} STREQUAL ${${name}.operating_system_windows})
@@ -139,10 +139,10 @@ else()
   message(FATAL_ERROR "instruction set architecture detection not executed")
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/includes/Shizu/Runtime/Configure.h.in includes/Shizu/Runtime/Configure.h)
-list(APPEND ${name}.configuration_files ${CMAKE_CURRENT_BINARY_DIR}/includes/Shizu/Runtime/Configure.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Includes/Shizu/Runtime/Configure.h.in Includes/Shizu/Runtime/Configure.h)
+list(APPEND ${name}.configuration_files ${CMAKE_CURRENT_BINARY_DIR}/Includes/Shizu/Runtime/Configure.h)
 
-end_library()
+Shizu_endLibrary()
 
 define_property(TARGET PROPERTY modules
   BRIEF_DOCS "My new custom property"
@@ -151,10 +151,6 @@ define_property(TARGET PROPERTY modules
 set_target_properties(Shizu.Runtime PROPERTIES modules "")
 
 target_link_libraries(${name} idlib-file-system idlib-bit-scan idlib-byte-sequence idlib-process)
-
-source_group(TREE ${CMAKE_CURRENT_BINARY_DIR} FILES ${${name}.configuration_files})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.header_files})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.source_files})
 
 # We must define _GNU_SOURCE under Linux.
 if (${${name}.operating_system_id} EQUAL ${${name}.operating_system_id_linux})

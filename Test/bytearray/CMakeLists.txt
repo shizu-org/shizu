@@ -23,11 +23,11 @@ cmake_minimum_required(VERSION 3.20)
 
 set(name ${Shizu.Runtime.project-name}.Runtime.Test.ByteArray)
 
-begin_executable()
+Shizu_beginExecutable()
 
 list(APPEND ${name}.source_files sources/Shizu.Runtime.Test.ByteArray/Main.c)
 
-end_executable()
+Shizu_endExecutable()
 
 set_property(TARGET ${name} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
 
