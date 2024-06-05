@@ -33,14 +33,13 @@ target_link_libraries(${name} PRIVATE ${Shizu.Runtime.project-name})
 
 add_dependencies(${name} Shizu.Runtime.Modules.FileSystem)
 
-add_test(NAME ${name} COMMAND ${name})
+add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
 
 set(modules "")
 get_target_property(modules Shizu.Runtime modules)
 foreach (module ${modules})
   add_dependencies(${name} ${module})
 endforeach()
-
 foreach (module ${modules})
   copy_plugin(${name} ${module})
 endforeach()

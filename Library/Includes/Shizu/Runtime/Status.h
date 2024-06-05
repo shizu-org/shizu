@@ -54,6 +54,8 @@ enum Shizu_Status {
 
   Shizu_Status_ConversionFailed,
 
+  Shizu_Status_NotExists,
+
   Shizu_Status_Exists,
 
 }; // enum Shizu_Status

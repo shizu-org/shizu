@@ -198,6 +198,7 @@ Shizu_String_concatenate
 	}
   Shizu_Type* TYPE = Shizu_String_getType(state);
   Shizu_String* new = (Shizu_String*)Shizu_Gc_allocateObject(state, sizeof(Shizu_String));
+  Shizu_Object_construct(state, (Shizu_Object*)new);
   size_t numberOfBytes = self->numberOfBytes + other->numberOfBytes;
   new->bytes = malloc(numberOfBytes > 0 ?  numberOfBytes : 1);
   if (!new->bytes) {
@@ -209,7 +210,7 @@ Shizu_String_concatenate
 	new->numberOfBytes = numberOfBytes;
 	memcpy(new->bytes, self->bytes, self->numberOfBytes);
 	memcpy(new->bytes + self->numberOfBytes, other->bytes, other->numberOfBytes);
-  ((Shizu_Object*)self)->type = TYPE;
+  ((Shizu_Object*)new)->type = TYPE;
 	return new;
 }
 

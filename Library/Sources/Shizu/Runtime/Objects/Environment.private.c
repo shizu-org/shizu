@@ -193,7 +193,7 @@ Shizu_Environment_getSize
 }
 
 void
-Shizu_Environment_define
+Shizu_Environment_set
   (
     Shizu_State* state,
     Shizu_Environment* self,
@@ -220,6 +220,25 @@ Shizu_Environment_define
   node->next = self->buckets[hashIndex];
   self->buckets[hashIndex] = node;
   self->size++;
+}
+
+Shizu_Value
+Shizu_Environment_get
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* key
+  )
+{
+  size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)key);
+  size_t hashIndex = hashValue % self->capacity;
+  for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
+    if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->key, (Shizu_Object*)key)) {
+      return node->value;
+    }
+  }
+  Shizu_State_setStatus(state, Shizu_Status_NotExists);
+  Shizu_State_jump(state);
 }
 
 Shizu_Boolean

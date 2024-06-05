@@ -110,7 +110,7 @@ getNewBestCapacity
 	}
 	size_t oldCapacity = self->capacity;
 	size_t newCapacity;
-	if (g->maximumCapacity - oldCapacity < additionalCapacity) {
+	if (g->maximumCapacity - oldCapacity >= additionalCapacity) {
 		newCapacity = oldCapacity + additionalCapacity;
 	} else {
 		Shizu_State_setStatus(state, Shizu_Status_AllocationFailed);
@@ -134,16 +134,26 @@ Shizu_ByteArray_postCreateType
 		Shizu_State1_setStatus(state1, 1);
 		Shizu_State1_jump(state1);
 	}
+
 	ByteArrays* g = NULL;
 	if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
 		Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
 		Shizu_State1_setStatus(state1, 1);
 		Shizu_State1_jump(state1);
 	}
+
   g->minimumCapacity = 8;
-	g->maximumPowerOfTwoInteger32 = Shizu_Integer32_Maximum & ~(Shizu_Integer32_Maximum - 1);
-	g->maximumPowerOfTwoSz = SIZE_MAX & ~(SIZE_MAX - 1);
-	// let the maximum capacity be the greatest power of two both size_t and int32_t can hold.
+
+	g->maximumPowerOfTwoSz = SIZE_MAX;
+	while (g->maximumPowerOfTwoSz % 2 != 0) {
+		g->maximumPowerOfTwoSz--;
+	}
+
+	g->maximumPowerOfTwoInteger32 = Shizu_Integer32_Maximum;
+	while (g->maximumPowerOfTwoInteger32 % 2 != 0) {
+		g->maximumPowerOfTwoInteger32--;
+	}
+
   g->maximumCapacity = g->maximumPowerOfTwoInteger32 < g->maximumPowerOfTwoSz ? g->maximumPowerOfTwoInteger32 : g->maximumPowerOfTwoSz;
 }
 
@@ -302,7 +312,6 @@ Shizu_ByteArray_prependValue
 	Shizu_ByteArray_insertValue(state, self, 0, value);
 }
 
-
 void
 Shizu_ByteArray_insertRawBytes
 	(	
@@ -371,3 +380,20 @@ Shizu_ByteArray_getNumberOfRawBytes
 		Shizu_ByteArray* self
 	)
 { return self->size; }
+
+Shizu_Boolean
+Shizu_ByteArray_compareRawBytes
+	(
+		Shizu_State* state,
+		Shizu_ByteArray const* self,
+		Shizu_ByteArray const* other
+	)
+{
+	if (self == other) {
+		return true;
+	}
+	if (self->size != other->size) {
+		return false;
+	}
+	return !memcmp(self->elements, other->elements, self->size);
+}

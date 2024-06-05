@@ -124,4 +124,12 @@ Shizu_ByteArray_getNumberOfRawBytes
     Shizu_ByteArray* self
   );
 
+Shizu_Boolean
+Shizu_ByteArray_compareRawBytes
+  (
+    Shizu_State* state,
+    Shizu_ByteArray const* self,
+    Shizu_ByteArray const* other
+  );
+
 #endif // SHIZU_RUNTIME_OBJECTS_BYTEARRAY_H_INCLUDED
