@@ -92,6 +92,17 @@ Shizu_ModuleLibrary_load
     Shizu_State_jump(state);
   }
 
+  Shizu_State_pushJumpTarget(state, &jumpTarget);
+  if (!setjmp(jumpTarget.environment)) {
+    Shizu_Value value;
+    Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_String_create(state, Shizu_OperatingSystem_DirectorySeparator, strlen(Shizu_OperatingSystem_DirectorySeparator)));
+    Shizu_Environment_set(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")), &value);
+    Shizu_State_popJumpTarget(state);
+  } else {
+    Shizu_State_popJumpTarget(state);
+    Shizu_State_jump(state);
+  }
+
   fprintf(stdout, "[Module : File System] loaded\n");
 }
 

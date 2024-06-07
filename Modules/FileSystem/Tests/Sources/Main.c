@@ -47,7 +47,8 @@ static void testSetFileContents1(Shizu_State* state, Shizu_String* relativePath,
   }
   Shizu_String* path = (Shizu_String*)Shizu_Value_getObject(&returnValue);
   // @todo Add and use "getDirectorySeparator".
-  path = Shizu_String_concatenate(state, path, Shizu_String_create(state, "\\", strlen("\\")));
+  Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
+  path = Shizu_String_concatenate(state, path, directorySeparator);
   path = Shizu_String_concatenate(state, path, relativePath);
   // Delete the file if it exists.
   p = Shizu_Environment_getCxxProcedure(state, environment, Shizu_String_create(state, "deleteFile", strlen("deleteFile")));
@@ -106,7 +107,8 @@ static void testGetFileContents(Shizu_State* state,  Shizu_String* relativePath,
   }
   Shizu_String* path = (Shizu_String*)Shizu_Value_getObject(&returnValue);
   // @todo Add and use "getDirectorySeparator".
-  path = Shizu_String_concatenate(state, path, Shizu_String_create(state, "\\", strlen("\\")));
+  Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
+  path = Shizu_String_concatenate(state, path, directorySeparator);
   path = Shizu_String_concatenate(state, path, relativePath);
   // Get the file contents.
   p = Shizu_Environment_getCxxProcedure(state, environment, Shizu_String_create(state, "getFileContents", strlen("getFileContents")));
@@ -130,13 +132,21 @@ static void testGetFileContents(Shizu_State* state,  Shizu_String* relativePath,
 }
 
 static void testGetFileContentsEmpty(Shizu_State* state) {
-  Shizu_String* relativePath = Shizu_String_create(state, "Assets/empty-file.txt", strlen("Assets/empty-file.txt"));
+  Shizu_Environment* environment = Shizu_State_getGlobals(state);
+  Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
+  Shizu_String* relativePath = Shizu_String_create(state, "Assets", strlen("Assets"));
+  relativePath = Shizu_String_concatenate(state, relativePath, directorySeparator);
+  relativePath = Shizu_String_concatenate(state, relativePath, Shizu_String_create(state, "empty-file.txt", strlen("empty-file.txt")));
   Shizu_ByteArray* expected = Shizu_ByteArray_create(state);
   testGetFileContents(state, relativePath, expected);
 }
 
 static void testGetFileContentsNonEmpty(Shizu_State* state) {
-  Shizu_String* relativePath = Shizu_String_create(state, "Assets/non-empty-file.txt", strlen("Assets/non-empty-file.txt"));
+  Shizu_Environment* environment = Shizu_State_getGlobals(state);
+  Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
+  Shizu_String* relativePath = Shizu_String_create(state, "Assets", strlen("Assets"));
+  relativePath = Shizu_String_concatenate(state, relativePath, directorySeparator);
+  relativePath = Shizu_String_concatenate(state, relativePath, Shizu_String_create(state, "non-empty-file.txt", strlen("non-empty-file.txt")));
   Shizu_ByteArray* expected = Shizu_ByteArray_create(state);
   Shizu_ByteArray_apppendRawBytes(state, expected, "Hello, World!", strlen("Hello, World!"));
   testGetFileContents(state, relativePath, expected);
