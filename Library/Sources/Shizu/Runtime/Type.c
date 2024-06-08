@@ -61,3 +61,25 @@ Shizu_Types_isTrueSubTypeOf
   } while (z);
   return NULL != z;
 }
+
+Shizu_Type*
+Shizu_Types_getParentType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* x
+  )
+{
+  return x->parentType;
+}
+
+Shizu_Object_Dispatch*
+Shizu_Types_getDispatch
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* x
+  )
+{
+  return x->dispatch;
+}

@@ -31,6 +31,7 @@ typedef struct Shizu_State1 Shizu_State1;
 typedef struct Shizu_Dl Shizu_Dl;
 typedef struct Shizu_State Shizu_State;
 typedef struct Shizu_Object Shizu_Object;
+typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
 typedef struct Shizu_Type Shizu_Type;
 typedef struct Shizu_TypeDescriptor Shizu_TypeDescriptor;
 typedef struct Shizu_Types Shizu_Types;
@@ -135,6 +136,35 @@ Shizu_Types_isTrueSubTypeOf
     Shizu_Types* self,
     Shizu_Type const* x,
     Shizu_Type const* y
+  );
+
+/**
+ * @since 1.0
+ * @brief Get the parent type of a type.
+ * @param x The type.
+ * @return The parent type if any, null otherwise. 
+ */
+Shizu_Type*
+Shizu_Types_getParentType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* x
+  );
+
+/**
+ * @since 1.0
+ * @brief Get the dispatch of a type.
+ * @param x The type.
+ * @return The dispatch of a type if any, null otherwise.
+ * @remarks This function returns null if the type is not an object type or the dispatch was not yet constructed.
+ */
+Shizu_Object_Dispatch*
+Shizu_Types_getDispatch
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* x
   );
 
 Shizu_Type*
