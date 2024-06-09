@@ -32,6 +32,52 @@ typedef struct Shizu_Gc Shizu_Gc;
 // fprintf, stderr
 #include <stdio.h>
 
+/// @brief Macro to facilate the definition of methods.
+/// @code
+/// static inline void
+/// A_f
+///   (
+///     Shizu_State* state,
+///     A* self,
+///     Shizu_Integer32 x
+///   )
+/// { Shizu_VirtualCall(A, f, self, x); }
+/// @endcode
+#define Shizu_VirtualCall(TYPE, METHOD, ...) \
+  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self); \
+  if (!dispatch) { \
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch not created\n", __FILE__, __LINE__); \
+    exit(EXIT_FAILURE); \
+  } \
+  if (!dispatch->METHOD) { \
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): pure virtual method call\n", __FILE__, __LINE__); \
+    exit(EXIT_FAILURE); \
+  } \
+  dispatch->METHOD(state, __VA_ARGS__);
+
+/// @brief Macro to facilate the definition of methods.
+/// @code
+/// static inline Shizu_Integer32
+/// A_f
+///   (
+///     Shizu_State* state,
+///     A* self,
+///     Shizu_Integer32 x
+///   )
+/// { Shizu_VirtualCallWithReturn(A, f, self, x); }
+/// @endcode
+#define Shizu_VirtualCallWithReturn(TYPE, METHOD, ...) \
+  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self); \
+  if (!dispatch) { \
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch not created\n", __FILE__, __LINE__); \
+    exit(EXIT_FAILURE); \
+  } \
+  if (!dispatch->METHOD) { \
+    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): pure virtual method call\n", __FILE__, __LINE__); \
+    exit(EXIT_FAILURE); \
+  } \
+  return dispatch->METHOD(state, __VA_ARGS__);
+
 Shizu_declareType(Shizu_Object);
 
 struct Shizu_Object_Dispatch {
@@ -136,18 +182,7 @@ Shizu_Object_getHashValue
     Shizu_State* state,
     Shizu_Object* self
   )
-{
-  Shizu_Object_Dispatch* dispatch = (Shizu_Object_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self);
-  if (!dispatch) {
-    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch is null\n", __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-  }
-  if (!dispatch->getHashValue) {
-    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch member is null\n", __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-  }
-  return dispatch->getHashValue(state, self);
-}
+{ Shizu_VirtualCallWithReturn(Shizu_Object, getHashValue, self); }
 
 /// @ingroup Object
 /// @brief
@@ -168,17 +203,6 @@ Shizu_Object_isEqualTo
     Shizu_Object* self,
     Shizu_Object* other
   )
-{
-  Shizu_Object_Dispatch* dispatch = (Shizu_Object_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self);
-  if (!dispatch) {
-    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch is null\n", __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-  }
-  if (!dispatch->isEqualTo) {
-    fprintf(stderr, "%s:%d: fatal error (unreachable code reached): dispatch member is null\n", __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-  }
-  return dispatch->isEqualTo(state, self, other);
-}
+{ Shizu_VirtualCallWithReturn(Shizu_Object, isEqualTo, self, other); }
 
 #endif // SHIZU_RUNTIME_GC_H_INCLUDED
