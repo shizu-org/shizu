@@ -112,6 +112,17 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/CxxProcedure.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Module.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
 
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Compiler/Object.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Compiler/Object.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Compiler/Ast.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Compiler/Ast.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Compiler/Token.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Compiler/Token.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Compiler/Scanner.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Compiler/Scanner.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Compiler/Parser.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Compiler/Parser.h)
+
 # Configuration variables for 'Configure.h.in'.
 if (${${name}.operating_system} STREQUAL ${${name}.operating_system_windows})
   set(Shizu_Configuration_OperatingSystem Shizu_Configuration_OperatingSystem_Windows)
