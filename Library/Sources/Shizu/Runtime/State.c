@@ -277,25 +277,27 @@ Shizu_Type*
 Shizu_State_getTypeByName
   (
     Shizu_State* self,
-    char const* name
+    char const* nameBytes,
+    size_t numberOfNameBytes
   )
 {
   Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != name);
-  return Shizu_Types_getTypeByName(Shizu_State2_getState1(self->state2), Shizu_State_getTypes(self), name);
+  Shizu_debugAssert(NULL != nameBytes);
+  return Shizu_Types_getTypeByName(Shizu_State2_getState1(self->state2), Shizu_State_getTypes(self), nameBytes, numberOfNameBytes);
 }
 
 Shizu_Type*
 Shizu_State_createType
   (
     Shizu_State* self,
-    char const* name,
+    char const* bytes,
+    size_t numberOfBytes,
     Shizu_Type* parentType,
     Shizu_Dl* dl,
     Shizu_OnTypeDestroyedCallback* typeDestroyed,
     Shizu_TypeDescriptor const* typeDescriptor
   )
-{ return Shizu_Types_createType(Shizu_State2_getState1(self->state2), Shizu_State2_getTypes(self->state2), name, parentType, dl, typeDestroyed, typeDescriptor); }
+{ return Shizu_Types_createType(Shizu_State2_getState1(self->state2), Shizu_State2_getTypes(self->state2), bytes, numberOfBytes, parentType, dl, typeDestroyed, typeDescriptor); }
 
 Shizu_Gc*
 Shizu_State_getGc

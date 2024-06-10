@@ -165,10 +165,12 @@ Shizu_Types_getTypeChildCount
 
 /**
  * @since 1.0
- * Get a type by its name.
+ * @brief Get a type by its name.
+ * @details Search for a type of the name @code{(bytes, numberOfBytes)}.
  * @param state1 A pointer to a Shizu_State1 object.
  * @param self A pointer to the Shizu_Types object.
- * @param name A pointer to the name, a C string.
+ * @param bytes A pointer to an array of @a numberOfBytes Bytes.
+ * @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
  * @return A pointer to the type if it was found. The null pointer otherwise.
  */
 Shizu_Type*
@@ -176,7 +178,8 @@ Shizu_Types_getTypeByName
   (
     Shizu_State1* state1,
     Shizu_Types* self,
-    char const* name
+    char const* bytes,
+    size_t numberOfBytes
   );
 
 Shizu_Type*
@@ -184,7 +187,8 @@ Shizu_Types_createType
   (
     Shizu_State1* state1,
     Shizu_Types* self,
-    char const* name,
+    char const* bytes,
+    size_t numberOfBytes,
     Shizu_Type* parentType,
     Shizu_Dl* dl,
     Shizu_OnTypeDestroyedCallback* typeDestroyed,

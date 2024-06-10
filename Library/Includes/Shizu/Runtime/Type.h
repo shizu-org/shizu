@@ -167,24 +167,6 @@ Shizu_Types_getDispatch
     Shizu_Type* x
   );
 
-Shizu_Type*
-Shizu_State_getTypeByName
-  (
-    Shizu_State* state,
-    char const* name
-  );
-
-Shizu_Type*
-Shizu_State_createType
-  (
-    Shizu_State* self,
-    char const* name,
-    Shizu_Type* parentType,
-    Shizu_Dl* dl,
-    Shizu_OnTypeDestroyedCallback* typeDestroyed,
-    Shizu_TypeDescriptor const* descriptor
-  );
-
 #define Shizu_declareType(Name) \
   typedef struct Name Name; \
 \
@@ -225,10 +207,10 @@ Shizu_State_createType
       Shizu_State* state \
     ) \
   { \
-    Shizu_Type* type = Shizu_State_getTypeByName(state, #Name); \
+    Shizu_Type* type = Shizu_State_getTypeByName(state, #Name, sizeof(#Name) - 1); \
     if (!type) { \
       Shizu_Dl* dl = Shizu_State_getDlByAdr(state, &Name##_getType); \
-      type = Shizu_State_createType(state, #Name, ParentName##_getType(state), dl, &Name##_typeDestroyed, &Name##_Type); \
+      type = Shizu_State_createType(state, #Name, sizeof(#Name) - 1, ParentName##_getType(state), dl, &Name##_typeDestroyed, &Name##_Type); \
     } \
     return type; \
   }

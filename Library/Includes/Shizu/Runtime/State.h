@@ -196,4 +196,41 @@ Shizu_State_getGlobals
     Shizu_State* state
   );
 
+Shizu_Type*
+Shizu_State_getTypeByName
+  (
+    Shizu_State* state,
+    char const* bytes,
+    size_t numberOfBytes
+  );
+
+/// @brief
+/// Create a type.
+/// @details
+/// Create a type of the name @code{(bytes, numberOfBytes)}.
+/// Raise an error if a type of that name already exists.
+/// @param bytes
+/// A pointer to an array of @a numberOfBytes Bytes.
+/// @param numberOfBytes
+/// The number of Bytes in the array pointed to by @a bytes.
+/// @param type
+/// A pointer to the parent type or the null pointer.
+/// @param dl
+/// A pointer to the dynamic library the type descriptor is defined in. 
+/// @param typeDestroyed
+/// A pointer to the Shizu_OnTypeDestroyedCallback callback function.
+/// @param descriptor
+/// A pointer to the type descriptor.
+Shizu_Type*
+Shizu_State_createType
+  (
+    Shizu_State* self,
+    char const* bytes,
+    size_t numberOfBytes,
+    Shizu_Type* parentType,
+    Shizu_Dl* dl,
+    Shizu_OnTypeDestroyedCallback* typeDestroyed,
+    Shizu_TypeDescriptor const* descriptor
+  );
+
 #endif // SHIZU_RUNTIME_STATE_H_INCLUDED

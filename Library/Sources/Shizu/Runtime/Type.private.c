@@ -278,18 +278,18 @@ Shizu_Types_getTypeByName
   (
     Shizu_State1* state1,
     Shizu_Types* self,
-    char const* name
+    char const* bytes,
+    size_t numberOfBytes
   )
 {
-  size_t numberOfBytes = strlen(name) + 1;
   size_t hashValue = numberOfBytes;
   for (size_t i = 0, n = numberOfBytes; i < n; ++i) {
-    hashValue = hashValue * 37 + (size_t)name[i];
+    hashValue = hashValue * 37 + (size_t)bytes[i];
   }
   size_t hashIndex = hashValue % self->capacity;
   for (Shizu_Type* type = self->elements[hashIndex]; NULL != type; type = type->next) {
     if (type->name.hashValue == hashValue && type->name.numberOfBytes == numberOfBytes) {
-      if (!strcmp(type->name.bytes, name)) {
+      if (!memcmp(type->name.bytes, bytes, numberOfBytes)) {
         return type;
       }
     }
@@ -302,23 +302,23 @@ Shizu_Types_createType
   (
     Shizu_State1* state1,
     Shizu_Types* self,
-    char const* name,
+    char const* bytes,
+    size_t numberOfBytes,
     Shizu_Type* parentType,
     Shizu_Dl* dl,
     Shizu_OnTypeDestroyedCallback* typeDestroyed,
     Shizu_TypeDescriptor const* typeDescriptor
   )
 {
-  size_t numberOfBytes = strlen(name) + 1;
   size_t hashValue = numberOfBytes;
   for (size_t i = 0, n = numberOfBytes; i < n; ++i) {
-    hashValue = hashValue * 37 + (size_t)name[i];
+    hashValue = hashValue * 37 + (size_t)bytes[i];
   }
   size_t hashIndex = hashValue % self->capacity;
   for (Shizu_Type* type = self->elements[hashIndex]; NULL != type; type = type->next) {
     if (type->name.hashValue == hashValue && type->name.numberOfBytes == numberOfBytes) {
-      if (!strcmp(type->name.bytes, name)) {
-        fprintf(stderr, "%s:%d: a type of name `%s` was already registered\n", __FILE__, __LINE__, name);
+      if (!memcmp(type->name.bytes, bytes, numberOfBytes)) {
+        fprintf(stderr, "%s:%d: a type of name `%.*s` was already registered\n", __FILE__, __LINE__, (int)numberOfBytes, bytes);
         Shizu_State1_setStatus(state1, 1);
         Shizu_State1_jump(state1);
       }
@@ -337,7 +337,7 @@ Shizu_Types_createType
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
-  memcpy(type->name.bytes, name, numberOfBytes);
+  memcpy(type->name.bytes, bytes, numberOfBytes);
   type->flags = 0;
   type->dispatch = NULL;
   type->parentType = parentType;

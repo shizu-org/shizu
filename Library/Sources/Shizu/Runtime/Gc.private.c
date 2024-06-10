@@ -164,11 +164,13 @@ Shizu_Object_getType
 {
   Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State_getState1(state),
                                                Shizu_State_getTypes(state),
-                                               "Shizu_Object");
+                                               "Shizu_Object",
+                                               sizeof("Shizu_Object") - 1);
   if (!type) {
     type = Shizu_Types_createType(Shizu_State_getState1(state),
                                   Shizu_State_getTypes(state),
                                   "Shizu_Object",
+                                  sizeof("Shizu_Object") - 1,
                                   NULL,
                                   NULL,
                                   &Shizu_Object_typeDestroyed,
