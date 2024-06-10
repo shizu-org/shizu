@@ -63,10 +63,10 @@ Shizu_Errors_raiseMethodNotImplemented
 #define Shizu_VirtualCall(TYPE, METHOD, ...) \
   TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
-    Shizu_Errors_raiseDispatchNotExists(state, self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseDispatchNotExists(state, (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   if (!dispatch->METHOD) { \
-    Shizu_Errors_raiseMethodNotImplemented(state, self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseMethodNotImplemented(state, (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   dispatch->METHOD(state, __VA_ARGS__);
 
@@ -84,10 +84,10 @@ Shizu_Errors_raiseMethodNotImplemented
 #define Shizu_VirtualCallWithReturn(TYPE, METHOD, ...) \
   TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
-    Shizu_Errors_raiseDispatchNotExists(state, self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseDispatchNotExists(state, (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   if (!dispatch->METHOD) { \
-    Shizu_Errors_raiseMethodNotImplemented(state, self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseMethodNotImplemented(state, (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   return dispatch->METHOD(state, __VA_ARGS__);
 
