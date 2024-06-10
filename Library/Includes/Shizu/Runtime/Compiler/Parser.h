@@ -13,4 +13,11 @@ struct Shizu_Runtime_Compiler_Parser {
   Shizu_Runtime_Compiler_Object _parent;
 };
 
+void
+Shizu_Runtime_Compiler_Parser_construct
+  (
+    Shizu_State* state,
+    Shizu_Runtime_Compiler_Parser* self
+  );
+
 #endif // SHIZU_RUNTIME_COMPILER_PARSER_H_INCLUDED

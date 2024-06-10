@@ -13,4 +13,11 @@ struct Shizu_Runtime_Compiler_Scanner {
   Shizu_Runtime_Compiler_Object _parent;
 };
 
+void
+Shizu_Runtime_Compiler_Scanner_construct
+  (
+    Shizu_State* state,
+    Shizu_Runtime_Compiler_Scanner* self
+  );
+
 #endif // SHIZU_RUNTIME_COMPILER_SCANNER_H_INCLUDED
