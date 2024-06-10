@@ -24,6 +24,9 @@
 #include "FileSystem/Utilities.h"
 #include "idlib/file_system.h"
 
+// fprintf, stderr
+#include <stdio.h>
+
 void
 setFileContents
   (

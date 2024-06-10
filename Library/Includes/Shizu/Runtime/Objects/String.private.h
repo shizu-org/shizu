@@ -26,7 +26,6 @@
   #error("Do not include `Shizu/Runtime/Objects/String.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Objects/String.h"
-#include "Shizu/Runtime/Gc.private.h"
 
 struct Shizu_String_Dispatch {
   Shizu_Object_Dispatch _parent;

@@ -3,6 +3,7 @@
 
 #include "Shizu/Runtime/Type.h"
 #include "Shizu/Runtime/Gc.h"
+#include "Shizu/Runtime/Object.h"
 
 Shizu_declareType(Shizu_Runtime_Compiler_Object)
 

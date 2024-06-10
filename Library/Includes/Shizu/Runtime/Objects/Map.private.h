@@ -26,7 +26,6 @@
   #error("Do not include `Shizu/Runtime/Objects/Map.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Objects/Map.h"
-#include "Shizu/Runtime/Gc.private.h"
 
 /**
  * @since 0.1

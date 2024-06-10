@@ -152,6 +152,16 @@ Shizu_Types_getParentType
     Shizu_Type* x
   );
 
+void
+Shizu_Types_getTypeName
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* x,
+    char const** bytes,
+    size_t* numberOfBytes
+  );
+
 /**
  * @since 1.0
  * @brief Get the dispatch of a type.

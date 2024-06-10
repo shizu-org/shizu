@@ -26,7 +26,6 @@
   #error("Do not include `Shizu/Runtime/Objects/ByteArray.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Objects/ByteArray.h"
-#include "Shizu/Runtime/Gc.private.h"
 
 struct Shizu_ByteArray_Dispatch {
   Shizu_Object_Dispatch _parent;

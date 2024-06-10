@@ -3,6 +3,9 @@
 // fprintf, stdio
 #include <stdio.h>
 
+// EXIT_SUCCESS, EXIT_FAILURE
+#include <stdlib.h>
+
 // strlen
 #include <string.h>
 

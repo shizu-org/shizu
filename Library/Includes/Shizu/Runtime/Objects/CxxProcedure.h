@@ -25,8 +25,7 @@
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
   #error("Do not include `Shizu/Runtime/Objects/CxxProcedure.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
-#include "Shizu/Runtime/State.h"
-#include "Shizu/Runtime/Value.h"
+#include "Shizu/Runtime/Object.h"
 
 /// @todo 
 /// Add calling modes:

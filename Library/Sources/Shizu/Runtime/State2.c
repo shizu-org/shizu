@@ -27,6 +27,8 @@
 #include "Shizu/Runtime/DebugAssert.h"
 #include "Shizu/Runtime/State1.h"
 
+#include "Shizu/Runtime/Gc.private.h"
+
 #include "Shizu/Runtime/Locks.private.h"
 #include "Shizu/Runtime/Type.private.h"
 

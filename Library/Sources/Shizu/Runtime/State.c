@@ -22,7 +22,8 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/State.h"
 
-
+// exit, EXIT_FAILURE
+#include <stdlib.h>
 
 #include "Shizu/Runtime/DebugAssert.h"
 #include "Shizu/Runtime/Module.h"

@@ -23,6 +23,8 @@
 #define SHIZU_RUNTIME_MODULE_H_INCLUDED
 
 #include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/Gc.h"
+#include "Shizu/Runtime/Object.h"
 
 Shizu_declareType(Shizu_Module);
 

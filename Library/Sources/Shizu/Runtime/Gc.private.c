@@ -29,6 +29,7 @@
 #include "Shizu/Runtime/Objects/WeakReference.private.h"
 #include "Shizu/Runtime/DebugAssert.h"
 #include "Shizu/Runtime/staticAssert.h"
+#include "Shizu/Runtime/Object.h"
 
 // malloc, free
 #include <malloc.h>

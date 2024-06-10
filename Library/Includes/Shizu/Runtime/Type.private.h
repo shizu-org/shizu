@@ -26,7 +26,7 @@
   #error("Do not include `Shizu/Runtime/Type.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/State1.h"
-#include "Shizu/Runtime/Gc.private.h"
+#include "Shizu/Runtime/Type.h"
 #include "Shizu/Runtime/Types/_SmallTypeArray.h"
 
 /// This flag is set after a succesfull call to Shizu_OnPostCreateTypeCallback function for a type.

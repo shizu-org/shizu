@@ -58,6 +58,13 @@ enum Shizu_Status {
 
   Shizu_Status_Exists,
 
+  // Raised if a dispatch does not exist.
+  Shizu_Status_DispatchNotExists,
+
+  // Raised if a method is not implemented.
+  // This is different from Shizu_Status_MethodNotDefined.
+  Shizu_Status_MethodNotImplemented,
+
 }; // enum Shizu_Status
 
 #endif // SHIZU_RUNTIME_STATUS_H_INCLUDED

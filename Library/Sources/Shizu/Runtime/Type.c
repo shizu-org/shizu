@@ -73,6 +73,20 @@ Shizu_Types_getParentType
   return x->parentType;
 }
 
+void
+Shizu_Types_getTypeName
+  (  
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type* x,
+    char const** bytes,
+    size_t* numberOfBytes
+  )
+{
+  *bytes = x->name.bytes;
+  *numberOfBytes = x->name.numberOfBytes;
+}
+
 Shizu_Object_Dispatch*
 Shizu_Types_getDispatch
   (

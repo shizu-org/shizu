@@ -26,7 +26,6 @@
   #error("Do not include `Shizu/Runtime/Objects/List.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Objects/List.h"
-#include "Shizu/Runtime/Gc.private.h"
 
 struct Shizu_List_Dispatch {
   Shizu_Object_Dispatch _parent;

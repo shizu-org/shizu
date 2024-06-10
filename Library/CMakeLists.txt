@@ -112,6 +112,9 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/CxxProcedure.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Module.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
 
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Object.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Object.h)
+
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Compiler/Object.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Compiler/Object.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Compiler/Ast.c)

@@ -22,10 +22,14 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/String.private.h"
 
+#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State1.h"
+#include "Shizu/Runtime/Gc.h"
+
 // malloc, free
 #include <malloc.h>
 
-// memcpy
+// memcmp, memcpy
 #include <string.h>
 
 // fprintf, stderr
@@ -34,8 +38,7 @@
 // exit, EXIT_FAILURE
 #include <stdlib.h>
 
-// memcmp. memcpy
-#include <string.h>
+#include "idlib/bit_scan.h"
 
 static void
 Shizu_String_finalize

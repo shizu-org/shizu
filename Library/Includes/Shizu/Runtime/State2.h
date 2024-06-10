@@ -26,7 +26,6 @@
 #include "Shizu/Runtime/State1.h"
 
 #include "Shizu/Runtime/Configure.h"
-#include "Shizu/Runtime/Gc.h"
 #include "Shizu/Runtime/Locks.h"
 #include "Shizu/Runtime/Type.h"
 

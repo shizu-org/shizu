@@ -22,6 +22,8 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Type.private.h"
 
+
+
 // malloc, free
 #include <malloc.h>
 
@@ -30,6 +32,8 @@
 
 // fprintf, stderr
 #include <stdio.h>
+
+#include "Shizu/Runtime/Object.h"
 
 Shizu_Types*
 Shizu_Types_startup

@@ -22,16 +22,23 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/WeakReference.private.h"
 
+#include "Shizu/Runtime/State.h"
 #include "Shizu/Runtime/State1.h"
+#include "Shizu/Runtime/Gc.h"
 
 // malloc, free
 #include <malloc.h>
+
+// memcmp, memcpy
+#include <string.h>
 
 // fprintf, stderr
 #include <stdio.h>
 
 // exit, EXIT_FAILURE
 #include <stdlib.h>
+
+#include "idlib/bit_scan.h"
 
 static void
 Shizu_WeakReference_postCreateType

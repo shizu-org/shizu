@@ -26,7 +26,6 @@
   #error("Do not include `Shizu/Runtime/Objects/Environment.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Objects/Environment.h"
-#include "Shizu/Runtime/Gc.private.h"
 
 /**
  * @since 0.1
