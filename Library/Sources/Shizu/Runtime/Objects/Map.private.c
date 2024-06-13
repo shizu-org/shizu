@@ -97,7 +97,7 @@ Shizu_Map_postCreateType
     Shizu_State1_jump(state1);
   }
   Maps* g = NULL;
-  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
     Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);

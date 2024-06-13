@@ -52,6 +52,7 @@ struct Shizu_State {
   int referenceCount;
   Shizu_State2* state2;
   Shizu_Stack* stack;
+  idlib_process* process;
   /// The globals environment.
   Shizu_Environment* globals;
   /// List of modules.
@@ -76,7 +77,13 @@ Shizu_State_create
     if (!self) {
       return 1;
     }
+    if (idlib_process_acquire(&self->process)) {
+      free(self);
+      return 1;
+    }
     if (Shizu_State2_acquire(&self->state2)) {
+      idlib_process_relinquish(self->process);
+      self->process = NULL;
       free(self);
       self = NULL;
       return 1;
@@ -95,6 +102,8 @@ Shizu_State_create
       Shizu_State_popJumpTarget(self);
       Shizu_State2_relinquish(self->state2);
       self->state2 = NULL;
+      idlib_process_relinquish(self->process);
+      self->process = NULL;
       free(self);
       self = NULL;
       return 1;
@@ -112,6 +121,8 @@ Shizu_State_create
       self->stack = NULL;
       Shizu_State2_relinquish(self->state2);
       self->state2 = NULL;
+      idlib_process_relinquish(self->process);
+      self->process = NULL;
       free(self);
       self = NULL;
       return 1;
@@ -131,6 +142,8 @@ Shizu_State_create
       self->stack = NULL;
       Shizu_State2_relinquish(self->state2);
       self->state2 = NULL;
+      idlib_process_relinquish(self->process);
+      self->process = NULL;
       free(self);
       self = NULL;
       return 1;
@@ -195,6 +208,8 @@ Shizu_State_destroy
     Shizu_Gc_run(self);
     Shizu_State2_relinquish(self->state2);
     self->state2 = NULL;
+    idlib_process_relinquish(self->process);
+    self->process = NULL;
     g_singleton = NULL;
     free(self);
   }
@@ -495,7 +510,7 @@ Shizu_State_ensureModulesLoaded
   context.list = modules;
   context.prefix = Shizu_String_concatenate(state, workingDirectory, Shizu_String_create(state, Shizu_OperatingSystem_DirectorySeparator, strlen(Shizu_OperatingSystem_DirectorySeparator)));
   if (idlib_enumerate_files(Shizu_String_getBytes(state, Shizu_String_concatenate(state, Shizu_getWorkingDirectory(state), Shizu_String_create(state, "", 1))),
-                            &context, &loadModulesCallback, true, true)) {
+                            &context, (idlib_enumerate_files_callback_function*)&loadModulesCallback, true, true)) {
     Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State_jump(state);
   }

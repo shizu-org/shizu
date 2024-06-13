@@ -100,6 +100,11 @@ macro(Shizu_endExecutable)
   source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.source_files})
   
   set_property(TARGET ${name} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+  
+  # We must define -rdynamic under Linux.
+  if (${${name}.operating_system} STREQUAL ${${name}.operating_system_linux})
+    target_link_options(${name} PRIVATE -rdynamic)
+  endif()
 
 endmacro()
 

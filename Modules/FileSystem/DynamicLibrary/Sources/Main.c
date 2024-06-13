@@ -125,7 +125,7 @@ Shizu_ModuleLibrary_getName
   return NAME;
 }
 
-Shizu_Module_Export
+Shizu_Module_Export void
 Shizu_ModuleLibrary_update
   (
     Shizu_State* state

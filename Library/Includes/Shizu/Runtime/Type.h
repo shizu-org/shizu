@@ -26,6 +26,8 @@
 
 // bool
 #include <stdbool.h>
+// size_t
+#include <stddef.h>
 
 typedef struct Shizu_State1 Shizu_State1;
 typedef struct Shizu_Dl Shizu_Dl;

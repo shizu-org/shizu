@@ -271,7 +271,7 @@ Shizu_State2_setStatus
   Shizu_State1_setStatus(self->state1, status);
 }
 
-int
+Shizu_Status
 Shizu_State2_getStatus
   (
     Shizu_State2* self

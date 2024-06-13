@@ -118,7 +118,7 @@
       char const* path
     )
   {
-    void* p = dlopen(path, RTLD_NOW);
+    void* p = dlopen(path, /*RTLD_NODELETE|*/RTLD_GLOBAL|RTLD_NOW);
     if (!p) {
       fprintf(stderr, "%s:%d: unable to load dl `%s`: reason `%s`\n", __FILE__, __LINE__, path, dlerror());
       return NULL;
@@ -441,7 +441,7 @@ Shizu_State1_getOrLoadDl
 
   {
     Dl_info info;
-    if (!dladdr(getDlName, &info)) {
+    if (!dladdr(getName, &info)) {
       free(name1);
       name1 = NULL;
       Shizu_OperatingSystem_unloadDl(handle);

@@ -96,7 +96,7 @@ Shizu_List_postCreateType
 		Shizu_State1_jump(state1);
 	}
 	Lists* g = NULL;
-	if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+	if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
 		Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
 		Shizu_State1_setStatus(state1, 1);
 		Shizu_State1_jump(state1);
@@ -219,7 +219,7 @@ Shizu_List_insertValue
 		size_t oldCapacity = self->capacity;
 		size_t newCapacity;
 		Lists* g = NULL;
-		if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+		if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, (void**)&g)) {
 			Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
 			Shizu_State_setStatus(state, 1);
 			Shizu_State_jump(state);

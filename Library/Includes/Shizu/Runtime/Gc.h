@@ -22,6 +22,8 @@
 #if !defined(SHIZU_RUNTIME_GC_H_INCLUDED)
 #define SHIZU_RUNTIME_GC_H_INCLUDED
 
+// size_t
+#include <stddef.h>
 #include "Shizu/Runtime/Value.h"
 typedef struct Shizu_Gc Shizu_Gc;
 typedef struct Shizu_State1 Shizu_State1;

@@ -126,7 +126,7 @@ Shizu_WeakReference_postCreateType
     Shizu_State1_jump(state1);
   }
   WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
     Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
@@ -170,7 +170,7 @@ Shizu_WeakReference_preDestroyType
   )
 {
   WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
@@ -201,7 +201,7 @@ Shizu_WeakReference_finalize
   )
 {
   WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, (void**)&g)) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
@@ -243,7 +243,7 @@ Shizu_WeakReference_construct
   Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
   Shizu_Object_construct(state, (Shizu_Object*)self);
   WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, (void**)&g)) {
     Shizu_State_setStatus(state, 1);
     Shizu_State_jump(state);
   }
@@ -278,7 +278,7 @@ Shizu_WeakReferences_notifyDestroy
 	)
 {
   WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, &g)) {
+  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
     // This can happen if we are not yet initialized.
     return;
   }

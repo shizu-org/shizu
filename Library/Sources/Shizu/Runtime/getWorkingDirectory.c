@@ -59,7 +59,7 @@ Shizu_getWorkingDirectory
     .state = state,
     .path = NULL,
   };
-  if (idlib_get_working_directory(&context, &callback)) {
+  if (idlib_get_working_directory(&context, (idlib_get_working_directory_callback*)&callback)) {
     Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State_jump(state);
   }

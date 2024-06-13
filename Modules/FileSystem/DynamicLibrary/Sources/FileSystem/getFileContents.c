@@ -72,7 +72,7 @@ getFileContents
   context.path = path;
   context.state = state;
   context.status = Shizu_Status_NoError;
-  idlib_status status = idlib_get_file_contents_memory_mapped(Shizu_String_getBytes(state, path), &context, &callback);
+  idlib_status status = idlib_get_file_contents_memory_mapped(Shizu_String_getBytes(state, path), &context, (idlib_get_file_contents_callback*)&callback);
   if (status || context.status) {
     Shizu_State_setStatus(state, context.status ? context.status : Shizu_Status_EnvironmentFailed);
     Shizu_State_jump(state);
