@@ -25,7 +25,7 @@ set(name ${Shizu.Runtime.project-name}.Runtime.Test.ByteArray)
 
 Shizu_beginExecutable()
 
-list(APPEND ${name}.source_files sources/Shizu.Runtime.Test.ByteArray/Main.c)
+list(APPEND ${name}.source_files Sources/Shizu.Runtime.Test.ByteArray/Main.c)
 
 Shizu_endExecutable()
 

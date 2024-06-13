@@ -158,10 +158,6 @@ list(APPEND ${name}.configuration_files ${CMAKE_CURRENT_BINARY_DIR}/Includes/Shi
 
 Shizu_endLibrary()
 
-define_property(TARGET PROPERTY modules
-  BRIEF_DOCS "My new custom property"
-)
-
 set_target_properties(Shizu.Runtime PROPERTIES modules "")
 
 target_link_libraries(${name} idlib-file-system idlib-bit-scan idlib-byte-sequence idlib-process)
