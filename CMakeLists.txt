@@ -105,17 +105,17 @@ endif()
 
 set(idlib-file-system.tag CACHE STRING "IdLib File System: The Git tag to check out")
 if (NOT idlib-file-system.tag)
-  set(idlib-file-system.tag 1.9)
+  set(idlib-file-system.tag 1.11)
 endif()
 
 set(idlib-file-system.source-dir CACHE STRING "IdLib File System: Path to the source directory")
 if (NOT idlib-file-system.source-dir)
-  set(idlib-file-system.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-file-system-1.9-src")
+  set(idlib-file-system.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-file-system-1.11-src")
 endif()
 
 set(idlib-file-system.binary-dir CACHE STRING "IdLib File System: Path to the build directory")
 if (NOT idlib-file-system.binary-dir)
-  set(idlib-file-system.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-file-system-1.9-bld")
+  set(idlib-file-system.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-file-system-1.11-bld")
 endif()
 
 FetchContent_Declare(idlib-file-system
