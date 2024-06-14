@@ -107,6 +107,12 @@ Shizu_Map_postCreateType
   if (g->maximumCapacity > Shizu_Integer32_Maximum) {
     g->maximumCapacity = Shizu_Integer32_Maximum;
   }
+  if (g->maximumCapacity > INT_MAX) {
+    g->maximumCapacity = INT_MAX;
+  }
+  if (g->maximumCapacity > SIZE_MAX) {
+    g->maximumCapacity = SIZE_MAX;
+  }
 }
 
 static void
@@ -189,3 +195,11 @@ Shizu_Map_create
   Shizu_Map_construct(state, self);
   return self;
 }
+
+size_t
+Shizu_Map_getSize
+  (
+    Shizu_State* state,
+    Shizu_Map* self
+  )
+{ return self->size; }

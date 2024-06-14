@@ -24,11 +24,9 @@
 
 #include "Shizu/Runtime/Configure.h"
 
-/** 
- * @since 1.0
- * Function annotation indicating a function will not return normally.
- * The function will either terminate the program (cf. exit)or perform a jump (cf. longjmp).
- */
+/// @since 1.0
+/// Function annotation indicating a function will not return normally.
+/// The function will either terminate the program (cf. exit)or perform a jump (cf. longjmp).
 #if Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
   #define Shizu_NoReturn() __declspec(noreturn)
 #else

@@ -171,8 +171,8 @@ Shizu_State_destroy
     Shizu_JumpTarget jumpTarget;
     Shizu_State_pushJumpTarget(self, &jumpTarget);
     if (!setjmp(jumpTarget.environment)) {
-      Shizu_Value sizeValue = Shizu_List_getSize(self, self->modules);
-      for (Shizu_Integer32 i = Shizu_Value_getInteger32(&sizeValue); i > 0; --i) {
+      size_t sizeValue = Shizu_List_getSize(self, self->modules);
+      for (Shizu_Integer32 i = sizeValue; i > 0; --i) {
         Shizu_Value elementValue = Shizu_List_getValue(self, self->modules, i - 1);
         if (!Shizu_Value_isObject(&elementValue)) {
           // Developer error if this occurs.
@@ -514,8 +514,8 @@ Shizu_State_ensureModulesLoaded
     Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State_jump(state);
   }
-  Shizu_Value size = Shizu_List_getSize(state, modules);
-  for (Shizu_Integer32 i = 0, n = Shizu_Value_getInteger32(&size); i < n; ++i) {
+  size_t size = Shizu_List_getSize(state, modules);
+  for (Shizu_Integer32 i = 0, n = (Shizu_Integer32)size; i < n; ++i) {
     Shizu_Value element = Shizu_List_getValue(state, modules, i);
     if (isModule(state, (Shizu_String*)Shizu_Value_getObject(&element))) {
       Shizu_Module* module = Shizu_Module_create(state, (Shizu_String*)Shizu_Value_getObject(&element));

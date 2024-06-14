@@ -40,4 +40,11 @@ Shizu_Map_create
     Shizu_State* state
   );
 
+size_t
+Shizu_Map_getSize
+  (
+    Shizu_State* state,
+    Shizu_Map* self
+  );
+
 #endif // SHIZU_RUNTIME_MAP_H_INCLUDED

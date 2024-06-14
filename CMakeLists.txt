@@ -67,6 +67,12 @@ set(idlib-process.binary-dir CACHE STRING "IdLib Process: Path to the build dire
 if (NOT idlib-process.binary-dir)
   set(idlib-process.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-process-1.6-bld")
 endif()
+
+FetchContent_Declare(idlib-process
+                     GIT_REPOSITORY ${idlib-process.repository}
+                     GIT_TAG ${idlib-process.tag}
+                     SOURCE_DIR ${idlib-process.source-dir}
+                     BINARY_DIR ${idlib-process.binary-dir})
                     
 #######################################################################################################################
 

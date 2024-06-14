@@ -106,6 +106,12 @@ Shizu_List_postCreateType
   if (g->maximumCapacity > Shizu_Integer32_Maximum) {
     g->maximumCapacity = Shizu_Integer32_Maximum;
 	}
+	if (g->maximumCapacity > INT_MAX) {
+		g->maximumCapacity = INT_MAX;
+	}
+	if (g->maximumCapacity > SIZE_MAX) {
+		g->maximumCapacity = SIZE_MAX;
+	}
 }
 
 static void
@@ -191,16 +197,14 @@ Shizu_List_getValue
 	return self->elements[index];
 }
 
-Shizu_Value
+size_t
 Shizu_List_getSize
 	(
 		Shizu_State* state,
 		Shizu_List* self
 	)
 {
-	Shizu_Value value;
-	Shizu_Value_setInteger32(&value, (Shizu_Integer32)self->size);
-	return value;
+	return self->size;
 }
 
 void

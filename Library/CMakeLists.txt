@@ -98,6 +98,8 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/StaticAssert.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/NoReturn.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/NoReturn.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/SourceLocationC.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/SourceLocationC.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/getWorkingDirectory.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/getWorkingDirectory.h)

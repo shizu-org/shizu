@@ -15,4 +15,11 @@ struct Shizu_Runtime_Compiler_Object {
   Shizu_Object _parent;
 };
 
+void
+Shizu_Runtime_Compiler_Object_construct
+  (
+    Shizu_State* state,
+    Shizu_Runtime_Compiler_Object* self
+  );
+
 #endif // SHIZU_RUNTIME_COMPILER_OBJECT_H_INCLUDED

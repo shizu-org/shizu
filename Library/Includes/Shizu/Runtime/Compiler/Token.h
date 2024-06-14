@@ -30,6 +30,15 @@ void
 Shizu_Runtime_Compiler_Token_construct
   (
     Shizu_State* state,
+    Shizu_Runtime_Compiler_Token* self,
+    Shizu_Runtime_Compiler_TokenType type,
+    Shizu_String* text
+  );
+
+Shizu_Runtime_Compiler_Token*
+Shizu_Runtime_Compiler_Token_create
+  (
+    Shizu_State* state,
     Shizu_Runtime_Compiler_TokenType type,
     Shizu_String* text
   );

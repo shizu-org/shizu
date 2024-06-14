@@ -48,7 +48,9 @@ Shizu_List_getValue
 		size_t index
 	);
 
-Shizu_Value
+/// @since 1.0
+/// @brief Get the size of this Shizu_List object.
+size_t
 Shizu_List_getSize
 	(
 		Shizu_State* state,

@@ -24,5 +24,6 @@ Shizu_List_getSize
 *Return Value*
 The size of the `Shizu_List` value.
 
-*Errors*
-- `index` is greater than or equal to the size of the `Shizu_List` value.
+*Remarks*
+The size of a `Shizu_List` value does not exceed `INT_MAX`, `SIZE_MAX`, or `Shizu_Integer32_Maximum` whichever of the three values is the smallest.
+Furthermore, the size is always non-negative.

@@ -21,3 +21,59 @@
 
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Compiler/Token.h"
+
+#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State1.h"
+#include "Shizu/Runtime/Gc.h"
+
+static void
+Shizu_Runtime_Compiler_Token_visit
+  (
+    Shizu_State* state,
+    Shizu_Runtime_Compiler_Token* self
+  )
+{}
+
+static Shizu_TypeDescriptor const Shizu_Runtime_Compiler_Token_Type = {
+  .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
+  .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Runtime_Compiler_Token),
+  .visit = (Shizu_OnVisitCallback*)&Shizu_Runtime_Compiler_Token_visit,
+  .finalize = (Shizu_OnFinalizeCallback*)NULL,
+  .dispatchSize = sizeof(Shizu_Runtime_Compiler_Token_Dispatch),
+  .dispatchInitialize = NULL,
+  .dispatchUninitialize = NULL,
+};
+
+Shizu_defineType(Shizu_Runtime_Compiler_Token, Shizu_Runtime_Compiler_Object);
+
+void
+Shizu_Runtime_Compiler_Token_construct
+  (
+    Shizu_State* state,
+    Shizu_Runtime_Compiler_Token* self,
+    Shizu_Runtime_Compiler_TokenType type,
+    Shizu_String* text
+  )
+{
+  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Token_getType(state);
+  Shizu_Runtime_Compiler_Object_construct(state, (Shizu_Runtime_Compiler_Object*)self);
+  self->type = type;
+  self->text = text;
+  ((Shizu_Object*)self)->type = TYPE;
+}
+
+Shizu_Runtime_Compiler_Token*
+Shizu_Runtime_Compiler_Token_create
+  (
+    Shizu_State* state,
+    Shizu_Runtime_Compiler_TokenType type,
+    Shizu_String* text
+  )
+{
+  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Token_getType(state);
+  Shizu_Runtime_Compiler_Token* self = (Shizu_Runtime_Compiler_Token*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Runtime_Compiler_Token));
+  Shizu_Runtime_Compiler_Token_construct(state, self, type, text);
+  return self;
+}
