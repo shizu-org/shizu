@@ -54,5 +54,6 @@ add_dependencies(${name} Shizu.Runtime)
 # For each MyTarget in this list and your executable target YourTarget you need to copy <$TARGET_FILE:MyTarget> to <TARGET_FILE_DIR:YourTarget>.
 set(modules "")
 get_target_property(modules Shizu.Runtime modules)
+#message(STATUS "${name} modules: ${modules}")
 list(APPEND modules ${name})
-set_target_properties(Shizu.Runtime PROPERTIES modules ${modules})
+set_target_properties(Shizu.Runtime PROPERTIES modules "${modules}")
