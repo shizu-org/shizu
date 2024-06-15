@@ -1,17 +1,30 @@
 #if !defined(SHIZU_RUNTIME_COMPILER_TOKEN_H_INCLUDED)
 #define SHIZU_RUNTIME_COMPILER_TOKEN_H_INCLUDED
 
-#include "Shizu/Runtime/Compiler/Object.h"
+#include "Compiler/Object.h"
 
 typedef enum Shizu_Runtime_Compiler_TokenType Shizu_Runtime_Compiler_TokenType;
 
 enum Shizu_Runtime_Compiler_TokenType  {
-  Shizu_Runtime_Compiler_TokenType_Class,
-  Shizu_Runtime_Compiler_TokenType_Method,
-  Shizu_Runtime_Compiler_TokenType_Constructor,
+  Shizu_Runtime_Compiler_TokenType_StartOfInput,
+  Shizu_Runtime_Compiler_TokenType_EndOfInput,
+  Shizu_Runtime_Compiler_TokenType_ClassKeyword,
+  Shizu_Runtime_Compiler_TokenType_MethodKeyword,
+  Shizu_Runtime_Compiler_TokenType_ConstructorKeyword,
+  Shizu_Runtime_Compiler_TokenType_IfKeyword,
+  Shizu_Runtime_Compiler_TokenType_ElseKeyword,
   Shizu_Runtime_Compiler_TokenType_Name,
   Shizu_Runtime_Compiler_TokenType_LeftParenthesis,
-  Shizu_Runtime_Compiler_TokenType_RightParenthesis
+  Shizu_Runtime_Compiler_TokenType_RightParenthesis,
+  Shizu_Runtime_Compiler_TokenType_LeftSquareBracket,
+  Shizu_Runtime_Compiler_TokenType_RightSquareBracket,
+  Shizu_Runtime_Compiler_TokenType_Period,
+  Shizu_Runtime_Compiler_TokenType_Comma,
+  Shizu_Runtime_Compiler_TokenType_Plus,
+  Shizu_Runtime_Compiler_TokenType_Minus,
+  Shizu_Runtime_Compiler_TokenType_Integer,
+  Shizu_Runtime_Compiler_TokenType_Real,
+  Shizu_Runtime_Compiler_TokenType_EndOfLine,
 };
 
 Shizu_declareType(Shizu_Runtime_Compiler_Token)

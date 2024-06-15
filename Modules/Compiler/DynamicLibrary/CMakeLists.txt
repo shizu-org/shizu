@@ -23,31 +23,24 @@ cmake_minimum_required(VERSION 3.20)
 
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
-set(name Shizu.Runtime.Modules.FileSystem)
+set(name Shizu.Runtime.Modules.Compiler)
 Shizu_beginDynamicLibrary()
 
 list(APPEND ${name}.source_files Sources/Main.c)
 
-list(APPEND ${name}.source_files Sources/FileSystem.c)
-list(APPEND ${name}.header_files Includes/FileSystem.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/getWorkingDirectory.c)
-list(APPEND ${name}.header_files Includes/FileSystem/getWorkingDirectory.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/setFileContents.c)
-list(APPEND ${name}.header_files Includes/FileSystem/setFileContents.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/getFileContents.c)
-list(APPEND ${name}.header_files Includes/FileSystem/getFileContents.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/deleteFile.c)
-list(APPEND ${name}.header_files Includes/FileSystem/deleteFile.h)
-
-list(APPEND ${name}.source_files Sources/FileSystem/Utilities.c)
-list(APPEND ${name}.header_files Includes/FileSystem/Utilities.h)
+list(APPEND ${name}.source_files Sources/Compiler/Object.c)
+list(APPEND ${name}.header_files Includes/Compiler/Object.h)
+list(APPEND ${name}.source_files Sources/Compiler/Ast.c)
+list(APPEND ${name}.header_files Includes/Compiler/Ast.h)
+list(APPEND ${name}.source_files Sources/Compiler/Token.c)
+list(APPEND ${name}.header_files Includes/Compiler/Token.h)
+list(APPEND ${name}.source_files Sources/Compiler/Scanner.c)
+list(APPEND ${name}.header_files Includes/Compiler/Scanner.h)
+list(APPEND ${name}.source_files Sources/Compiler/Parser.c)
+list(APPEND ${name}.header_files Includes/Compiler/Parser.h)
 
 # Setup the list of prerequisite modules.
-set(${name}.prerequisiteModules "")
+set(${name}.prerequisiteModules Shizu.Runtime.Modules.FileSystem)
 
 Shizu_endDynamicLibrary()
 

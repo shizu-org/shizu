@@ -19,5 +19,5 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-add_subdirectory(FileSystem)
-add_subdirectory(Compiler)
+add_subdirectory(DynamicLibrary)
+add_subdirectory(Tests)

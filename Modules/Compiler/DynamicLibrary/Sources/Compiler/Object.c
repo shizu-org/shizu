@@ -20,4 +20,34 @@
 */
 
 #define SHIZU_RUNTIME_PRIVATE (1)
-#include "Shizu/Runtime/Compiler/Object.h"
+#include "Compiler/Object.h"
+
+#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State1.h"
+#include "Shizu/Runtime/Gc.h"
+
+static Shizu_TypeDescriptor const Shizu_Runtime_Compiler_Object_Type = {
+  .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
+  .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Runtime_Compiler_Object),
+  .visit = (Shizu_OnVisitCallback*)NULL,
+  .finalize = (Shizu_OnFinalizeCallback*)NULL,
+  .dispatchSize = sizeof(Shizu_Runtime_Compiler_Object_Dispatch),
+  .dispatchInitialize = NULL,
+  .dispatchUninitialize = NULL,
+};
+
+Shizu_defineType(Shizu_Runtime_Compiler_Object, Shizu_Object);
+
+void
+Shizu_Runtime_Compiler_Object_construct
+  (
+    Shizu_State* state,
+    Shizu_Runtime_Compiler_Object* self
+  )
+{
+  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Object_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  ((Shizu_Object*)self)->type = TYPE;
+}

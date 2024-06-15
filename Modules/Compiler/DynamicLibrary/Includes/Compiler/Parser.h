@@ -1,7 +1,7 @@
 #if !defined(SHIZU_RUNTIME_COMPILER_PARSER_H_INCLUDED)
 #define SHIZU_RUNTIME_COMPILER_PARSER_H_INCLUDED
 
-#include "Shizu/Runtime/Compiler/Object.h"
+#include "Compiler/Object.h"
 
 Shizu_declareType(Shizu_Runtime_Compiler_Parser)
 
@@ -18,6 +18,12 @@ Shizu_Runtime_Compiler_Parser_construct
   (
     Shizu_State* state,
     Shizu_Runtime_Compiler_Parser* self
+  );
+
+Shizu_Runtime_Compiler_Parser*
+Shizu_Runtime_Compiler_Parser_create
+  (
+    Shizu_State* state
   );
 
 #endif // SHIZU_RUNTIME_COMPILER_PARSER_H_INCLUDED
