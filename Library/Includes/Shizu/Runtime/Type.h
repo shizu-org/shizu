@@ -179,6 +179,14 @@ Shizu_Types_getDispatch
     Shizu_Type* x
   );
 
+/// @brief Macro to declare an enumeration type.
+#define Shizu_declareEnumerationType(Name) \
+  typedef enum Name Name;
+
+/// @brief Macro the define an enumeration type.
+#define Shizu_defineEnumerationType(Name) \
+  /* Intentionally empty. */ 
+
 #define Shizu_declareType(Name) \
   typedef struct Name Name; \
 \
