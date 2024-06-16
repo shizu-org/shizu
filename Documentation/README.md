@@ -1,23 +1,8 @@
 # Shizu Runtime
-*Shizu Runtime* is the underlaying execution environment in which the server and its clients are implemented.
+*Shizu Runtime* is the underlaying execution environment for the games developed by the *Shizu.org*.
 
 ## C Interface Documentation
-
-### Conventions
-The C code of *Shizu Runtime* follows conventions in the source code as well as the documentation of the source code.
-
-A `Shizu_Reference(T)` object is a pointer to a `T` object where `T` is one of the following:
-- `Shizu_CxxFunction` type
-- `Shizu_Object` type (or derived type).
-In particular, these pointers may *not* be null.
-
-`Shizu_MaybeReference(T)` object is a pointer to an `T` object or the null pointer where `T` is one of the following:
-- `Shizu_CxxFunction` type
-- `Shizu_Object` type (or derived type).
-These pointers may be null.
-
-### Documentation
-It follows the documentation of the *Shizu Runtime* C Interface in alphabetic oder.
+Find below the *Shizu Runtime* C Interface in alphabetic oder.
 
 *A*
 
