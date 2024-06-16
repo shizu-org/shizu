@@ -1,29 +1,31 @@
-#if !defined(SHIZU_RUNTIME_COMPILER_PARSER_H_INCLUDED)
-#define SHIZU_RUNTIME_COMPILER_PARSER_H_INCLUDED
+#if !defined(COMPILER_PARSER_H_INCLUDED)
+#define COMPILER_PARSER_H_INCLUDED
 
 #include "Compiler/Object.h"
+typedef struct Compiler_Scanner Compiler_Scanner;
 
-Shizu_declareType(Shizu_Runtime_Compiler_Parser)
+Shizu_declareType(Compiler_Parser)
 
-struct Shizu_Runtime_Compiler_Parser_Dispatch {
-  Shizu_Runtime_Compiler_Object_Dispatch _parent;
+struct Compiler_Parser_Dispatch {
+  Compiler_Object_Dispatch _parent;
 };
 
-struct Shizu_Runtime_Compiler_Parser {
-  Shizu_Runtime_Compiler_Object _parent;
+struct Compiler_Parser {
+  Compiler_Object _parent;
+  Compiler_Scanner* scanner;
 };
 
 void
-Shizu_Runtime_Compiler_Parser_construct
+Compiler_Parser_construct
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Parser* self
+    Compiler_Parser* self
   );
 
-Shizu_Runtime_Compiler_Parser*
-Shizu_Runtime_Compiler_Parser_create
+Compiler_Parser*
+Compiler_Parser_create
   (
     Shizu_State* state
   );
 
-#endif // SHIZU_RUNTIME_COMPILER_PARSER_H_INCLUDED
+#endif // COMPILER_PARSER_H_INCLUDED

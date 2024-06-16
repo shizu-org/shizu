@@ -1,59 +1,62 @@
-#if !defined(SHIZU_RUNTIME_COMPILER_TOKEN_H_INCLUDED)
-#define SHIZU_RUNTIME_COMPILER_TOKEN_H_INCLUDED
+#if !defined(COMPILER_TOKEN_H_INCLUDED)
+#define COMPILER_TOKEN_H_INCLUDED
 
 #include "Compiler/Object.h"
 
-typedef enum Shizu_Runtime_Compiler_TokenType Shizu_Runtime_Compiler_TokenType;
+Shizu_declareEnumerationType(Compiler_TokenType);
 
-enum Shizu_Runtime_Compiler_TokenType  {
-  Shizu_Runtime_Compiler_TokenType_StartOfInput,
-  Shizu_Runtime_Compiler_TokenType_EndOfInput,
-  Shizu_Runtime_Compiler_TokenType_ClassKeyword,
-  Shizu_Runtime_Compiler_TokenType_MethodKeyword,
-  Shizu_Runtime_Compiler_TokenType_ConstructorKeyword,
-  Shizu_Runtime_Compiler_TokenType_IfKeyword,
-  Shizu_Runtime_Compiler_TokenType_ElseKeyword,
-  Shizu_Runtime_Compiler_TokenType_Name,
-  Shizu_Runtime_Compiler_TokenType_LeftParenthesis,
-  Shizu_Runtime_Compiler_TokenType_RightParenthesis,
-  Shizu_Runtime_Compiler_TokenType_LeftSquareBracket,
-  Shizu_Runtime_Compiler_TokenType_RightSquareBracket,
-  Shizu_Runtime_Compiler_TokenType_Period,
-  Shizu_Runtime_Compiler_TokenType_Comma,
-  Shizu_Runtime_Compiler_TokenType_Plus,
-  Shizu_Runtime_Compiler_TokenType_Minus,
-  Shizu_Runtime_Compiler_TokenType_Integer,
-  Shizu_Runtime_Compiler_TokenType_Real,
-  Shizu_Runtime_Compiler_TokenType_EndOfLine,
+enum Compiler_TokenType  {
+  Compiler_TokenType_StartOfInput,
+  Compiler_TokenType_EndOfInput,
+  Compiler_TokenType_ClassKeyword,
+  Compiler_TokenType_MethodKeyword,
+  Compiler_TokenType_ConstructorKeyword,
+  Compiler_TokenType_IfKeyword,
+  Compiler_TokenType_ElseKeyword,
+  Compiler_TokenType_Name,
+  Compiler_TokenType_LeftParenthesis,
+  Compiler_TokenType_RightParenthesis,
+  Compiler_TokenType_LeftSquareBracket,
+  Compiler_TokenType_RightSquareBracket,
+  Compiler_TokenType_Period,
+  Compiler_TokenType_Comma,
+  Compiler_TokenType_Plus,
+  Compiler_TokenType_Minus,
+  Compiler_TokenType_Star,
+  Compiler_TokenType_Slash,
+  Compiler_TokenType_SingleLineComment,
+  Compiler_TokenType_Integer,
+  Compiler_TokenType_Real,
+  Compiler_TokenType_EndOfLine,
 };
 
-Shizu_declareType(Shizu_Runtime_Compiler_Token)
+Shizu_declareType(Compiler_Token)
 
-struct Shizu_Runtime_Compiler_Token_Dispatch {
-  Shizu_Runtime_Compiler_Object_Dispatch _parent;
+struct Compiler_Token_Dispatch {
+  Compiler_Object_Dispatch _parent;
 };
 
-struct Shizu_Runtime_Compiler_Token {
-  Shizu_Runtime_Compiler_Object _parent;
-  Shizu_Runtime_Compiler_TokenType type;
+struct Compiler_Token {
+  Compiler_Object _parent;
+  Compiler_TokenType type;
   Shizu_String* text;
 };
 
 void
-Shizu_Runtime_Compiler_Token_construct
+Compiler_Token_construct
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Token* self,
-    Shizu_Runtime_Compiler_TokenType type,
+    Compiler_Token* self,
+    Compiler_TokenType type,
     Shizu_String* text
   );
 
-Shizu_Runtime_Compiler_Token*
-Shizu_Runtime_Compiler_Token_create
+Compiler_Token*
+Compiler_Token_create
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_TokenType type,
+    Compiler_TokenType type,
     Shizu_String* text
   );
 
-#endif // SHIZU_RUNTIME_COMPILER_TOKEN_H_INCLUDED
+#endif // COMPILER_TOKEN_H_INCLUDED

@@ -46,7 +46,7 @@ static Shizu_ByteArray* getFileContents(Shizu_State* state,  Shizu_String* relat
     Shizu_State_jump(state);
   }
   Shizu_String* path = (Shizu_String*)Shizu_Value_getObject(&returnValue);
-  // @todo Add and use "getDirectorySeparator".
+  // Get the directory separator.
   Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
   path = Shizu_String_concatenate(state, path, directorySeparator);
   path = Shizu_String_concatenate(state, path, relativePath);
@@ -67,7 +67,13 @@ static Shizu_ByteArray* getFileContents(Shizu_State* state,  Shizu_String* relat
   return received;
 }
 
-int main(int argc, char** argv) {
+int
+main
+  (
+    int argc,
+    char** argv
+  )
+{
   Shizu_State* state = NULL;
   if (Shizu_State_create(&state)) {
     return EXIT_FAILURE;
@@ -80,8 +86,13 @@ int main(int argc, char** argv) {
     Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
     Shizu_String* path = Shizu_String_create(state, "Assets", strlen("Assets"));
     path = Shizu_String_concatenate(state, path, directorySeparator);
-    getFileContents(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld1.cil", strlen("HelloWorld1.cil"))));
-    getFileContents(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld2.cil", strlen("HelloWorld2.cil"))));
+    Shizu_ByteArray* inputByteArray = NULL;
+    Shizu_String* input = NULL;
+    inputByteArray = getFileContents(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld1.cil", strlen("HelloWorld1.cil"))));
+    input = Shizu_String_create(state, Shizu_ByteArray_getRawBytes(state, inputByteArray), Shizu_ByteArray_getNumberOfRawBytes(state, inputByteArray));
+    //Compiler_Scanner_create();
+    inputByteArray = getFileContents(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld2.cil", strlen("HelloWorld2.cil"))));
+    input = Shizu_String_create(state, Shizu_ByteArray_getRawBytes(state, inputByteArray), Shizu_ByteArray_getNumberOfRawBytes(state, inputByteArray));
     Shizu_State_popJumpTarget(state);
   } else {
     Shizu_State_popJumpTarget(state);

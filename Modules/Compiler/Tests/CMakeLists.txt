@@ -35,15 +35,14 @@ add_dependencies(${name} Shizu.Runtime)
 
 add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
 
+get_target_property(prerequisiteModules Shizu.Runtime.Modules.Compiler prerequisiteModules)
+list(APPEND prerequisiteModules "Shizu.Runtime.Modules.Compiler")
 
-set(modules "")
-get_target_property(modules Shizu.Runtime modules)
-foreach (module ${modules})
-  add_dependencies(${name} ${module})
-endforeach()
-
-foreach (module ${modules})
-  copy_plugin(${name} ${module})
+message(STATUS " - adding prerequisite modules")
+foreach (prerequisiteModule ${prerequisiteModules})
+  message(STATUS " - - ${name} <- ${prerequisiteModule}")
+  add_dependencies(${name} ${prerequisiteModule})
+  copy_plugin(${name} ${prerequisiteModule})
 endforeach()
 
 get_target_property(source_dir ${name} SOURCE_DIR)

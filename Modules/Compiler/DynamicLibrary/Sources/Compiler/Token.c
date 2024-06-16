@@ -26,11 +26,13 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
+Shizu_defineEnumerationType(Compiler_TokenType);
+
 static void
-Shizu_Runtime_Compiler_Token_visit
+Compiler_Token_visit
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Token* self
+    Compiler_Token* self
   )
 {
   if (self->text) {
@@ -38,46 +40,46 @@ Shizu_Runtime_Compiler_Token_visit
   }
 }
 
-static Shizu_TypeDescriptor const Shizu_Runtime_Compiler_Token_Type = {
+static Shizu_TypeDescriptor const Compiler_Token_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Shizu_Runtime_Compiler_Token),
-  .visit = (Shizu_OnVisitCallback*)&Shizu_Runtime_Compiler_Token_visit,
+  .size = sizeof(Compiler_Token),
+  .visit = (Shizu_OnVisitCallback*)&Compiler_Token_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
-  .dispatchSize = sizeof(Shizu_Runtime_Compiler_Token_Dispatch),
+  .dispatchSize = sizeof(Compiler_Token_Dispatch),
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_Runtime_Compiler_Token, Shizu_Runtime_Compiler_Object);
+Shizu_defineType(Compiler_Token, Compiler_Object);
 
 void
-Shizu_Runtime_Compiler_Token_construct
+Compiler_Token_construct
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Token* self,
-    Shizu_Runtime_Compiler_TokenType type,
+    Compiler_Token* self,
+    Compiler_TokenType type,
     Shizu_String* text
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Token_getType(state);
-  Shizu_Runtime_Compiler_Object_construct(state, (Shizu_Runtime_Compiler_Object*)self);
+  Shizu_Type* TYPE = Compiler_Token_getType(state);
+  Compiler_Object_construct(state, (Compiler_Object*)self);
   self->type = type;
   self->text = text;
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-Shizu_Runtime_Compiler_Token*
-Shizu_Runtime_Compiler_Token_create
+Compiler_Token*
+Compiler_Token_create
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_TokenType type,
+    Compiler_TokenType type,
     Shizu_String* text
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Token_getType(state);
-  Shizu_Runtime_Compiler_Token* self = (Shizu_Runtime_Compiler_Token*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Runtime_Compiler_Token));
-  Shizu_Runtime_Compiler_Token_construct(state, self, type, text);
+  Shizu_Type* TYPE = Compiler_Token_getType(state);
+  Compiler_Token* self = (Compiler_Token*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Token));
+  Compiler_Token_construct(state, self, type, text);
   return self;
 }

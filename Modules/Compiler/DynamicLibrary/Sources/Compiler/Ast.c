@@ -26,11 +26,13 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
+Shizu_defineEnumerationType(Compiler_AstType);
+
 static void
-Shizu_Runtime_Compiler_Ast_visit
+Compiler_Ast_visit
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Ast* self
+    Compiler_Ast* self
   )
 {
   if (self->text) {
@@ -38,46 +40,46 @@ Shizu_Runtime_Compiler_Ast_visit
   }
 }
 
-static Shizu_TypeDescriptor const Shizu_Runtime_Compiler_Ast_Type = {
+static Shizu_TypeDescriptor const Compiler_Ast_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Shizu_Runtime_Compiler_Ast),
-  .visit = (Shizu_OnVisitCallback*)&Shizu_Runtime_Compiler_Ast_visit,
+  .size = sizeof(Compiler_Ast),
+  .visit = (Shizu_OnVisitCallback*)&Compiler_Ast_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
-  .dispatchSize = sizeof(Shizu_Runtime_Compiler_Ast_Dispatch),
+  .dispatchSize = sizeof(Compiler_Ast_Dispatch),
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_Runtime_Compiler_Ast, Shizu_Runtime_Compiler_Object);
+Shizu_defineType(Compiler_Ast, Compiler_Object);
 
 void
-Shizu_Runtime_Compiler_Ast_construct
+Compiler_Ast_construct
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Ast* self,
-    Shizu_Runtime_Compiler_AstType type,
+    Compiler_Ast* self,
+    Compiler_AstType type,
     Shizu_String* text
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Ast_getType(state);
-  Shizu_Runtime_Compiler_Object_construct(state, (Shizu_Runtime_Compiler_Object*)self);
+  Shizu_Type* TYPE = Compiler_Ast_getType(state);
+  Compiler_Object_construct(state, (Compiler_Object*)self);
   self->type = type;
   self->text = text;
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-Shizu_Runtime_Compiler_Ast*
-Shizu_Runtime_Compiler_Ast_create
+Compiler_Ast*
+Compiler_Ast_create
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_AstType type,
+    Compiler_AstType type,
     Shizu_String* text
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Ast_getType(state);
-  Shizu_Runtime_Compiler_Ast* self = (Shizu_Runtime_Compiler_Ast*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Runtime_Compiler_Ast));
-  Shizu_Runtime_Compiler_Ast_construct(state, self, type, text);
+  Shizu_Type* TYPE = Compiler_Ast_getType(state);
+  Compiler_Ast* self = (Compiler_Ast*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Ast));
+  Compiler_Ast_construct(state, self, type, text);
   return self;
 }

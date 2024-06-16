@@ -1,25 +1,25 @@
-#if !defined(SHIZU_RUNTIME_COMPILER_OBJECT_H_INCLUDED)
-#define SHIZU_RUNTIME_COMPILER_OBJECT_H_INCLUDED
+#if !defined(COMPILER_OBJECT_H_INCLUDED)
+#define COMPILER_OBJECT_H_INCLUDED
 
 #include "Shizu/Runtime/Type.h"
 #include "Shizu/Runtime/Gc.h"
 #include "Shizu/Runtime/Object.h"
 
-Shizu_declareType(Shizu_Runtime_Compiler_Object)
+Shizu_declareType(Compiler_Object)
 
-struct Shizu_Runtime_Compiler_Object_Dispatch {
+struct Compiler_Object_Dispatch {
   Shizu_Object_Dispatch _parent;
 };
-
-struct Shizu_Runtime_Compiler_Object {
+       
+struct Compiler_Object {
   Shizu_Object _parent;
 };
 
 void
-Shizu_Runtime_Compiler_Object_construct
+Compiler_Object_construct
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Object* self
+    Compiler_Object* self
   );
 
-#endif // SHIZU_RUNTIME_COMPILER_OBJECT_H_INCLUDED
+#endif // COMPILER_OBJECT_H_INCLUDED

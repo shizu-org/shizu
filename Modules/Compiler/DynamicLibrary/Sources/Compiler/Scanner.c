@@ -30,10 +30,10 @@
 #include "Shizu/Runtime/Objects/String.h"
 
 static void
-Shizu_Runtime_Compiler_Scanner_visit
+Compiler_Scanner_visit
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Scanner* self
+    Compiler_Scanner* self
   )
 { 
   if (self->buffer) {
@@ -44,55 +44,55 @@ Shizu_Runtime_Compiler_Scanner_visit
   }
 }
 
-static Shizu_TypeDescriptor const Shizu_Runtime_Compiler_Scanner_Type = {
+static Shizu_TypeDescriptor const Compiler_Scanner_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Shizu_Runtime_Compiler_Scanner),
-  .visit = (Shizu_OnVisitCallback*)&Shizu_Runtime_Compiler_Scanner_visit,
+  .size = sizeof(Compiler_Scanner),
+  .visit = (Shizu_OnVisitCallback*)&Compiler_Scanner_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
-  .dispatchSize = sizeof(Shizu_Runtime_Compiler_Scanner_Dispatch),
+  .dispatchSize = sizeof(Compiler_Scanner_Dispatch),
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_Runtime_Compiler_Scanner, Shizu_Runtime_Compiler_Object);
+Shizu_defineType(Compiler_Scanner, Compiler_Object);
 
 void
-Shizu_Runtime_Compiler_Scanner_construct
+Compiler_Scanner_construct
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Scanner* self
+    Compiler_Scanner* self
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Scanner_getType(state);
-  Shizu_Runtime_Compiler_Object_construct(state, (Shizu_Runtime_Compiler_Object*)self);
+  Shizu_Type* TYPE = Compiler_Scanner_getType(state);
+  Compiler_Object_construct(state, (Compiler_Object*)self);
   self->buffer = Shizu_ByteArray_create(state);
   self->input = Shizu_String_create(state, "", strlen(""));
   self->start = Shizu_String_getBytes(state, self->input);
   self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
   self->current = self->start;
-  self->tokenType = Shizu_Runtime_Compiler_TokenType_StartOfInput;
+  self->tokenType = Compiler_TokenType_StartOfInput;
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-Shizu_Runtime_Compiler_Scanner*
-Shizu_Runtime_Compiler_Scanner_create
+Compiler_Scanner*
+Compiler_Scanner_create
   (
     Shizu_State* state
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Scanner_getType(state);
-  Shizu_Runtime_Compiler_Scanner* self = (Shizu_Runtime_Compiler_Scanner*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Runtime_Compiler_Scanner));
-  Shizu_Runtime_Compiler_Scanner_construct(state, self);
+  Shizu_Type* TYPE = Compiler_Scanner_getType(state);
+  Compiler_Scanner* self = (Compiler_Scanner*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Scanner));
+  Compiler_Scanner_construct(state, self);
   return self;
 }
 
 void
-Shizu_Runtime_Compiler_Scanner_setInput
+Compiler_Scanner_setInput
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Scanner* self,
+    Compiler_Scanner* self,
     Shizu_String* input
   )
 {
@@ -100,14 +100,14 @@ Shizu_Runtime_Compiler_Scanner_setInput
   self->start = Shizu_String_getBytes(state, self->input);
   self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
   self->current = self->start;
-  self->tokenType = Shizu_Runtime_Compiler_TokenType_StartOfInput;
+  self->tokenType = Compiler_TokenType_StartOfInput;
 }
 
 Shizu_String*
-Shizu_Runtime_Compiler_Scanner_getInput
+Compiler_Scanner_getInput
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Scanner* self
+    Compiler_Scanner* self
   )
 {
   return self->input;
@@ -182,13 +182,13 @@ isNewline
 }
 
 void
-Shizu_Runtime_Compiler_Scanner_step
+Compiler_Scanner_step
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Scanner* self
+    Compiler_Scanner* self
   )
 {
-  if (self->tokenType == Shizu_Runtime_Compiler_TokenType_EndOfInput) {
+  if (self->tokenType == Compiler_TokenType_EndOfInput) {
     return;
   }
   // Consume whitespaces.
@@ -197,7 +197,7 @@ Shizu_Runtime_Compiler_Scanner_step
       self->current++;
     } while (isWhitespace(self->end, self->current));
   }
-
+  // Parse newlines.
   if (isNewline(self->end, self->current)) {
     do {
       self->current++;
@@ -206,50 +206,76 @@ Shizu_Runtime_Compiler_Scanner_step
         self->current++; 
       }
     } while (isNewline(self->end, self->current));
-    self->tokenType = Shizu_Runtime_Compiler_TokenType_EndOfLine;
+    self->tokenType = Compiler_TokenType_EndOfLine;
     return;
   }
   
   if (self->current == self->end) {
-    self->tokenType = Shizu_Runtime_Compiler_TokenType_EndOfInput;
+    self->tokenType = Compiler_TokenType_EndOfInput;
     return;
   }
   switch (*self->current) {
     case '(': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_LeftParenthesis;
+      self->tokenType = Compiler_TokenType_LeftParenthesis;
       self->current++;
+      return;
     } break;
     case ')': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_RightParenthesis;
+      self->tokenType = Compiler_TokenType_RightParenthesis;
       self->current++;
     } break;
     case '{': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_LeftSquareBracket;
-    } break;
+      self->tokenType = Compiler_TokenType_LeftSquareBracket;
+      self->current++;
+      return;
+   } break;
     case '}': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_RightSquareBracket;
+      self->tokenType = Compiler_TokenType_RightSquareBracket;
+      self->current++;
+      return;
     } break;
     case '.': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_Period;
+      self->tokenType = Compiler_TokenType_Period;
       self->current++;
       if (isDigit(self->end, self->current)) {
         do {
           self->current++;
         } while (isDigit(self->end, self->current));
-        self->tokenType = Shizu_Runtime_Compiler_TokenType_Real;
+        self->tokenType = Compiler_TokenType_Real;
       }
+      return;
     } break;
     case ',': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_Comma;
+      self->tokenType = Compiler_TokenType_Comma;
       self->current++;
+      return;
     } break;
     case '+': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_Plus;
+      self->tokenType = Compiler_TokenType_Plus;
       self->current++;
+      return;
     } break;
     case '-': {
-      self->tokenType = Shizu_Runtime_Compiler_TokenType_Minus;
+      self->tokenType = Compiler_TokenType_Minus;
       self->current++;
+      return;
+    } break;
+    case '*': {
+      self->tokenType = Compiler_TokenType_Star;
+      self->current++;
+      return;
+    } break;
+    case '/': {
+      self->tokenType = Compiler_TokenType_Slash;
+      self->current++;
+      if (self->current != self->end && '/' == *self->current) {
+        self->current++;
+        while (self->end != self->current && !isNewline(self->end, self->current)) {
+          self->current++;
+        }
+        self->tokenType = Compiler_TokenType_SingleLineComment;
+      }
+      return;
     } break;
     default: {
     } break;
@@ -264,17 +290,17 @@ Shizu_Runtime_Compiler_Scanner_step
       self->current++;
      } while (isUnderscore(self->end, self->current) && isAlpha(self->end, self->current));
    }
-   self->tokenType = Shizu_Runtime_Compiler_TokenType_Name;
+   self->tokenType = Compiler_TokenType_Name;
   } else if (isAlpha(self->end, self->current)) {
     do {
       self->current++;
     } while (isUnderscore(self->end, self->current) && isAlpha(self->end, self->current));
-    self->tokenType = Shizu_Runtime_Compiler_TokenType_Name;
+    self->tokenType = Compiler_TokenType_Name;
   } else if (isDigit(self->end, self->current)) {
     do {
       self->current;
     } while (isDigit(self->end, self->current));
-    self->tokenType = Shizu_Runtime_Compiler_TokenType_Integer;
+    self->tokenType = Compiler_TokenType_Integer;
   } else {
     Shizu_State_setStatus(state, Shizu_Status_LexicalError);
     Shizu_State_jump(state);

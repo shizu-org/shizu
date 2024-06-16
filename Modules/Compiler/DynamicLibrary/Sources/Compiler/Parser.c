@@ -27,47 +27,47 @@
 #include "Shizu/Runtime/Gc.h"
 
 static void
-Shizu_Runtime_Compiler_Parser_visit
+Compiler_Parser_visit
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Parser* self
+    Compiler_Parser* self
   )
 { }
 
-static Shizu_TypeDescriptor const Shizu_Runtime_Compiler_Parser_Type = {
+static Shizu_TypeDescriptor const Compiler_Parser_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Shizu_Runtime_Compiler_Parser),
-  .visit = (Shizu_OnVisitCallback*)&Shizu_Runtime_Compiler_Parser_visit,
+  .size = sizeof(Compiler_Parser),
+  .visit = (Shizu_OnVisitCallback*)&Compiler_Parser_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
-  .dispatchSize = sizeof(Shizu_Runtime_Compiler_Parser_Dispatch),
+  .dispatchSize = sizeof(Compiler_Parser_Dispatch),
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_Runtime_Compiler_Parser, Shizu_Runtime_Compiler_Object);
+Shizu_defineType(Compiler_Parser, Compiler_Object);
 
 void
-Shizu_Runtime_Compiler_Parser_construct
+Compiler_Parser_construct
   (
     Shizu_State* state,
-    Shizu_Runtime_Compiler_Parser* self
+    Compiler_Parser* self
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Parser_getType(state);
-  Shizu_Runtime_Compiler_Object_construct(state, (Shizu_Runtime_Compiler_Object*)self);
+  Shizu_Type* TYPE = Compiler_Parser_getType(state);
+  Compiler_Object_construct(state, (Compiler_Object*)self);
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-Shizu_Runtime_Compiler_Parser*
-Shizu_Runtime_Compiler_Parser_create
+Compiler_Parser*
+Compiler_Parser_create
   (
     Shizu_State* state
   )
 {
-  Shizu_Type* TYPE = Shizu_Runtime_Compiler_Parser_getType(state);
-  Shizu_Runtime_Compiler_Parser* self = (Shizu_Runtime_Compiler_Parser*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Runtime_Compiler_Parser));
-  Shizu_Runtime_Compiler_Parser_construct(state, self);
+  Shizu_Type* TYPE = Compiler_Parser_getType(state);
+  Compiler_Parser* self = (Compiler_Parser*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Parser));
+  Compiler_Parser_construct(state, self);
   return self;
 }
