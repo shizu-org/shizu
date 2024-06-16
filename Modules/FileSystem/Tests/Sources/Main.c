@@ -49,7 +49,7 @@ static void testSetFileContents1(Shizu_State* state, Shizu_String* relativePath,
     Shizu_State_jump(state);
   }
   Shizu_String* path = (Shizu_String*)Shizu_Value_getObject(&returnValue);
-  // @todo Add and use "getDirectorySeparator".
+  // Get the directory separator.
   Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
   path = Shizu_String_concatenate(state, path, directorySeparator);
   path = Shizu_String_concatenate(state, path, relativePath);
@@ -109,7 +109,7 @@ static void testGetFileContents(Shizu_State* state,  Shizu_String* relativePath,
     Shizu_State_jump(state);
   }
   Shizu_String* path = (Shizu_String*)Shizu_Value_getObject(&returnValue);
-  // @todo Add and use "getDirectorySeparator".
+  // Get the directory separator.
   Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
   path = Shizu_String_concatenate(state, path, directorySeparator);
   path = Shizu_String_concatenate(state, path, relativePath);

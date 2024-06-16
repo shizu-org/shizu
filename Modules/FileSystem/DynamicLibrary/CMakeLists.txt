@@ -46,15 +46,19 @@ list(APPEND ${name}.header_files Includes/FileSystem/deleteFile.h)
 list(APPEND ${name}.source_files Sources/FileSystem/Utilities.c)
 list(APPEND ${name}.header_files Includes/FileSystem/Utilities.h)
 
-# Setup the list of prerequisite modules.
-set(${name}.prerequisiteModules "")
-
 Shizu_endDynamicLibrary()
+
+# Setup the list of prerequisite modules.
+set_target_properties(${name} PROPERTIES prerequisiteModules "")
 
 target_link_libraries(${name} Shizu.Runtime)
 add_dependencies(${name} Shizu.Runtime)
-foreach (prerequisiteModule ${${name}.prerequisiteModules})
+get_target_property(prerequisiteModules ${name} prerequisiteModules)
+message(STATUS " - adding prerequisite modules")
+foreach (prerequisiteModule ${prerequisiteModules})
+  message(STATUS " - - ${name} <- ${prerequisiteModule}")
   add_dependencies(${name} ${prerequisiteModule})
+  copy_plugin(${name} ${prerequisiteModule})
 endforeach()
 
 # For each MyTarget in this list and your executable target YourTarget you need to copy <$TARGET_FILE:MyTarget> to <TARGET_FILE_DIR:YourTarget>.
