@@ -50,7 +50,7 @@ include(FetchContent)
 
 set(idlib-process.repository CACHE STRING "IdLib Process: The Git repository to check out")
 if (NOT idlib-process.repository)
-  set(idlib-process.repository https://github.com/michaelheilmann/idlib-process.git)
+  set(idlib-process.repository https://github.com/shizu-org/idlib-process.git)
 endif()
 
 set(idlib-process.tag CACHE STRING "IdLib Process: The Git tag to check out")
@@ -78,7 +78,7 @@ FetchContent_Declare(idlib-process
 
 set(idlib-bit-scan.repository CACHE STRING "IdLib Bit Scan: The Git repository to check out")
 if (NOT idlib-bit-scan.repository)
-  set(idlib-bit-scan.repository https://github.com/michaelheilmann/idlib-bit-scan.git)
+  set(idlib-bit-scan.repository https://github.com/shizu-org/idlib-bit-scan.git)
 endif()
 
 set(idlib-bit-scan.tag CACHE STRING "IdLib Bit Scan: The Git tag to check out")
@@ -106,7 +106,7 @@ FetchContent_Declare(idlib-bit-scan
 
 set(idlib-file-system.repository CACHE STRING "IdLib File System: The Git repository to check out")
 if (NOT idlib-file-system.repository)
-  set(idlib-file-system.repository https://github.com/michaelheilmann/idlib-file-system.git)
+  set(idlib-file-system.repository https://github.com/shizu-org/idlib-file-system.git)
 endif()
 
 set(idlib-file-system.tag CACHE STRING "IdLib File System: The Git tag to check out")
@@ -134,7 +134,7 @@ FetchContent_Declare(idlib-file-system
 
 set(idlib-byte-sequence.repository CACHE STRING "IdLib Byte Sequence: The Git repository to check out")
 if (NOT idlib-byte-sequence.repository)
-  set(idlib-byte-sequence.repository https://github.com/michaelheilmann/idlib-byte-sequence.git)
+  set(idlib-byte-sequence.repository https://github.com/shizu-org/idlib-byte-sequence.git)
 endif()
 
 set(idlib-byte-sequence.tag CACHE STRING "IdLib Byte Sequence: The Git tag to check out")
