@@ -9,33 +9,11 @@
 // strlen
 #include <string.h>
 
-static Shizu_Object* Shizu_Environment_getObject(Shizu_State* state, Shizu_Environment* self, Shizu_String* name, Shizu_Type* type) {
-  Shizu_Value v = Shizu_Environment_get(state, self, name);
-  if (!Shizu_Value_isObject(&v)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
-  }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_Value_getObject(&v)->type, type)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
-  }
-  return Shizu_Value_getObject(&v);
-}
-
-static Shizu_CxxProcedure* Shizu_Environment_getCxxProcedure(Shizu_State* state, Shizu_Environment* self, Shizu_String* name) {
-  Shizu_Type* type = Shizu_CxxProcedure_getType(state);
-  return (Shizu_CxxProcedure*)Shizu_Environment_getObject(state, self, name, type);
-}
-
-static Shizu_String* Shizu_Environment_getString(Shizu_State* state, Shizu_Environment* self, Shizu_String* name) {
-  return (Shizu_String*)Shizu_Environment_getObject(state, self, name, Shizu_String_getType(state));
-}
-
 static void testSetFileContents1(Shizu_State* state, Shizu_String* relativePath, Shizu_ByteArray* contents) {
   Shizu_Value returnValue;
   Shizu_Value argumentValues[2];
   Shizu_CxxProcedure* p;
-  Shizu_Environment* environment = Shizu_State_getGlobals(state);
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   // Compute the path.
   p = Shizu_Environment_getCxxProcedure(state, environment, Shizu_String_create(state, "getWorkingDirectory", strlen("getWorkingDirectory")));
   p->f(state, &returnValue, 0, argumentValues);
@@ -97,7 +75,7 @@ static void testSetFileContentsNonEmpty(Shizu_State* state) {
 static void testGetFileContents(Shizu_State* state,  Shizu_String* relativePath, Shizu_ByteArray* expected) {
   Shizu_Value returnValue;
   Shizu_Value argumentValues[2];
-  Shizu_Environment* environment = Shizu_State_getGlobals(state);
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   Shizu_CxxProcedure* p = Shizu_Environment_getCxxProcedure(state, environment, Shizu_String_create(state, "getWorkingDirectory", strlen("getWorkingDirectory")));
   p->f(state, &returnValue, 0, argumentValues);
   if (!Shizu_Value_isObject(&returnValue)) {
@@ -135,7 +113,7 @@ static void testGetFileContents(Shizu_State* state,  Shizu_String* relativePath,
 }
 
 static void testGetFileContentsEmpty(Shizu_State* state) {
-  Shizu_Environment* environment = Shizu_State_getGlobals(state);
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
   Shizu_String* relativePath = Shizu_String_create(state, "Assets", strlen("Assets"));
   relativePath = Shizu_String_concatenate(state, relativePath, directorySeparator);
@@ -145,7 +123,7 @@ static void testGetFileContentsEmpty(Shizu_State* state) {
 }
 
 static void testGetFileContentsNonEmpty(Shizu_State* state) {
-  Shizu_Environment* environment = Shizu_State_getGlobals(state);
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
   Shizu_String* relativePath = Shizu_String_create(state, "Assets", strlen("Assets"));
   relativePath = Shizu_String_concatenate(state, relativePath, directorySeparator);

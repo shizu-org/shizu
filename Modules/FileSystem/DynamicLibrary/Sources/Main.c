@@ -27,13 +27,22 @@ Shizu_ModuleLibrary_load
 {
   Shizu_Dl* dl = NULL;
   Shizu_JumpTarget jumpTarget;
+  
+  Shizu_Environment* environment = NULL;
+  environment = Shizu_State_getGlobals(state);
+  if (!Shizu_Environment_isDefined(state, environment, Shizu_String_create(state, "FileSystem", strlen("FileSystem")))) {
+    Shizu_Value temporary;
+    Shizu_Value_setObject(&temporary, (Shizu_Object*)Shizu_Environment_create(state));
+    Shizu_Environment_set(state, environment, Shizu_String_create(state, "FileSystem", strlen("FileSystem")), &temporary);
+  }
+  environment = Shizu_Environment_getEnvironment(state, environment, Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
 
   Shizu_State_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
     dl = Shizu_State_getDlByAdr(state, &deleteFile);
     Shizu_Value value;
     Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &deleteFile, dl));
-    Shizu_Environment_set(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "deleteFile", strlen("deleteFile")), &value);
+    Shizu_Environment_set(state, environment, Shizu_String_create(state, "deleteFile", strlen("deleteFile")), &value);
     Shizu_State_popJumpTarget(state);
     Shizu_State1_unrefDl(Shizu_State_getState1(state), dl);
   } else {
@@ -49,7 +58,7 @@ Shizu_ModuleLibrary_load
     dl = Shizu_State_getDlByAdr(state, &getFileContents);
     Shizu_Value value;
     Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &getFileContents, dl));
-    Shizu_Environment_set(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "getFileContents", strlen("getFileContents")), &value);
+    Shizu_Environment_set(state, environment, Shizu_String_create(state, "getFileContents", strlen("getFileContents")), &value);
     Shizu_State_popJumpTarget(state);
     Shizu_State1_unrefDl(Shizu_State_getState1(state), dl);
   } else {
@@ -65,7 +74,7 @@ Shizu_ModuleLibrary_load
     dl = Shizu_State_getDlByAdr(state, &getWorkingDirectory);
     Shizu_Value value;
     Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &getWorkingDirectory, dl));
-    Shizu_Environment_set(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "getWorkingDirectory", strlen("getWorkingDirectory")), &value);
+    Shizu_Environment_set(state, environment, Shizu_String_create(state, "getWorkingDirectory", strlen("getWorkingDirectory")), &value);
     Shizu_State_popJumpTarget(state);
     Shizu_State1_unrefDl(Shizu_State_getState1(state), dl);
   } else {
@@ -81,7 +90,7 @@ Shizu_ModuleLibrary_load
     dl = Shizu_State_getDlByAdr(state, &setFileContents);
     Shizu_Value value;
     Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &setFileContents, dl));
-    Shizu_Environment_set(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "setFileContents", strlen("setFileContents")), &value);
+    Shizu_Environment_set(state, environment, Shizu_String_create(state, "setFileContents", strlen("setFileContents")), &value);
     Shizu_State_popJumpTarget(state);
     Shizu_State1_unrefDl(Shizu_State_getState1(state), dl);
   } else {
@@ -96,7 +105,7 @@ Shizu_ModuleLibrary_load
   if (!setjmp(jumpTarget.environment)) {
     Shizu_Value value;
     Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_String_create(state, Shizu_OperatingSystem_DirectorySeparator, strlen(Shizu_OperatingSystem_DirectorySeparator)));
-    Shizu_Environment_set(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")), &value);
+    Shizu_Environment_set(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")), &value);
     Shizu_State_popJumpTarget(state);
   } else {
     Shizu_State_popJumpTarget(state);
