@@ -20,7 +20,7 @@ Shizu_ModuleLibrary_load
     Shizu_State* state
   )
 {
-  fprintf(stdout, "[Module : File Compiler] loaded\n");
+  fprintf(stdout, "[Module : Compiler] loaded\n");
 }
 
 Shizu_Module_Export void
@@ -29,7 +29,7 @@ Shizu_ModuleLibrary_unload
     Shizu_State* state
   )
 {
-  fprintf(stdout, "[Module : File Compiler] unloaded\n");
+  fprintf(stdout, "[Module : Compiler] unloaded\n");
 }
 
 Shizu_Module_Export char const*
