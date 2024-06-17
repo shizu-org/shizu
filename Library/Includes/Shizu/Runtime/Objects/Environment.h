@@ -26,6 +26,10 @@
 #error("Do not include `Shizu/Runtime/Objects/Environment.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Object.h"
+typedef struct Shizu_CxxProcedure Shizu_CxxProcedure;
+typedef struct Shizu_Environment Shizu_Environment;
+typedef struct Shizu_String Shizu_String;
+typedef struct Shizu_WeakReference Shizu_WeakReference;
 
 Shizu_declareType(Shizu_Environment);
 
@@ -70,6 +74,7 @@ Shizu_Environment_set
   );
 
 /// @error The variable is not defined in this environment.
+/// @error @a self or @a key is null.
 /// @undefined @a state does not point to a Shizu_State value.
 Shizu_Value
 Shizu_Environment_get
@@ -77,6 +82,73 @@ Shizu_Environment_get
     Shizu_State* state,
     Shizu_Environment* self,
     Shizu_String* key
+  );
+
+/// @error The variable is not defined in this environment.
+/// @error @a self, @a key, or @a type is null.
+/// @error @a type does not denote a <code>Shizu.Object</code> or derived type.
+/// @undefined @a state does not point to a Shizu_State value.
+Shizu_Object*
+Shizu_Environment_getObject
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name,
+    Shizu_Type* type
+  );
+
+/* Extension method. */
+Shizu_CxxProcedure*
+Shizu_Environment_getCxxProcedure
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  );
+
+/* Extension method. */
+Shizu_Environment*
+Shizu_Environment_getEnvironment
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  );
+
+/* Extension method. */
+Shizu_List*
+Shizu_Environment_getList
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  );
+
+/* Extension method. */
+Shizu_Map*
+Shizu_Environment_getMap
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  );
+
+/* Extension method. */
+Shizu_String*
+Shizu_Environment_getString
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  );
+
+/* Extension method. */
+Shizu_WeakReference*
+Shizu_Environment_getWeakReference
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
   );
 
 /// @since 1.0

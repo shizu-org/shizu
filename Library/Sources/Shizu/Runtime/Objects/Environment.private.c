@@ -26,6 +26,12 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
+#include "Shizu/Runtime/Objects/CxxProcedure.h"
+#include "Shizu/Runtime/Objects/List.h"
+#include "Shizu/Runtime/Objects/Map.h"
+#include "Shizu/Runtime/Objects/String.h"
+#include "Shizu/Runtime/Objects/WeakReference.h"
+
 // malloc, free
 #include <malloc.h>
 
@@ -124,32 +130,32 @@ Shizu_Environment_visit
     Shizu_Environment* self
   )
 {
-	for (size_t i = 0, n = self->capacity; i < n; ++i) {
-		Shizu_Environment_Node* node = self->buckets[i];
-		while (node) {
-			Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)node->key);
-			Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), &node->value);
-			node = node->next;
-		}
-	}
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    Shizu_Environment_Node* node = self->buckets[i];
+    while (node) {
+      Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)node->key);
+      Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), &node->value);
+      node = node->next;
+    }
+  }
 }
 
 void
 Shizu_Environment_finalize
   (
-		Shizu_State* state,
-		Shizu_Environment* self
-	)
+    Shizu_State* state,
+    Shizu_Environment* self
+  )
 {
-	for (size_t i = 0, n = self->capacity; i < n; ++i) {
-		Shizu_Environment_Node** bucket = &(self->buckets[i]);
-		while (*bucket) {
-			Shizu_Environment_Node* node = *bucket;
-			*bucket = node->next;
-			free(node);
-		}
-	}
-	free(self->buckets);
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    Shizu_Environment_Node** bucket = &(self->buckets[i]);
+    while (*bucket) {
+      Shizu_Environment_Node* node = *bucket;
+      *bucket = node->next;
+      free(node);
+    }
+  }
+  free(self->buckets);
   self->buckets = NULL;
 }
 
@@ -246,6 +252,107 @@ Shizu_Environment_get
   }
   Shizu_State_setStatus(state, Shizu_Status_NotExists);
   Shizu_State_jump(state);
+}
+
+Shizu_Object*
+Shizu_Environment_getObject
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name,
+    Shizu_Type* type
+  )
+{
+  if (!self || !name || !type) {
+    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State_jump(state); 
+  }
+  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), type, Shizu_Object_getType(state))) {
+    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State_jump(state); 
+  }
+  Shizu_Value value = Shizu_Environment_get(state, self, name);
+  if (!Shizu_Value_isObject(&value)) {
+    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State_jump(state);
+  }
+  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_Value_getObject(&value)->type, type)) {
+    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State_jump(state);
+  }
+  return Shizu_Value_getObject(&value);
+}
+
+Shizu_CxxProcedure*
+Shizu_Environment_getCxxProcedure
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Type* type = Shizu_CxxProcedure_getType(state);
+  return (Shizu_CxxProcedure*)Shizu_Environment_getObject(state, self, name, type);
+}
+
+Shizu_Environment*
+Shizu_Environment_getEnvironment
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Type* type = Shizu_Environment_getType(state);
+  return (Shizu_Environment*)Shizu_Environment_getObject(state, self, name, type);
+}
+
+Shizu_List*
+Shizu_Environment_getList
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Type* type = Shizu_List_getType(state);
+  return (Shizu_List*)Shizu_Environment_getObject(state, self, name, type);
+}
+
+Shizu_Map*
+Shizu_Environment_getMap
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Type* type = Shizu_Map_getType(state);
+  return (Shizu_Map*)Shizu_Environment_getObject(state, self, name, type);
+}
+
+Shizu_String*
+Shizu_Environment_getString
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Type* type = Shizu_String_getType(state);
+  return (Shizu_String*)Shizu_Environment_getObject(state, self, name, type);
+}
+
+Shizu_WeakReference*
+Shizu_Environment_getWeakReference
+  (
+    Shizu_State* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Type* type = Shizu_WeakReference_getType(state);
+  return (Shizu_WeakReference*)Shizu_Environment_getObject(state, self, name, type);
 }
 
 Shizu_Boolean
