@@ -351,6 +351,9 @@ Shizu_Types_createType
   type->next = NULL;
   type->typeDestroyed = typeDestroyed;
   type->dl = dl;
+  if (type->dl) {
+    Shizu_State1_refDl(state1, type->dl);
+  }
   // Allocate array for references to children.
   if (SmallTypeArray_initialize(&type->children)) {
     free(type->name.bytes);

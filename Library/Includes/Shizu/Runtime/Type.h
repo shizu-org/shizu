@@ -231,6 +231,9 @@ Shizu_Types_getDispatch
     if (!type) { \
       Shizu_Dl* dl = Shizu_State_getDlByAdr(state, &Name##_getType); \
       type = Shizu_State_createType(state, #Name, sizeof(#Name) - 1, ParentName##_getType(state), dl, &Name##_typeDestroyed, &Name##_Type); \
+      if (dl) { \
+        Shizu_Dl_unref(state, dl); \
+      } \
     } \
     return type; \
   }

@@ -531,20 +531,7 @@ Shizu_State1_getDlByAdr
 
   HMODULE handle = NULL;
   GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, p, &handle);
-
-#elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem || Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
-
-  void* handle = NULL;
-  Dl_info info;
-  if (!dladdr(p, &info)) {
-    return NULL;
-  }
-
-#else
-
-  #error("operating system not (yet) supported")
-
-#endif
+  
 
   char const* (*getDlName)() = Shizu_OperatingSystem_getDlSymbol(handle, "Shizu_ModuleLibrary_getName");
   if (!getDlName) {
@@ -560,6 +547,33 @@ Shizu_State1_getDlByAdr
     dl = dl->next;
   }
   return NULL;    
+
+#elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem || Shizu_Configuration_OperatingSystem_Cygwin == Shizu_Configuration_OperatingSystem
+
+  void* handle = NULL;
+  Dl_info info;
+  if (!dladdr(p, &info)) {
+    return NULL;
+  }
+  if (info.dli_sname == NULL && info.dli_saddr == NULL) {
+    return NULL;
+  }
+  Shizu_Dl* dl = state->dls;
+  while (NULL != dl) {
+    if (!strcmp(dl->path, info.dli_fname)) {
+      dl->referenceCount++;
+      return dl;
+    }
+    dl = dl->next;
+  }
+  return NULL;
+
+#else
+
+  #error("operating system not (yet) supported")
+
+#endif
+
 }
 
 void
