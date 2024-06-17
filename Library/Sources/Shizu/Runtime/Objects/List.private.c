@@ -38,6 +38,9 @@
 // exit, EXIT_FAILURE
 #include <stdlib.h>
 
+// INT_MAX, SIZE_MAX
+#include <limits.h>
+
 #include "idlib/bit_scan.h"
 
 static void
