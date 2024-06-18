@@ -30,6 +30,7 @@
 #include <stddef.h>
 
 typedef struct Shizu_State1 Shizu_State1;
+typedef struct Shizu_State2 Shizu_State2;
 typedef struct Shizu_Dl Shizu_Dl;
 typedef struct Shizu_State Shizu_State;
 typedef struct Shizu_Object Shizu_Object;
@@ -70,11 +71,11 @@ typedef void (Shizu_VisitTypeCallback)(Shizu_State1* state1);
 
 /// @since 1.0
 /// The type of a "onVisit" callback function.
-typedef void (Shizu_OnVisitCallback)(Shizu_State* state, Shizu_Object* object);
+typedef void (Shizu_OnVisitCallback)(Shizu_State2* state, Shizu_Object* object);
 
 /// @since 1.0
 /// The type of a "onFinalize" callback function.
-typedef void (Shizu_OnFinalizeCallback)(Shizu_State* state, Shizu_Object* object);
+typedef void (Shizu_OnFinalizeCallback)(Shizu_State2* state, Shizu_Object* object);
 
 /// @since 1.0
 /// The type of a "onTypeDestroyed" callback function.
@@ -195,7 +196,7 @@ Shizu_Types_getDispatch
   Shizu_Type* \
   Name##_getType \
     ( \
-      Shizu_State* state \
+      Shizu_State2* state \
     );
 
 // The DL a type is created by must not be unloaded as long as the type exists.
@@ -211,7 +212,7 @@ Shizu_Types_getDispatch
   Shizu_Type* \
   Name##_getType \
     ( \
-      Shizu_State* state \
+      Shizu_State2* state \
     ); \
   \
   static void \
@@ -224,18 +225,63 @@ Shizu_Types_getDispatch
   Shizu_Type* \
   Name##_getType \
     ( \
-      Shizu_State* state \
+      Shizu_State2* state \
     ) \
   { \
-    Shizu_Type* type = Shizu_State_getTypeByName(state, #Name, sizeof(#Name) - 1); \
+    Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1); \
     if (!type) { \
-      Shizu_Dl* dl = Shizu_State_getDlByAdr(state, &Name##_getType); \
-      type = Shizu_State_createType(state, #Name, sizeof(#Name) - 1, ParentName##_getType(state), dl, &Name##_typeDestroyed, &Name##_Type); \
+      Shizu_Dl* dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &Name##_getType); \
+      type = Shizu_Types_createType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1, ParentName##_getType(state), dl, &Name##_typeDestroyed, &Name##_Type); \
       if (dl) { \
-        Shizu_Dl_unref(state, dl); \
+        Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl); \
       } \
     } \
     return type; \
   }
+
+/**
+ * @since 1.0
+ * @brief Get a type by its name.
+ * @details Search for a type of the name @code{(bytes, numberOfBytes)}.
+ * @param state1 A pointer to a Shizu_State1 object.
+ * @param self A pointer to the Shizu_Types object.
+ * @param bytes A pointer to an array of @a numberOfBytes Bytes.
+ * @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
+ * @return A pointer to the type if it was found. The null pointer otherwise.
+ */
+Shizu_Type*
+Shizu_Types_getTypeByName
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    char const* bytes,
+    size_t numberOfBytes
+  );
+
+/**
+ * @since 1.0
+ * @brief Create a type.
+ * @details
+ * Create a type of the name @code{(bytes, numberOfBytes)}.
+ * Raise an error if a type of that name already exists.
+ * @param bytes A pointer to an array of @a numberOfBytes Bytes.
+ * @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
+ * @param parentType A pointer to the parent type or the null pointer.
+ * @param dl A pointer to the dynamic library the type descriptor is defined in. 
+ * @param typeDestroyed A pointer to the Shizu_OnTypeDestroyedCallback callback function.
+ * @param descriptor A pointer to the type descriptor.
+ */
+Shizu_Type*
+Shizu_Types_createType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    char const* bytes,
+    size_t numberOfBytes,
+    Shizu_Type* parentType,
+    Shizu_Dl* dl,
+    Shizu_OnTypeDestroyedCallback* typeDestroyed,
+    Shizu_TypeDescriptor const* typeDescriptor
+  );
 
 #endif // SHIZU_RUNTIME_TYPE_H_INCLUDED

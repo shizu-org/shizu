@@ -22,13 +22,13 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/getWorkingDirectory.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Objects/String.h"
 
 #include "idlib/file_system.h"
 
 typedef struct Context {
-  Shizu_State* state;
+  Shizu_State2* state;
   Shizu_String* path;
 } Context;
 
@@ -41,18 +41,18 @@ callback
   )
 {
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(context->state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(context->state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
     context->path = Shizu_String_create(context->state, bytes, numberOfBytes);
   }
-  Shizu_State_popJumpTarget(context->state);
+  Shizu_State2_popJumpTarget(context->state);
   return true;
 }
 
 Shizu_String*
 Shizu_getWorkingDirectory
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
   Context context = {
@@ -60,8 +60,8 @@ Shizu_getWorkingDirectory
     .path = NULL,
   };
   if (idlib_get_working_directory(&context, (idlib_get_working_directory_callback*)&callback)) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   return context.path;
 }

@@ -116,12 +116,12 @@ Shizu_Object_unlock
 }
 
 Shizu_Locks*
-Shizu_Locks_startup
+Shizu_Locks_create
   (
     Shizu_State1* state1
   )
 {
-  Shizu_Locks* self = malloc(sizeof(Shizu_Locks));
+  Shizu_Locks* self = Shizu_State1_allocate(state1, sizeof(Shizu_Locks));
   if (!self) {
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
@@ -142,7 +142,7 @@ Shizu_Locks_startup
 
   // (3)
   self->capacity = self->minimalCapacity;
-  self->buckets = malloc(sizeof(LockNode*) * self->capacity);
+  self->buckets = Shizu_State1_allocate(state1, sizeof(LockNode*) * self->capacity);
 	if (!self->buckets) {
 		free(self);
     self = NULL;
@@ -160,7 +160,7 @@ Shizu_Locks_startup
 }
 
 void
-Shizu_Locks_shutdown
+Shizu_Locks_destroy
   (
     Shizu_State1* state1,
     Shizu_Locks* self
@@ -178,13 +178,21 @@ Shizu_Locks_shutdown
 		}
 	}
   self->capacity = 0;
-  free(self->buckets);
+  Shizu_State1_deallocate(state1, self->buckets);
   self->buckets = NULL;
 
   // (2)
-  free(self);
+  Shizu_State1_deallocate(state1, self);
   self = NULL;
 }
+
+size_t
+Shizu_Locks_getSize
+  (
+    Shizu_State1* state1,
+    Shizu_Locks* self
+  )
+{ return self->size; }
 
 void
 Shizu_Locks_notifyPreMark
@@ -208,9 +216,10 @@ Shizu_Locks_notifyPreMark
 }
 
 void
-Shizu_Locks_notifyDestroy
+Shizu_Locks_notifyObjectFinalize
   (
     Shizu_State1* state1,
+    Shizu_Gc* gc,
     Shizu_Locks* self,
     Shizu_Object* object
   )

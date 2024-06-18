@@ -23,16 +23,9 @@
 #include "Shizu/Runtime/Gc.private.h"
 
 #include "Shizu/Runtime/State.h"
-#include "Shizu/Runtime/Locks.private.h"
-#include "Shizu/Runtime/Stack.private.h"
-#include "Shizu/Runtime/Type.private.h"
-#include "Shizu/Runtime/Objects/WeakReference.private.h"
-#include "Shizu/Runtime/DebugAssert.h"
-#include "Shizu/Runtime/StaticAssert.h"
 #include "Shizu/Runtime/Object.h"
-
-// malloc, free
-#include <malloc.h>
+#include "Shizu/Runtime/Type.private.h"
+#include "Shizu/Runtime/CxxUtilities.h"
 
 // fprintf, stderr
 #include <stdio.h>
@@ -46,40 +39,71 @@
 
 #define Shizu_Object_Flags_Gray (Shizu_Object_Flags_White|Shizu_Object_Flags_Black)
 
-#define Shizu_Gc_MarkStack_Capacity (1024)
-
-typedef struct Gc {
-  int referenceCount;
-  Shizu_Object* all;
-  Shizu_Object* gray;
-} Gc;
-
 Shizu_Gc*
-Shizu_Gc_startup
+Shizu_Gc_create
   (
     Shizu_State1* state1
   )
 {
-  Shizu_Gc* self = malloc(sizeof(Gc));
+  Shizu_Gc* self = Shizu_State1_allocate(state1, sizeof(Shizu_Gc));
   if (!self) {
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
   self->all = NULL;
   self->gray = NULL;
+  self->preMarkHooks.nodes = NULL;
+  self->preMarkHooks.running = false;
+  self->objectFinalizeHooks.nodes = NULL;
+  self->objectFinalizeHooks.running = false;
 
   return self;
 }
 
 void
-Shizu_Gc_shutdown
+Shizu_Gc_destroy
   (
     Shizu_State1* state1,
-    Shizu_Gc* gc
+    Shizu_Gc* self
   )
 {
-  free(gc);
-  gc = NULL;
+  if (self->preMarkHooks.nodes) {
+    fprintf(stderr, "%s: %d: warning: premark hook list not empty\n", __FILE__, __LINE__);
+  }
+  if (self->gray) {
+    fprintf(stderr, "%s: %d: warning: gray list not empty\n", __FILE__, __LINE__);
+  }
+  if (self->all) {
+    fprintf(stderr, "%s: %d: warning: all list not empty\n", __FILE__, __LINE__);
+  }
+  if (self->preMarkHooks.nodes) {
+    size_t live = 0;
+    do {
+      PreMarkHookNode* node = self->preMarkHooks.nodes;
+      self->preMarkHooks.nodes = node->next;
+      if (!node->dead) {
+        live++;
+      }
+      Shizu_State1_deallocate(state1, node);
+    } while (self->preMarkHooks.nodes);
+    fprintf(stderr, "%s: %d: warning: pre mark hook node list not empty\n", __FILE__, __LINE__);
+  }
+  if (self->objectFinalizeHooks.nodes) {
+    size_t live = 0;
+    do {
+      ObjectFinalizeHookNode* node = self->objectFinalizeHooks.nodes;
+      self->objectFinalizeHooks.nodes = node->next;
+      if (!node->dead) {
+        live++;
+      }
+      Shizu_State1_deallocate(state1, node);
+    } while (self->objectFinalizeHooks.nodes);
+    if (live) {
+      fprintf(stderr, "%s: %d: warning: object finalize hook node list not empty\n", __FILE__, __LINE__);
+    }
+  }
+  Shizu_State1_deallocate(state1, self);
+  self = NULL;
 }
 
 static void
@@ -91,14 +115,14 @@ Shizu_Object_typeDestroyed
 static Shizu_Integer32
 Shizu_Object_getHashValueImpl
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* self
   );
 
 static Shizu_Boolean
 Shizu_Object_isEqualToImpl
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* self,
     Shizu_Object* other
   );
@@ -132,7 +156,7 @@ Shizu_Object_typeDestroyed
 static Shizu_Integer32
 Shizu_Object_getHashValueImpl
   ( 
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* self
   )
 { return (Shizu_Integer32)(intptr_t)self; }
@@ -140,7 +164,7 @@ Shizu_Object_getHashValueImpl
 static Shizu_Boolean
 Shizu_Object_isEqualToImpl
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* self,
     Shizu_Object* other
   )
@@ -160,16 +184,16 @@ Shizu_Object_initializeDispatch
 Shizu_Type*
 Shizu_Object_getType
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
-  Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State_getState1(state),
-                                               Shizu_State_getTypes(state),
+  Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state),
+                                               Shizu_State2_getTypes(state),
                                                "Shizu_Object",
                                                sizeof("Shizu_Object") - 1);
   if (!type) {
-    type = Shizu_Types_createType(Shizu_State_getState1(state),
-                                  Shizu_State_getTypes(state),
+    type = Shizu_Types_createType(Shizu_State2_getState1(state),
+                                  Shizu_State2_getTypes(state),
                                   "Shizu_Object",
                                   sizeof("Shizu_Object") - 1,
                                   NULL,
@@ -225,7 +249,7 @@ Shizu_Object_isBlack
 Shizu_Object*
 Shizu_Gc_allocateObject
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     size_t size
   )
 {
@@ -238,16 +262,16 @@ Shizu_Gc_allocateObject
 #endif
   if (size < sizeof(Shizu_Object)) {
     fprintf(stderr, "%s:%d: size `%zu` is smaller than sizeof(Shizu_Object) = `%zu`\n", __FILE__, __LINE__, size, sizeof(Shizu_Object));
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(Shizu_State2_getState1(state), 1);
+    Shizu_State1_jump(Shizu_State2_getState1(state));
   }
-  Shizu_Object* self = malloc(size);
+  Shizu_Object* self = Shizu_State1_allocate(Shizu_State2_getState1(state), size);
   if (!self) {
     fprintf(stderr, "%s:%d: unable to allocate `%zu` Bytes\n", __FILE__, __LINE__, size);
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State1_setStatus(Shizu_State2_getState1(state), 1);
+    Shizu_State1_jump(Shizu_State2_getState1(state));
   }
-  Shizu_Gc* gc = Shizu_State_getGc(state);
+  Shizu_Gc* gc = Shizu_State2_getGc(state);
   self->gray = NULL;
   self->flags = Shizu_Object_Flags_White;
   self->type = Shizu_Object_getType(state);
@@ -256,26 +280,97 @@ Shizu_Gc_allocateObject
   return self;
 }
 
+static void
+notifyObjectFinalizeHooks
+  (
+    Shizu_State2* state,
+    Shizu_Gc* self,
+    Shizu_Object* object
+  )
+{
+  self->objectFinalizeHooks.running = true;
+  size_t dead = 0;
+  ObjectFinalizeHookNode* node = self->objectFinalizeHooks.nodes;
+  while (node) {
+    if (node->dead) {
+      dead++;
+      continue;
+    }
+    node->function(Shizu_State2_getState1(state), self, node->context, object);
+    node = node->next;
+  }
+  self->objectFinalizeHooks.running = false;
+  // This is very unlikely to happen.
+  if (dead > 0) {
+    ObjectFinalizeHookNode** previous = &self->objectFinalizeHooks.nodes;
+    ObjectFinalizeHookNode* current = self->objectFinalizeHooks.nodes;
+    while (current) {
+      if (current->dead) {
+        ObjectFinalizeHookNode* node = current;
+        *previous = current->next;
+        current = current->next;
+        Shizu_State1_deallocate(Shizu_State2_getState1(state), node);
+      } else {
+        previous = &current->next;
+        current = current->next;
+      }
+      node->function(Shizu_State2_getState1(state), self, node->context, object);
+    }
+  }
+}
+
+static void
+notifyPreMarkHooks
+  (
+    Shizu_State2* state,
+    Shizu_Gc* self
+  )
+{
+  self->preMarkHooks.running = true;
+  size_t dead = 0;
+  PreMarkHookNode* node = self->preMarkHooks.nodes;
+  while (node) {
+    if (node->dead) {
+      dead++;
+      continue;
+    }
+    node->function(Shizu_State2_getState1(state), self, node->context);
+    node = node->next;
+  }
+  self->preMarkHooks.running = false;
+  // This is very unlikely to happen.
+  if (dead > 0) {
+    PreMarkHookNode** previous = &self->preMarkHooks.nodes;
+    PreMarkHookNode* current = self->preMarkHooks.nodes;
+    while (current) {
+      if (current->dead) {
+        PreMarkHookNode* node = current;
+        *previous = current->next;
+        current = current->next;
+        Shizu_State1_deallocate(Shizu_State2_getState1(state), node);
+      } else {
+        previous = &current->next;
+        current = current->next;
+      }
+      node->function(Shizu_State2_getState1(state), self, node->context);
+    }
+  }
+}
+
 void
 Shizu_Gc_run
   (
-    Shizu_State* state
+    Shizu_State2* state,
+    Shizu_Gc* self,
+    Shizu_Gc_SweepInfo* sweepInfo
   )
 {
-  Shizu_Gc* gc = Shizu_State_getGc(state);
-  Shizu_debugAssert(NULL == gc->gray);
-  // Premark.
-  // @todo We should have them register for premark and finalization themselves.
-  if (Shizu_State_getLocks(state)) {
-    Shizu_Locks_notifyPreMark(Shizu_State_getState1(state), gc, Shizu_State_getLocks(state));
-  }
-  if (Shizu_State_getStack(state)) {
-    Shizu_Stack_notifyPreMark(Shizu_State_getState1(state), gc, Shizu_State_getStack(state));
-  }
+  Shizu_debugAssert(NULL == self->gray); 
+  notifyPreMarkHooks(state, self);
   // Mark.
-  while (gc->gray) {
-    Shizu_Object* object = gc->gray;
-    gc->gray = object->gray;
+  while (self->gray) {
+    Shizu_Object* object = self->gray;
+    self->gray = object->gray;
     object->gray = NULL;
     Shizu_debugAssert(!Shizu_Object_isWhite(object)); // Must not be white.
     Shizu_debugAssert(NULL == object->gray);
@@ -287,8 +382,8 @@ Shizu_Gc_run
   }
   // Sweep.
   size_t live = 0, dead = 0;
-  Shizu_Object** previous = &gc->all;
-  Shizu_Object* current = gc->all;
+  Shizu_Object** previous = &self->all;
+  Shizu_Object* current = self->all;
   while (NULL != current) {
     if (Shizu_Object_isWhite(current)) {
       Shizu_Object* object = current;
@@ -296,8 +391,7 @@ Shizu_Gc_run
       current = current->next;
       // TODO: Shizu_Locks_notifyDestroy as well as Shizu_WeakReferences_notifyDestroy perform an object address hash lookup.
       //       Investigage if there is a relevant performance gain when only one hash table is used?
-      Shizu_Locks_notifyDestroy(Shizu_State_getState1(state), Shizu_State_getLocks(state), object);
-      Shizu_WeakReferences_notifyDestroy(Shizu_State_getState1(state), object);
+      notifyObjectFinalizeHooks(state, self, object);
       while (object->type) {
         if (object->type->descriptor->finalize) {
           object->type->descriptor->finalize(state, object);
@@ -314,7 +408,10 @@ Shizu_Gc_run
       live++;
     }
   }
-  fprintf(stdout, "%s:%d: live = %zu, dead = %zu\n", __FILE__, __LINE__, live, dead);
+  if (sweepInfo) {
+    sweepInfo->live = live;
+    sweepInfo->dead = dead;
+  }
 }
 
 void
@@ -354,5 +451,115 @@ Shizu_Gc_visitValue
     default: {
       /* Intentionally empty. */
     } break;
+  }
+}
+
+void
+Shizu_Gc_addPreMarkHook
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_PreMarkCallbackContext* context,
+    Shizu_Gc_PreMarkCallbackFunction* function
+  )
+{ 
+  PreMarkHookNode* node = Shizu_State1_allocate(state, sizeof(PreMarkHookNode));
+  if (!node) {
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  node->next = gc->preMarkHooks.nodes;
+  gc->preMarkHooks.nodes = node;
+  node->context = context;
+  node->function = function;
+  node->dead = false;
+}
+
+void
+Shizu_Gc_removePreMarkHook
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_PreMarkCallbackContext* context,
+    Shizu_Gc_PreMarkCallbackFunction* function
+  )
+{
+  if (gc->preMarkHooks.running) { 
+    PreMarkHookNode* node = gc->preMarkHooks.nodes;
+    while (node) {
+      if (node->context == context && node->function == function) {
+        node->dead = true;
+      }
+      node = node->next;
+    }
+  } else {
+    PreMarkHookNode** previous = &gc->preMarkHooks.nodes;
+    PreMarkHookNode* current = gc->preMarkHooks.nodes;
+    while (current) {
+      if (current->dead || (current->context == context && current->function == function)) {
+        *previous = current->next;
+        PreMarkHookNode* node = current;
+        current = current->next;
+        Shizu_State1_deallocate(state, node);
+      } else {
+        previous = &current->next;
+        current = current->next;
+      }
+    }
+  }
+}
+
+void
+Shizu_Gc_addObjectFinalizeHook
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_ObjectFinalizeCallbackContext* context,
+    Shizu_Gc_ObjectFinalizeCallbackFunction* function
+  )
+{ 
+  ObjectFinalizeHookNode* node = Shizu_State1_allocate(state, sizeof(ObjectFinalizeHookNode));
+  if (!node) {
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  node->next = gc->objectFinalizeHooks.nodes;
+  gc->objectFinalizeHooks.nodes = node;
+  node->context = context;
+  node->function = function;
+  node->dead = false;
+}
+
+void
+Shizu_Gc_removeObjectFinalizeHook
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_ObjectFinalizeCallbackContext* context,
+    Shizu_Gc_ObjectFinalizeCallbackFunction* function
+  )
+{
+  if (gc->objectFinalizeHooks.running) {
+    ObjectFinalizeHookNode* node = gc->objectFinalizeHooks.nodes;
+    while (node) {
+      if (node->context == context && node->function == function) {
+        node->dead = true;
+      }
+      node = node->next;
+    }
+  } else {
+    ObjectFinalizeHookNode** previous = &gc->objectFinalizeHooks.nodes;
+    ObjectFinalizeHookNode* current = gc->objectFinalizeHooks.nodes;
+    while (current) {
+      if (current->dead || (current->context == context && current->function == function)) {
+        *previous = current->next;
+        ObjectFinalizeHookNode* node = current;
+        current = current->next;
+        Shizu_State1_deallocate(state, node);
+      } else {
+        previous = &current->next;
+        current = current->next;
+      }
+    }
   }
 }

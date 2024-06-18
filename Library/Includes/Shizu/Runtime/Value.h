@@ -40,6 +40,7 @@
 
 #define Shizu_MaybeReference(T) T*
 
+typedef struct Shizu_State2 Shizu_State2;
 typedef struct Shizu_State Shizu_State;
 
 
@@ -54,7 +55,7 @@ typedef bool Shizu_Boolean;
 
 
 
-typedef void (Shizu_CxxFunction)(Shizu_State* state);
+typedef void (Shizu_CxxFunction)(Shizu_State2* state);
 
 
 

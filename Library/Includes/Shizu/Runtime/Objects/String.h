@@ -40,7 +40,7 @@ Shizu_declareType(Shizu_String);
 Shizu_String*
 Shizu_String_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     char const* bytes,
     size_t numberOfBytes
   );
@@ -54,7 +54,7 @@ Shizu_String_create
 Shizu_String*
 Shizu_String_concatenate
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* self,
     Shizu_String* other
   );
@@ -62,21 +62,21 @@ Shizu_String_concatenate
 char const*
 Shizu_String_getBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* self
   );
 
 size_t
 Shizu_String_getNumberOfBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* self
   );
 
 Shizu_Boolean
 Shizu_String_startsWith
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* self,
     Shizu_String* prefix
   );
@@ -84,7 +84,7 @@ Shizu_String_startsWith
 Shizu_Boolean
 Shizu_String_endsWith
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* self,
     Shizu_String* suffix
   );

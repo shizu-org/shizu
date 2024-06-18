@@ -32,86 +32,86 @@
 static void
 test1
   (
-    Shizu_State* state
+    Shizu_State2* state
   );
 
 /* Create a Shizu_ByteArray object. */
 static void
 test2
   (
-    Shizu_State* state
+    Shizu_State2* state
   );
 
 static void
 test1
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
   Shizu_Type* objectType = Shizu_Object_getType(state);
   if (!objectType) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   Shizu_Type* byteArrayType = Shizu_ByteArray_getType(state);
   if (!byteArrayType) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
-  if (!Shizu_Types_isTrueSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), byteArrayType, objectType)) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isTrueSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), byteArrayType, objectType)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
 }
 
 static void
 test2
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 { 
   Shizu_ByteArray* byteArray = Shizu_ByteArray_create(state);
   if (!byteArray) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   Shizu_Value v = Shizu_ByteArray_getSize(state, byteArray);
   if (!Shizu_Value_isInteger32(&v)) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   if (Shizu_Value_getInteger32(&v)) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
 }
 
 static int
 safeExecute
   (
-    void (*test)(Shizu_State* state)
+    void (*test)(Shizu_State2* state)
   )
 {
   if (!test) {
     return 1;
   }
-  Shizu_State* state = NULL;
-  if (Shizu_State_create(&state)) {
+  Shizu_State2* state = NULL;
+  if (Shizu_State2_acquire(&state)) {
     return 1;
   }
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_State_ensureModulesLoaded(state);
+    Shizu_State2_ensureModulesLoaded(state);
     (*test)(state);
-    Shizu_State_popJumpTarget(state);
+    Shizu_State2_popJumpTarget(state);
   } else {
-    Shizu_State_popJumpTarget(state);
-    Shizu_State_destroy(state);
+    Shizu_State2_popJumpTarget(state);
+    Shizu_State2_relinquish(state);
     state = NULL;
     return 1;
   }
-  Shizu_State_destroy(state);
+  Shizu_State2_relinquish(state);
   state = NULL;
   return 0;
 }

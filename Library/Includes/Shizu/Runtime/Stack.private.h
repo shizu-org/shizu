@@ -29,23 +29,27 @@
 typedef struct Shizu_Gc Shizu_Gc;
 
 /// @since 1.0
+/// @state-constructor
 /// Startup the "stack" module.
 /// Called by Shizu_State_create/Shizu_State_destroy.
-/// Shutdown the stacks module by calling Shizu_Stack_shutdown.
-/// This function requires the "gc" to be initialized.
+/// Shutdown the "stack" module by calling Shizu_Stack_shutdown.
+/// This function may invoke Shizu_State1_(push|pop)JumpTarget, Shizu_State1_(jump|setStatus|getStatus) Shizu_State1 is required.
+/// Only one Shizu_Stack object may exist in a process.
+/// @remarks This function requires the "gc" state to be available.
 Shizu_Stack*
-Shizu_Stack_startup
+Shizu_Stack_create
   (
-    Shizu_State* state
+    Shizu_State1* state
   );
 
 /// @since 1.0
-/// Shutdown the "stack" module.
+/// @state-destructor
+/// @brief Shutdown the "stack" state.
 /// This function may only return via regular control flow and not via jump control flow.
 void
-Shizu_Stack_shutdown
+Shizu_Stack_destroy
   (
-    Shizu_State* state,
+    Shizu_State1* state,
     Shizu_Stack* self
   );
 

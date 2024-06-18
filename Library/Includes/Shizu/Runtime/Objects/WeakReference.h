@@ -27,6 +27,10 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 
+/// The "weak references" state.
+/// @todo Rename to "Shizu_WeakReferencesState".
+typedef struct Shizu_WeakReferences Shizu_WeakReferences;
+
 Shizu_declareType(Shizu_WeakReference);
 
 /// @since 1.0
@@ -37,7 +41,7 @@ Shizu_declareType(Shizu_WeakReference);
 Shizu_WeakReference*
 Shizu_WeakReference_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* reference
   );
 

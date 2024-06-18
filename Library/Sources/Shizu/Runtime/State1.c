@@ -23,10 +23,9 @@
 #include "Shizu/Runtime/State1.h"
 
 /// @todo Remove this! Currently required for Shizu_OperatingSystem_* functionality.
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 
 #include "Shizu/Runtime/Status.h"
-#include "Shizu/Runtime/DebugAssert.h"
 
 #include "idlib/process.h"
 
@@ -321,6 +320,39 @@ Shizu_State1_relinquish
   return 0;
 }
 
+void*
+Shizu_State1_allocate
+  (
+    Shizu_State1* state,
+    size_t n
+  )
+{
+  void* p = malloc(n > 0 ? n : 1);
+  return p;
+}
+
+void*
+Shizu_State1_reallocate
+  (
+    Shizu_State1* state,
+    void* p,
+    size_t n
+  )
+{
+  void* q = realloc(p, n > 0 ? n : 1);
+  return q;
+}
+
+void
+Shizu_State1_deallocate
+  (
+    Shizu_State1* state,
+    void* p
+  )
+{
+  free(p);
+}
+
 void
 Shizu_State1_pushJumpTarget
   (
@@ -365,7 +397,7 @@ Shizu_State1_setStatus
   self->status = status;
 }
 
-int
+Shizu_Status
 Shizu_State1_getStatus
   (
     Shizu_State1* self

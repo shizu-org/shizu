@@ -22,6 +22,8 @@
 #if !defined(SHIZU_RUNTIME_STATUS_H_INCLUDED)
 #define SHIZU_RUNTIME_STATUS_H_INCLUDED
 
+#include "Shizu/Runtime/CxxUtilities.h"
+
 typedef enum Shizu_Status Shizu_Status;
 
 enum Shizu_Status {
@@ -41,6 +43,9 @@ enum Shizu_Status {
   Shizu_Status_StackUnderflow,
 
   Shizu_Status_StackIndexOutOfBounds,
+
+  /// Unable to perform an operation because a value is of the wrong type.
+  Shizu_Status_TypeError,
   
   Shizu_Status_StackCorruption,
     

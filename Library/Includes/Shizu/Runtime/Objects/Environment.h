@@ -41,7 +41,7 @@ Shizu_declareType(Shizu_Environment);
 Shizu_Environment*
 Shizu_Environment_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   );
 
 /// @since 1.0
@@ -53,25 +53,103 @@ Shizu_Environment_create
 Shizu_Integer32
 Shizu_Environment_getSize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self
   );
 
 /// @since 1.0
-/// @brief Set a variable in this environment.
+/// @brief Define (if not yet defined) ans assign a variable in this environment.
 /// @param state A pointer to a Shizu_State value.
-/// @param key The key.
+/// @param name The name of the variable.
 /// @param value The value.
 /// @success The variable is defined in this environment and has th specified value assigned.
 /// @undefined @a state does not point to a Shizu_State value.
+/// @error @a self is a null pointer.
+/// @error @a name is a null pointer.
+/// @error @a value is a null pointer.
 void
 Shizu_Environment_set
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
-    Shizu_String* key,
+    Shizu_String* name,
     Shizu_Value* value
   );
+
+/* Extension method. */
+static inline void
+Shizu_Environment_setBoolean
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name,
+    Shizu_Boolean value
+  )
+{
+  Shizu_Value temporary;
+  Shizu_Value_setBoolean(&temporary, value);
+  Shizu_Environment_set(state, self, name, &temporary);
+}
+
+/* Extension method. */
+static inline void
+Shizu_Environment_setFloat32
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name,
+    Shizu_Float32 value
+  )
+{
+  Shizu_Value temporary;
+  Shizu_Value_setFloat32(&temporary, value);
+  Shizu_Environment_set(state, self, name, &temporary);
+}
+
+/* Extension method. */
+static inline void
+Shizu_Environment_setInteger32
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name,
+    Shizu_Integer32 value
+  )
+{
+  Shizu_Value temporary;
+  Shizu_Value_setInteger32(&temporary, value);
+  Shizu_Environment_set(state, self, name, &temporary);
+}
+
+/* Extension method. */
+static inline void
+Shizu_Environment_setObject
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name,
+    Shizu_Object* value
+  )
+{
+  Shizu_Value temporary;
+  Shizu_Value_setObject(&temporary, value);
+  Shizu_Environment_set(state, self, name, &temporary);
+}
+
+/* Extension method. */
+static inline void
+Shizu_Environment_setVoid
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name,
+    Shizu_Void value
+  )
+{
+  Shizu_Value temporary;
+  Shizu_Value_setVoid(&temporary, value);
+  Shizu_Environment_set(state, self, name, &temporary);
+}
 
 /// @error The variable is not defined in this environment.
 /// @error @a self or @a key is null.
@@ -79,9 +157,18 @@ Shizu_Environment_set
 Shizu_Value
 Shizu_Environment_get
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* key
+  );
+
+/* Extension method. */
+Shizu_Boolean
+Shizu_Environment_getBoolean
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name
   );
 
 /// @error The variable is not defined in this environment.
@@ -91,7 +178,7 @@ Shizu_Environment_get
 Shizu_Object*
 Shizu_Environment_getObject
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name,
     Shizu_Type* type
@@ -101,7 +188,7 @@ Shizu_Environment_getObject
 Shizu_CxxProcedure*
 Shizu_Environment_getCxxProcedure
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   );
@@ -110,7 +197,16 @@ Shizu_Environment_getCxxProcedure
 Shizu_Environment*
 Shizu_Environment_getEnvironment
   (
-    Shizu_State* state,
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  );
+
+/* Extension method. */
+Shizu_Integer32
+Shizu_Environment_getInteger32
+  (
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   );
@@ -119,7 +215,7 @@ Shizu_Environment_getEnvironment
 Shizu_List*
 Shizu_Environment_getList
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   );
@@ -128,7 +224,7 @@ Shizu_Environment_getList
 Shizu_Map*
 Shizu_Environment_getMap
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   );
@@ -137,7 +233,7 @@ Shizu_Environment_getMap
 Shizu_String*
 Shizu_Environment_getString
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   );
@@ -146,7 +242,7 @@ Shizu_Environment_getString
 Shizu_WeakReference*
 Shizu_Environment_getWeakReference
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   );
@@ -159,7 +255,7 @@ Shizu_Environment_getWeakReference
 Shizu_Boolean
 Shizu_Environment_isDefined
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* key
   );

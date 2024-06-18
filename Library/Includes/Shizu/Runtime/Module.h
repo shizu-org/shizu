@@ -22,7 +22,7 @@
 #if !defined(SHIZU_RUNTIME_MODULE_H_INCLUDED)
 #define SHIZU_RUNTIME_MODULE_H_INCLUDED
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Gc.h"
 #include "Shizu/Runtime/Object.h"
 
@@ -45,21 +45,21 @@ struct Shizu_Module {
 Shizu_Module*
 Shizu_Module_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* folderPath
   );
 
 Shizu_String*
 Shizu_Module_getName
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* rendition
   );
 
 Shizu_CxxFunction*
 Shizu_Module_getUpdate
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* rendition
   );
 
@@ -72,7 +72,7 @@ Shizu_Module_getUpdate
 void
 Shizu_Module_ensureLoaded
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   );
 
@@ -85,7 +85,7 @@ Shizu_Module_ensureLoaded
 void
 Shizu_Module_ensureUnloaded
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   );
 
@@ -96,7 +96,7 @@ Shizu_Module_ensureUnloaded
 Shizu_Boolean
 Shizu_Module_isLoaded
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   );
 

@@ -26,33 +26,69 @@
   #error("Do not include `Shizu/Runtime/Gc.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Gc.h"
-typedef struct Shizu_State1 Shizu_State1;
 
-typedef struct Shizu_Gc {
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+typedef struct PreMarkHookNode PreMarkHookNode;
+
+struct PreMarkHookNode {
+  PreMarkHookNode* next;
+  bool dead;
+  Shizu_Gc_PreMarkCallbackContext* context;
+  Shizu_Gc_PreMarkCallbackFunction* function;
+};
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+typedef struct ObjectFinalizeHookNode ObjectFinalizeHookNode;
+
+struct ObjectFinalizeHookNode {
+  ObjectFinalizeHookNode* next;
+  bool dead;
+  Shizu_Gc_ObjectFinalizeCallbackContext* context;
+  Shizu_Gc_ObjectFinalizeCallbackFunction* function;
+};
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+typedef struct Shizu_Gc Shizu_Gc;
+
+struct Shizu_Gc {
   int referenceCount;
   Shizu_Object* all;
   Shizu_Object* gray;
-} Shizu_Gc;
+  struct {
+    PreMarkHookNode* nodes;
+    bool running;
+  } preMarkHooks;
+  struct {
+    ObjectFinalizeHookNode* nodes;
+    bool running;
+  } objectFinalizeHooks;
+};
 
 /// @since 1.0
-/// Startup the "gc" module.
-/// Called by Shizu_State_create/Shizu_State_destroy.
-/// Shutdown the garbage collector module by calling Shizu_Gc_shutdown.
-/// This function may invoke Shizu_State_(push|pop)JumpTarget, Shizu_State_(jump|setError|getError) hence that part of the Shizu_State object must be ready to use.
+/// @state-constructor
+/// Startup the "garbage collector" state.
+/// Called by Shizu_State2_create/Shizu_State2_destroy.
+/// Shutdown the "garbage collector" state by calling Shizu_Gc_destroy.
+/// This function may invoke Shizu_State1_(push|pop)JumpTarget, Shizu_State1_(jump|setStatus|getStatus) Shizu_State1 is required.
+/// Only one Shizu_Gc object may exist in a process.
 Shizu_Gc*
-Shizu_Gc_startup
+Shizu_Gc_create
   (
     Shizu_State1* state1
   );
 
 /// @since 1.0
-/// Shutdown the "gc" module.
+/// @state-destructor
+/// Shutdown the "garbage collector" state.
 /// This function may only return via regular control flow and not via jump control flow.
 void
-Shizu_Gc_shutdown
+Shizu_Gc_destroy
   (
     Shizu_State1* state1,
-    Shizu_Gc* gc
+    Shizu_Gc* self
   );
 
 /// @since 1.0

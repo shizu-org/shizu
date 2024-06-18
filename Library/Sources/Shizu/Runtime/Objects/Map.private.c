@@ -23,7 +23,7 @@
 #include "Shizu/Runtime/Objects/Map.private.h"
 
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -59,14 +59,14 @@ Shizu_Map_preDestroyType
 static void
 Shizu_Map_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Map* self
   );
 
 static void
 Shizu_Map_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Map* self
   );
 
@@ -130,15 +130,15 @@ Shizu_Map_preDestroyType
 static void
 Shizu_Map_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Map* self
   )
 {
 	for (size_t i = 0, n = self->capacity; i < n; ++i) {
 		Shizu_Map_Node* node = self->buckets[i];
 		while (node) {
-			Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), &node->key);
-			Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), &node->value);
+			Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), &node->key);
+			Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), &node->value);
 			node = node->next;
 		}
 	}
@@ -147,7 +147,7 @@ Shizu_Map_visit
 void
 Shizu_Map_finalize
   (
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_Map* self
 	)
 {
@@ -168,7 +168,7 @@ Shizu_defineType(Shizu_Map, Shizu_Object);
 void
 Shizu_Map_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Map* self
   )
 {
@@ -176,8 +176,8 @@ Shizu_Map_construct
   Shizu_Object_construct(state, (Shizu_Object*)self);
   self->buckets = malloc(sizeof(Shizu_Map_Node*) * 8);
   if (!self->buckets) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, 1);
+    Shizu_State2_jump(state);
   }
   for (size_t i = 0, n = 8; i < n; ++i) {
     self->buckets[i] = NULL;
@@ -190,7 +190,7 @@ Shizu_Map_construct
 Shizu_Map*
 Shizu_Map_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
   Shizu_Type* TYPE = Shizu_Map_getType(state);
@@ -202,7 +202,7 @@ Shizu_Map_create
 size_t
 Shizu_Map_getSize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Map* self
   )
 { return self->size; }

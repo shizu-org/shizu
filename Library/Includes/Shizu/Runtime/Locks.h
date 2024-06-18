@@ -24,6 +24,9 @@
 
 /*#include "Shizu/Runtime/State.h"*/
 #include "Shizu/Runtime/Value.h"
+
+/// The "locks" state.
+/// @todo Rename to "Shizu_LocksState".
 typedef struct Shizu_Locks Shizu_Locks;
 typedef struct Shizu_State1 Shizu_State1;
 

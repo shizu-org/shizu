@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/Environment.private.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -61,14 +61,14 @@ Shizu_Environment_preDestroyType
 static void
 Shizu_Environment_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self
   );
 
 static void
 Shizu_Environment_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self
   );
 
@@ -126,15 +126,15 @@ Shizu_Environment_preDestroyType
 static void
 Shizu_Environment_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self
   )
 {
   for (size_t i = 0, n = self->capacity; i < n; ++i) {
     Shizu_Environment_Node* node = self->buckets[i];
     while (node) {
-      Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)node->key);
-      Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), &node->value);
+      Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)node->name);
+      Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), &node->value);
       node = node->next;
     }
   }
@@ -143,7 +143,7 @@ Shizu_Environment_visit
 void
 Shizu_Environment_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self
   )
 {
@@ -164,7 +164,7 @@ Shizu_defineType(Shizu_Environment, Shizu_Object);
 void
 Shizu_Environment_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self
   )
 {
@@ -172,8 +172,8 @@ Shizu_Environment_construct
   Shizu_Object_construct(state, (Shizu_Object*)self);
   self->buckets = malloc(sizeof(Shizu_Environment_Node*) * 8);
   if (!self->buckets) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, 1);
+    Shizu_State2_jump(state);
   }
   for (size_t i = 0, n = 8; i < n; ++i) {
     self->buckets[i] = NULL;
@@ -186,7 +186,7 @@ Shizu_Environment_construct
 Shizu_Environment*
 Shizu_Environment_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
   Shizu_Type* TYPE = Shizu_Environment_getType(state);
@@ -198,7 +198,7 @@ Shizu_Environment_create
 Shizu_Integer32
 Shizu_Environment_getSize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self
   )
 {
@@ -208,27 +208,27 @@ Shizu_Environment_getSize
 void
 Shizu_Environment_set
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
-    Shizu_String* key,
+    Shizu_String* name,
     Shizu_Value* value
   )
 {
-  size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)key);
+  size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)name);
   size_t hashIndex = hashValue % self->capacity;
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
-    if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->key, (Shizu_Object*)key)) {
-      node->key = key;
+    if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->name, (Shizu_Object*)name)) {
+      node->name = name;
       node->value = *value;
       return;
     }
   }
   Shizu_Environment_Node* node = malloc(sizeof(Shizu_Environment_Node));
   if (!node) {
-    Shizu_State_setStatus(state, Shizu_Status_AllocationFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
   }
-  node->key = key;
+  node->name = name;
   node->value = *value;
   node->next = self->buckets[hashIndex];
   self->buckets[hashIndex] = node;
@@ -238,7 +238,7 @@ Shizu_Environment_set
 Shizu_Value
 Shizu_Environment_get
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* key
   )
@@ -246,47 +246,63 @@ Shizu_Environment_get
   size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)key);
   size_t hashIndex = hashValue % self->capacity;
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
-    if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->key, (Shizu_Object*)key)) {
+    if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->name, (Shizu_Object*)key)) {
       return node->value;
     }
   }
-  Shizu_State_setStatus(state, Shizu_Status_NotExists);
-  Shizu_State_jump(state);
+  Shizu_State2_setStatus(state, Shizu_Status_NotExists);
+  Shizu_State2_jump(state);
 }
 
 Shizu_Object*
 Shizu_Environment_getObject
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name,
     Shizu_Type* type
   )
 {
   if (!self || !name || !type) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state); 
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state); 
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), type, Shizu_Object_getType(state))) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state); 
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), type, Shizu_Object_getType(state))) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state); 
   }
   Shizu_Value value = Shizu_Environment_get(state, self, name);
   if (!Shizu_Value_isObject(&value)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_Value_getObject(&value)->type, type)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&value)->type, type)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   return Shizu_Value_getObject(&value);
+}
+
+Shizu_Boolean
+Shizu_Environment_getBoolean
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Value value = Shizu_Environment_get(state, self, name);
+  if (!Shizu_Value_isBoolean(&value)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
+  }
+  return Shizu_Value_getBoolean(&value);
 }
 
 Shizu_CxxProcedure*
 Shizu_Environment_getCxxProcedure
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   )
@@ -298,7 +314,7 @@ Shizu_Environment_getCxxProcedure
 Shizu_Environment*
 Shizu_Environment_getEnvironment
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   )
@@ -307,10 +323,26 @@ Shizu_Environment_getEnvironment
   return (Shizu_Environment*)Shizu_Environment_getObject(state, self, name, type);
 }
 
+Shizu_Integer32
+Shizu_Environment_getInteger32
+  (
+    Shizu_State2* state,
+    Shizu_Environment* self,
+    Shizu_String* name
+  )
+{
+  Shizu_Value value = Shizu_Environment_get(state, self, name);
+  if (!Shizu_Value_isInteger32(&value)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
+  }
+  return Shizu_Value_getInteger32(&value);
+}
+
 Shizu_List*
 Shizu_Environment_getList
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   )
@@ -322,7 +354,7 @@ Shizu_Environment_getList
 Shizu_Map*
 Shizu_Environment_getMap
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   )
@@ -334,7 +366,7 @@ Shizu_Environment_getMap
 Shizu_String*
 Shizu_Environment_getString
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   )
@@ -346,7 +378,7 @@ Shizu_Environment_getString
 Shizu_WeakReference*
 Shizu_Environment_getWeakReference
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* name
   )
@@ -358,7 +390,7 @@ Shizu_Environment_getWeakReference
 Shizu_Boolean
 Shizu_Environment_isDefined
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Environment* self,
     Shizu_String* key
   )
@@ -366,7 +398,7 @@ Shizu_Environment_isDefined
   size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)key);
   size_t hashIndex = hashValue % self->capacity;
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
-    if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->key, (Shizu_Object*)key)) {
+    if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->name, (Shizu_Object*)key)) {
       Shizu_Boolean_True;
     }
   }

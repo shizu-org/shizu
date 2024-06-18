@@ -19,18 +19,28 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_NORETURN_H_INCLUDED)
-#define SHIZU_RUNTIME_NORETURN_H_INCLUDED
+#define SHIZU_RUNTIME_PRIVATE (1)
+#include "Shizu/Runtime/CxxUtilities.h"
 
-#include "Shizu/Runtime/Configure.h"
+// fprintf, stderr
+#include <stdio.h>
 
-/// @since 1.0
-/// Function annotation indicating a function will not return normally.
-/// The function will either terminate the program (cf. exit)or perform a jump (cf. longjmp).
-#if Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
-  #define Shizu_NoReturn() __declspec(noreturn)
-#else
-  #define Shizu_NoReturn()
-#endif
+// exit, EXIT_FAILURE
+#include <stdlib.h>
 
-#endif // SHIZU_RUNTIME_NORETURN_H_INCLUDED
+Shizu_NoReturn() void
+Shizu_debugAssertionFailed
+  (
+    char const* file,
+    int line,
+    char const* expression
+  )
+{
+  fprintf(stderr, "%s:%d: debug assertion `%s` failed\n", file, line, expression);
+  exit(EXIT_FAILURE);
+}
+
+Shizu_NoReturn() void Shizu_unreachableCodeReached(char const* file, int line) {
+  fprintf(stderr, "%s:%d: unreachable code reached\n", file, line);
+  exit(EXIT_FAILURE);
+}

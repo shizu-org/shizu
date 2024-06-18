@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Module.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Objects/String.h"
 
 // malloc, free
@@ -37,14 +37,14 @@
 static void
 Shizu_Module_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* rendition
   );
 
 static void
 Shizu_Module_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* rendition
   );
 
@@ -65,12 +65,12 @@ Shizu_defineType(Shizu_Module, Shizu_Object);
 static void
 Shizu_Module_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   )
 { 
   if (self->dl) {
-    Shizu_Dl_unref(state, self->dl);
+    Shizu_State1_unrefDl(Shizu_State2_getState1(state),self->dl);
     self->dl = NULL;
   }
 }
@@ -78,53 +78,53 @@ Shizu_Module_finalize
 static void
 Shizu_Module_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   )
 {
   if (self->path) {
-    Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)self->path);
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->path);
   }
 }
 
 static void
 Shizu_Module_ensureLibraryLoaded
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   )
 {
   if (!self->dl) {
     Shizu_String* zeroTerminator = Shizu_String_create(state, "", sizeof(char));
     Shizu_String* zeroTerminatedPath = Shizu_String_concatenate(state, self->path, zeroTerminator);
-    self->dl = Shizu_State_getOrLoadDl(state, Shizu_String_getBytes(state, zeroTerminatedPath), true);
+    self->dl = Shizu_State1_getOrLoadDl(Shizu_State2_getState1(state), Shizu_String_getBytes(state, zeroTerminatedPath), true);
     if (!self->dl) {
       fprintf(stderr, "unable to link `%.*s`\n", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
-      Shizu_State_jump(state);
+      Shizu_State2_jump(state);
     }
   }
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_Dl_getSymbol(state, self->dl, "Shizu_ModuleLibrary_load");
+    Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), self->dl, "Shizu_ModuleLibrary_load");
     if (!f) {
       fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_load", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
-      Shizu_State_jump(state);
+      Shizu_State2_jump(state);
     }
     (*f)(state);
-    Shizu_State_popJumpTarget(state);
+    Shizu_State2_popJumpTarget(state);
   } else {
-    Shizu_State_popJumpTarget(state);
-    Shizu_Dl_unref(state, self->dl);
+    Shizu_State2_popJumpTarget(state);
+    Shizu_State1_unrefDl(Shizu_State2_getState1(state), self->dl);
     self->dl = NULL;
-    Shizu_State_jump(state);
+    Shizu_State2_jump(state);
   }
 }
 
 Shizu_Module*
 Shizu_Module_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* path
   )
 {
@@ -138,84 +138,84 @@ Shizu_Module_create
 Shizu_String*
 Shizu_Module_getName
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* rendition
   )
 {
   Shizu_Module_ensureLibraryLoaded(state, rendition);
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    char const* (*getName)(Shizu_State1*) = (char const * (*)(Shizu_State1*))Shizu_Dl_getSymbol(state, rendition->dl, "Shizu_ModuleLibrary_getName");
+    char const* (*getName)(Shizu_State1*) = (char const * (*)(Shizu_State1*))Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), rendition->dl, "Shizu_ModuleLibrary_getName");
     if (!getName) {
       fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_getName", (int)Shizu_String_getNumberOfBytes(state, rendition->path), Shizu_String_getBytes(state, rendition->path));
-      Shizu_State_jump(state);
+      Shizu_State2_jump(state);
     }
-    char const* p = getName(Shizu_State_getState1(state));
+    char const* p = getName(Shizu_State2_getState1(state));
     Shizu_String* name = Shizu_String_create(state, p, strlen(p));
-    Shizu_State_popJumpTarget(state);
+    Shizu_State2_popJumpTarget(state);
     return name;
   } else {
-    Shizu_State_popJumpTarget(state);
-    Shizu_State_jump(state);
+    Shizu_State2_popJumpTarget(state);
+    Shizu_State2_jump(state);
   }
 }
 
 Shizu_CxxFunction*
 Shizu_Module_getUpdate
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* rendition
   )
 {
   Shizu_Module_ensureLibraryLoaded(state, rendition);
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_CxxFunction* f = (void (*)(Shizu_State*))Shizu_Dl_getSymbol(state, rendition->dl, "Shizu_ModuleLibrary_update");
+    Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), rendition->dl, "Shizu_ModuleLibrary_update");
     if (!f) {
       fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_update", (int)Shizu_String_getNumberOfBytes(state, rendition->path), Shizu_String_getBytes(state, rendition->path));
-      Shizu_State_jump(state);
+      Shizu_State2_jump(state);
     }
-    Shizu_State_popJumpTarget(state);
+    Shizu_State2_popJumpTarget(state);
     return f;
   } else {
-    Shizu_State_popJumpTarget(state);
-    Shizu_State_jump(state);
+    Shizu_State2_popJumpTarget(state);
+    Shizu_State2_jump(state);
   }
 }
 
 void
 Shizu_Module_ensureLoaded
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   )
 {
   if (!self->dl) {
     Shizu_String* zeroTerminator = Shizu_String_create(state, "", sizeof(char));
     Shizu_String* zeroTerminatedPath = Shizu_String_concatenate(state, self->path, zeroTerminator);
-    self->dl = Shizu_State_getOrLoadDl(state, Shizu_String_getBytes(state, zeroTerminatedPath), true);
+    self->dl = Shizu_State1_getOrLoadDl(Shizu_State2_getState1(state), Shizu_String_getBytes(state, zeroTerminatedPath), true);
     if (!self->dl) {
       fprintf(stderr, "unable to link `%.*s`\n", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
-      Shizu_State_jump(state);
+      Shizu_State2_jump(state);
     }
     //
     Shizu_JumpTarget jumpTarget;
-    Shizu_State_pushJumpTarget(state, &jumpTarget);
+    Shizu_State2_pushJumpTarget(state, &jumpTarget);
     if (!setjmp(jumpTarget.environment)) {
-      Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_Dl_getSymbol(state, self->dl, "Shizu_ModuleLibrary_load");
+      Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), self->dl, "Shizu_ModuleLibrary_load");
       if (!f) {
         fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_load", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
-        Shizu_State_jump(state);
+        Shizu_State2_jump(state);
       }
       (*f)(state);
-      Shizu_State_popJumpTarget(state);
+      Shizu_State2_popJumpTarget(state);
     } else {
-      Shizu_State_popJumpTarget(state);
-      Shizu_Dl_unref(state, self->dl);
+      Shizu_State2_popJumpTarget(state);
+      Shizu_State1_unrefDl(Shizu_State2_getState1(state), self->dl);
       self->dl = NULL;
-      Shizu_State_jump(state);
+      Shizu_State2_jump(state);
     }
   }
 }
@@ -223,30 +223,30 @@ Shizu_Module_ensureLoaded
 void
 Shizu_Module_ensureUnloaded
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   )
 {
   if (self->dl) {
     //
     Shizu_JumpTarget jumpTarget;
-    Shizu_State_pushJumpTarget(state, &jumpTarget);
+    Shizu_State2_pushJumpTarget(state, &jumpTarget);
     if (!setjmp(jumpTarget.environment)) {
-      Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_Dl_getSymbol(state, self->dl, "Shizu_ModuleLibrary_unload");
+      Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), self->dl, "Shizu_ModuleLibrary_unload");
       if (!f) {
         fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_unload", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
-        Shizu_State_jump(state);
+        Shizu_State2_jump(state);
       }
       (*f)(state);
-      Shizu_State_popJumpTarget(state);
+      Shizu_State2_popJumpTarget(state);
     } else {
-      Shizu_State_popJumpTarget(state);
-      Shizu_Dl_unref(state, self->dl);
+      Shizu_State2_popJumpTarget(state);
+      Shizu_State1_unrefDl(Shizu_State2_getState1(state), self->dl);
       self->dl = NULL;
-      Shizu_State_jump(state);
+      Shizu_State2_jump(state);
     }
     //
-    Shizu_Dl_unref(state, self->dl);
+    Shizu_State1_unrefDl(Shizu_State2_getState1(state), self->dl);
     self->dl = NULL;
   }
 }
@@ -254,7 +254,7 @@ Shizu_Module_ensureUnloaded
 Shizu_Boolean
 Shizu_Module_isLoaded
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Module* self
   )
 { return NULL != self->dl; }

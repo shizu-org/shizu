@@ -4,12 +4,12 @@
 #include <stdio.h>
 // exit, EXIT_FAILURE
 #include <stdlib.h>
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 
 static void
 Shizu_Error_emitMethodCallContext
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     FILE* f,
     Shizu_SourceLocationC sourceLocationC,
     Shizu_Object* callee,
@@ -31,7 +31,7 @@ Shizu_Error_emitMethodCallContext
   // Callee type address/name.
   Shizu_Type* calleeType = ((Shizu_Object*)callee)->type;
   char const* calleeTypeName; size_t calleeTypeNameLength;
-  Shizu_Types_getTypeName(Shizu_State_getState1(state), Shizu_State_getTypes(state), calleeType, &calleeTypeName, &calleeTypeNameLength);
+  Shizu_Types_getTypeName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), calleeType, &calleeTypeName, &calleeTypeNameLength);
   fprintf(f, ", ");
   fprintf(f, "callee type: %p/", calleeType);
   fwrite(calleeTypeName, 1, calleeTypeNameLength, f);
@@ -45,7 +45,7 @@ Shizu_Error_emitMethodCallContext
 Shizu_NoReturn() void
 Shizu_Errors_raiseDispatchNotExists
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_SourceLocationC sourceLocationC,
     Shizu_Object* target,
     char const* methodName,
@@ -54,14 +54,14 @@ Shizu_Errors_raiseDispatchNotExists
 {
   Shizu_Error_emitMethodCallContext(state, stderr, sourceLocationC, target, methodName, methodNameLength);
   fprintf(stderr, ": dispatch not created\n");
-  Shizu_State_setStatus(state, Shizu_Status_DispatchNotExists);
-  Shizu_State_jump(state);
+  Shizu_State2_setStatus(state, Shizu_Status_DispatchNotExists);
+  Shizu_State2_jump(state);
 }
 
 Shizu_NoReturn() void
 Shizu_Errors_raiseMethodNotImplemented
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_SourceLocationC sourceLocationC,
     Shizu_Object* target,
     char const* methodName,
@@ -70,14 +70,14 @@ Shizu_Errors_raiseMethodNotImplemented
 {
   Shizu_Error_emitMethodCallContext(state, stderr, sourceLocationC, target, methodName, methodNameLength);
   fprintf(stderr, ": call to undefined method\n");
-  Shizu_State_setStatus(state, Shizu_Status_MethodNotImplemented);
-  Shizu_State_jump(state);
+  Shizu_State2_setStatus(state, Shizu_Status_MethodNotImplemented);
+  Shizu_State2_jump(state);
 }
 
 void
 Shizu_Object_construct
   (
-  Shizu_State* state,
+  Shizu_State2* state,
   Shizu_Object* self
   )
 {

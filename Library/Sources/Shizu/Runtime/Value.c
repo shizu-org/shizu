@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Value.h"
 
-#include "Shizu/Runtime/DebugAssert.h"
+#include "Shizu/Runtime/CxxUtilities.h"
 
 Shizu_Boolean
 Shizu_Value_getBoolean

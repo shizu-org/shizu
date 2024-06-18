@@ -37,13 +37,13 @@ Shizu_declareType(Shizu_Map);
 Shizu_Map*
 Shizu_Map_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   );
 
 size_t
 Shizu_Map_getSize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Map* self
   );
 

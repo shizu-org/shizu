@@ -27,6 +27,7 @@
 #include "Shizu/Runtime/Value.h"
 typedef struct Shizu_Gc Shizu_Gc;
 typedef struct Shizu_State1 Shizu_State1;
+typedef struct Shizu_State2 Shizu_State2;
 typedef struct Shizu_State Shizu_State;
 
 /// @since 1.0
@@ -35,7 +36,7 @@ typedef struct Shizu_State Shizu_State;
 Shizu_Object*
 Shizu_Gc_allocateObject
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     size_t size
   );
 
@@ -55,10 +56,81 @@ Shizu_Gc_visitValue
     Shizu_Value* value
   );
 
+typedef struct Shizu_Gc_SweepInfo {
+  size_t live;
+  size_t dead;
+} Shizu_Gc_SweepInfo;
+
+typedef void Shizu_Gc_PreMarkCallbackContext;
+typedef void (Shizu_Gc_PreMarkCallbackFunction)(Shizu_State1*, Shizu_Gc*, Shizu_Gc_PreMarkCallbackContext*);
+
+/// @brief Add a registration of a pre mark hook.
+/// @param context, notify The context and the function of the pre mark hook.
+/// @remark The same @a context and @a notify pointers can be registered multiple times.
+/// @undefined @a state does not point to a Shizu_State1 object.
+/// @error @a gc is a null pointer.
+/// @error @a function is a null pointer. 
+void
+Shizu_Gc_addPreMarkHook
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_PreMarkCallbackContext* context,
+    Shizu_Gc_PreMarkCallbackFunction* function
+  );
+
+/// @brief Remove all(!) registrations of a pre mark hook.
+/// @param context, notify The context and the function of the pre mark hook.
+/// @undefined @a state does not point to a Shizu_State1 object.
+/// @error @a gc is a null pointer.
+/// @error @a function is a null pointer. 
+void
+Shizu_Gc_removePreMarkHook 
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_PreMarkCallbackContext* context,
+    Shizu_Gc_PreMarkCallbackFunction* function
+  );
+
+typedef void Shizu_Gc_ObjectFinalizeCallbackContext;
+typedef void (Shizu_Gc_ObjectFinalizeCallbackFunction)(Shizu_State1*, Shizu_Gc*, Shizu_Gc_ObjectFinalizeCallbackContext*, Shizu_Object*);
+
+/// @brief Add a registration of a object finalize hook.
+/// @param context, notify The context and the function of the object finalize hook.
+/// @remark The same @a context and @a notify pointers can be registered multiple times.
+/// @undefined @a state does not point to a Shizu_State1 object.
+/// @error @a gc is a null pointer.
+/// @error @a function is a null pointer. 
+void
+Shizu_Gc_addObjectFinalizeHook
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_ObjectFinalizeCallbackContext* context,
+    Shizu_Gc_ObjectFinalizeCallbackFunction* function
+  );
+
+/// @brief Remove all(!) registrations of an object finalize hook.
+/// @param context, notify The context and the function of the object finalize hook.
+/// @undefined @a state does not point to a Shizu_State1 object.
+/// @error @a gc is a null pointer.
+/// @error @a function is a null pointer. 
+void
+Shizu_Gc_removeObjectFinalizeHook
+  (
+    Shizu_State1* state,
+    Shizu_Gc* gc,
+    Shizu_Gc_ObjectFinalizeCallbackContext* context,
+    Shizu_Gc_ObjectFinalizeCallbackFunction* function
+  );
+
 void
 Shizu_Gc_run
   (
-    Shizu_State* state
+    Shizu_State2* state,
+    Shizu_Gc* self,
+    Shizu_Gc_SweepInfo* sweepInfo
   );
 
 #endif // SHIZU_RUNTIME_GC_H_INCLUDED

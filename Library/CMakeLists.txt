@@ -50,9 +50,6 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Stack.private.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Stack.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Stack.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/State.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/State.h)
-
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/State1.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/State1.h)
 
@@ -90,14 +87,9 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/ByteArray.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Status.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Status.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/DebugAssert.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/DebugAssert.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/CxxUtilities.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/CxxUtilities.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/StaticAssert.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/StaticAssert.h)
-
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/NoReturn.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/NoReturn.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/SourceLocationC.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/SourceLocationC.h)
 
@@ -116,6 +108,9 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Object.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Object.h)
+
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/State/TypeEnvironment.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/State/TypeEnvironment.h)
 
 # Configuration variables for 'Configure.h.in'.
 if (${${name}.operating_system} STREQUAL ${${name}.operating_system_windows})

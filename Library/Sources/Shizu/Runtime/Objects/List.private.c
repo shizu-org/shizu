@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/List.private.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -58,14 +58,14 @@ Shizu_List_preDestroyType
 static void
 Shizu_List_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_List* self
   );
 
 static void
 Shizu_List_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_List* self
   );
 
@@ -129,19 +129,19 @@ Shizu_List_preDestroyType
 static void
 Shizu_List_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_List* self
   )
 {
 	for (size_t i = 0, n = self->size; i < n; ++i) {
-		Shizu_Gc_visitValue(Shizu_State_getState1(state), Shizu_State_getGc(state), self->elements + i);
+		Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), self->elements + i);
 	}
 }
 
 static void
 Shizu_List_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_List* self
   )
 {
@@ -156,7 +156,7 @@ Shizu_defineType(Shizu_List, Shizu_Object);
 void
 Shizu_List_construct
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self
 	)
 {
@@ -164,8 +164,8 @@ Shizu_List_construct
 	Shizu_Object_construct(state, (Shizu_Object*)self);
 	self->elements = malloc(8 * sizeof(Shizu_Value));
 	if (!self->elements) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
+		Shizu_State2_setStatus(state, 1);
+		Shizu_State2_jump(state);
 	}
 	self->size = 0;
 	self->capacity = 8;
@@ -175,7 +175,7 @@ Shizu_List_construct
 Shizu_List*
 Shizu_List_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
   Shizu_Type* TYPE = Shizu_List_getType(state);
@@ -189,7 +189,7 @@ static Shizu_Value const IndexOutOfBounds = { .tag = Shizu_Value_Tag_Void, .void
 Shizu_Value
 Shizu_List_getValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		size_t index
 	)
@@ -203,7 +203,7 @@ Shizu_List_getValue
 size_t
 Shizu_List_getSize
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self
 	)
 {
@@ -213,7 +213,7 @@ Shizu_List_getSize
 void
 Shizu_List_insertValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		size_t index,
 		Shizu_Value const* value
@@ -226,10 +226,10 @@ Shizu_List_insertValue
 		size_t oldCapacity = self->capacity;
 		size_t newCapacity;
 		Lists* g = NULL;
-		if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, (void**)&g)) {
-			Shizu_State1_deallocateNamedStorage(Shizu_State_getState1(state), namedMemoryName);
-			Shizu_State_setStatus(state, 1);
-			Shizu_State_jump(state);
+		if (Shizu_State1_getNamedStorage(Shizu_State2_getState1(state), namedMemoryName, (void**)&g)) {
+			Shizu_State1_deallocateNamedStorage(Shizu_State2_getState1(state), namedMemoryName);
+			Shizu_State2_setStatus(state, 1);
+			Shizu_State2_jump(state);
 		}
 		if (oldCapacity > g->maximumCapacity / 2) {
 			// as the following fact holds
@@ -237,8 +237,8 @@ Shizu_List_insertValue
 			// we cannot double the capacity.
 			// try to saturate the capacity.
 			if (oldCapacity == g->maximumCapacity) {
-				Shizu_State_setStatus(state, 1);
-				Shizu_State_jump(state);
+				Shizu_State2_setStatus(state, 1);
+				Shizu_State2_jump(state);
 			} else {
 				newCapacity = g->maximumCapacity;
 			}
@@ -247,8 +247,8 @@ Shizu_List_insertValue
 		}
 		Shizu_Value* newElements = realloc(self->elements, newCapacity * sizeof(Shizu_Value));
 		if (!newElements) {
-			Shizu_State_setStatus(state, 1);
-			Shizu_State_jump(state);
+			Shizu_State2_setStatus(state, 1);
+			Shizu_State2_jump(state);
 		}
 		self->elements = newElements;
 		self->capacity = newCapacity;
@@ -265,7 +265,7 @@ Shizu_List_insertValue
 void
 Shizu_List_appendValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		Shizu_Value const* value
 	)
@@ -276,7 +276,7 @@ Shizu_List_appendValue
 void
 Shizu_List_prependValue
 	( 
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		Shizu_Value const* value
 	)

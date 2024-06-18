@@ -37,13 +37,13 @@ Shizu_declareType(Shizu_List);
 Shizu_List*
 Shizu_List_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   );
 
 Shizu_Value
 Shizu_List_getValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		size_t index
 	);
@@ -53,14 +53,14 @@ Shizu_List_getValue
 size_t
 Shizu_List_getSize
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self
 	);
 
 void
 Shizu_List_insertValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		size_t index,
 		Shizu_Value const* value
@@ -69,7 +69,7 @@ Shizu_List_insertValue
 void
 Shizu_List_appendValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		Shizu_Value const* value
 	);
@@ -77,7 +77,7 @@ Shizu_List_appendValue
 void
 Shizu_List_prependValue
 	( 
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		Shizu_Value const* value
 	);
@@ -93,7 +93,7 @@ Shizu_List_prependValue
 static inline void
 Shizu_List_appendBoolean
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* list,
 		Shizu_Boolean element
 	)
@@ -115,7 +115,7 @@ Shizu_List_appendBoolean
 static inline void
 Shizu_List_appendCxxFunction
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* list,
 		Shizu_CxxFunction* element
 	)
@@ -136,7 +136,7 @@ Shizu_List_appendCxxFunction
 static inline void
 Shizu_List_appendInteger32
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* list,
 		Shizu_Integer32 element
 	)
@@ -158,7 +158,7 @@ Shizu_List_appendInteger32
 static inline void
 Shizu_List_appendObject
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* list,
 		Shizu_Object* element
 	)
@@ -180,7 +180,7 @@ Shizu_List_appendObject
 static inline void
 Shizu_List_appendVoid
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_List* self,
 		Shizu_Void element
 	)

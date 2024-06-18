@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/WeakReference.private.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -55,7 +55,7 @@ Shizu_WeakReference_preDestroyType
 static void
 Shizu_WeakReference_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_WeakReference* self
   );
 
@@ -90,8 +90,6 @@ static Shizu_TypeDescriptor const Shizu_WeakReference_Type = {
 
 Shizu_defineType(Shizu_WeakReference, Shizu_Object);
 
-typedef struct WeakReferences WeakReferences;
-
 typedef struct WeakReferenceNode WeakReferenceNode;
 
 struct WeakReferenceNode {
@@ -104,8 +102,7 @@ struct WeakReferenceNode {
 	Shizu_WeakReference* weakReference;
 };
 
-struct WeakReferences {
-	//* free;
+struct Shizu_WeakReferences {
 	Shizu_WeakReference** buckets;
 	size_t size;
 	size_t capacity;
@@ -113,116 +110,146 @@ struct WeakReferences {
 	size_t maximalCapacity;
 };
 
-static const char* namedMemoryName = "Shizu.WeakReference.NamedMemory";
+Shizu_WeakReferences*
+Shizu_WeakReferences_create
+  (
+    Shizu_State1* state
+  )
+{
+  // (1)
+  Shizu_WeakReferences* self = Shizu_State1_allocate(state, sizeof(Shizu_WeakReferences));
+  if (!self) {
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  // (2)
+  self->minimalCapacity = 8;
+  self->maximalCapacity = SIZE_MAX / sizeof(WeakReferenceNode*);
+  if (self->maximalCapacity > Shizu_Integer32_Maximum) {
+    self->maximalCapacity = Shizu_Integer32_Maximum;
+  }
+  if (self->maximalCapacity < self->minimalCapacity) {
+    Shizu_State1_deallocate(state, self);
+    self = NULL;
+    Shizu_State1_setStatus(state, 1);
+    Shizu_State1_jump(state);
+  }
+  // (3)
+  self->capacity = self->minimalCapacity;
+  self->buckets = Shizu_State1_allocate(state, sizeof(Shizu_WeakReference*) * self->capacity);
+  if (!self->buckets) {
+    Shizu_State1_deallocate(state, self);
+    self = NULL;
+    Shizu_State1_setStatus(state, 1);
+    Shizu_State1_jump(state);
+  }
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    self->buckets[i] = NULL;
+  }
+  // (4)
+  self->size = 0;
+  // (5)
+  return self;
+}
+
+void
+Shizu_WeakReferences_destroy
+  (
+    Shizu_State1* state,
+    Shizu_WeakReferences* self
+  )
+{
+  // @todo In debug mode, assert the table is empty.
+  self->size = 0;
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    Shizu_WeakReference** bucket = &(self->buckets[i]);
+    while (*bucket) {
+      Shizu_WeakReference* node = *bucket;
+      *bucket = (*bucket)->next;
+      Shizu_State1_deallocate(state, node);
+    }
+  }
+  self->capacity = 0;
+  Shizu_State1_deallocate(state, self->buckets);
+  self->buckets = NULL;
+  Shizu_State1_deallocate(state, self);
+  self = NULL;
+}
+
+void
+Shizu_WeakReferenceState_notifyObjectFinalize
+  (
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_WeakReferences* self,
+    Shizu_Object* reference
+  )
+{
+  // Remove all weak references to that object from the hash table.
+  // Set their reference field to null.
+  // Remove the weak reference from the hash table.
+  size_t hashValue = hashPointer(reference);
+  size_t hashIndex = hashValue % self->capacity;
+  Shizu_WeakReference** previous = &(self->buckets[hashIndex]);
+  Shizu_WeakReference* current = self->buckets[hashIndex];
+  while (current) {
+    if (current->reference == reference) {
+      Shizu_WeakReference* weakReference = current;
+      *previous = current->next;
+      current = current->next;
+      weakReference->next = NULL;
+      self->size--;
+      break;
+    } else {
+      previous = &current->next;
+      current = current->next;
+    }
+  }
+}
 
 static void
 Shizu_WeakReference_postCreateType
   (
     Shizu_State1* state1
   )
-{
-  if (Shizu_State1_allocateNamedStorage(state1, namedMemoryName, sizeof(WeakReferences))) {
-    Shizu_State1_setStatus(state1, 1);
-    Shizu_State1_jump(state1);
-  }
-  WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
-    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
-    Shizu_State1_setStatus(state1, 1);
-    Shizu_State1_jump(state1);
-  }
-  // (2)
-  g->minimalCapacity = 8;
-	g->maximalCapacity = SIZE_MAX / sizeof(WeakReferenceNode*);
-	if (g->maximalCapacity > Shizu_Integer32_Maximum) {
-		g->maximalCapacity = Shizu_Integer32_Maximum;
-	}
-  if (g->maximalCapacity < g->minimalCapacity) {
-    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
-    free(g);
-    g = NULL;
-    Shizu_State1_setStatus(state1, 1);
-    Shizu_State1_jump(state1);
-  }
-
-  // (3)
-  g->capacity = g->minimalCapacity;
-  g->buckets = malloc(sizeof(Shizu_WeakReference*) * g->capacity);
-	if (!g->buckets) {
-    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
-		free(g);
-		g = NULL;
-		Shizu_State1_setStatus(state1, 1);
-    Shizu_State1_jump(state1);
-	}
-	for (size_t i = 0, n = g->capacity; i < n; ++i) {
-		g->buckets[i] = NULL;
-	}
-
-  // (4)
-  g->size = 0;
-}
+{/*Intentionally empty.*/}
 
 static void
 Shizu_WeakReference_preDestroyType
   (
     Shizu_State1* state1
   )
-{
-  WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
-    Shizu_State1_setStatus(state1, 1);
-    Shizu_State1_jump(state1);
-  }
-  // TODO: In debug mode, assert the table must be empty.
-  // (4), (3)
-  g->size = 0;
-	for (size_t i = 0, n = g->capacity; i < n; ++i) {
-    Shizu_WeakReference** bucket = &(g->buckets[i]);
-		while (*bucket) {
-      Shizu_WeakReference* node = *bucket;
-			*bucket = (*bucket)->next;
-			free(node);
-		}
-	}
-  g->capacity = 0;
-  free(g->buckets);
-  g->buckets = NULL;
-
-  // (2)
-  Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
-}
+{/*Intentionally empty.*/}
 
 static void
 Shizu_WeakReference_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_WeakReference* self
   )
 {
-  WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, (void**)&g)) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
+  Shizu_WeakReferences* g = Shizu_State2_getWeakReferences(state);
+  if (!g) {
+    fprintf(stderr, "%s: %d: error: weak references not initialized\n", __FILE__, __LINE__);
+    Shizu_State2_setStatus(state, Shizu_Status_OperationInvalid);
+    Shizu_State2_jump(state);
   }
-  //if (self->reference) {
-    // Remove the weak reference from the hash table.
-    size_t hashValue = hashPointer(self->reference);
-    size_t hashIndex = hashValue % g->capacity;
-    Shizu_WeakReference** previous = &(g->buckets[hashIndex]);
-    Shizu_WeakReference* current = g->buckets[hashIndex];
-    while (current) {
-      if (current == self) {
-        *previous = current->next;
-        self->next = NULL;
-        g->size--;
-        break;
-      } else {
-        previous = &current->next;
-        current = current->next;
-      }
+  // Remove the weak reference from the hash table.
+  size_t hashValue = hashPointer(self->reference);
+  size_t hashIndex = hashValue % g->capacity;
+  Shizu_WeakReference** previous = &(g->buckets[hashIndex]);
+  Shizu_WeakReference* current = g->buckets[hashIndex];
+  while (current) {
+    if (current == self) {
+      *previous = current->next;
+      self->next = NULL;
+      g->size--;
+      break;
+    } else {
+      previous = &current->next;
+      current = current->next;
     }
-  //}
+  }
 }
 
 static size_t
@@ -235,18 +262,14 @@ hashPointer
 void
 Shizu_WeakReference_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_WeakReference* self,
     Shizu_Object* reference
   )
 {
   Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
   Shizu_Object_construct(state, (Shizu_Object*)self);
-  WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, (void**)&g)) {
-    Shizu_State_setStatus(state, 1);
-    Shizu_State_jump(state);
-  }
+  Shizu_WeakReferences* g = Shizu_State2_getWeakReferences(state);
   // Add the weak reference to the hash table.
   size_t hashValue = hashPointer(reference);
   size_t hashIndex = hashValue % g->capacity;
@@ -260,7 +283,7 @@ Shizu_WeakReference_construct
 Shizu_WeakReference*
 Shizu_WeakReference_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* reference
   )
 {
@@ -269,45 +292,3 @@ Shizu_WeakReference_create
   Shizu_WeakReference_construct(state, self, reference);
   return self;
 }
-
-void
-Shizu_WeakReferences_notifyDestroy
-	(
-		Shizu_State1* state1,
-		Shizu_Object* reference
-	)
-{
-  WeakReferences* g = NULL;
-  if (Shizu_State1_getNamedStorage(state1, namedMemoryName, (void**)&g)) {
-    // This can happen if we are not yet initialized.
-    return;
-  }
-  // Remove all weak references to that object from the hash table.
-  // Set their reference field to null.
-  // Remove the weak reference from the hash table.
-  size_t hashValue = hashPointer(reference);
-  size_t hashIndex = hashValue % g->capacity;
-  Shizu_WeakReference** previous = &(g->buckets[hashIndex]);
-  Shizu_WeakReference* current = g->buckets[hashIndex];
-  while (current) {
-    if (current->reference == reference) {
-      Shizu_WeakReference* weakReference = current;
-      *previous = current->next;
-      current = current->next;
-      weakReference->next = NULL;
-      g->size--;
-      break;
-    } else {
-      previous = &current->next;
-      current = current->next;
-    }
-  }
-}
-
-Shizu_Object*
-Shizu_WeakReference_get
-  (
-    Shizu_State* state,
-    Shizu_WeakReference* self
-  )
-{ return self->reference; }

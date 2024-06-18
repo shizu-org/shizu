@@ -26,31 +26,38 @@
   #error("Do not include `Shizu/Runtime/Objects/WeakReference.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Objects/WeakReference.h"
-  
-/// @since 1.0
-/// @internal
-/// @brief Notify the weak references on an "Shizu.Object Destroyed" event.
-/// @param stat1e A pointer to the Shizu_State1 value.
-/// @param reference A pointer to the Shizu_Object value that was destroyed.
-/// @remarks This will search the bucket where the WeakReference nodes for this reference reside.
-/// Next it sets any reference in all nodes refering to that object to null.
-void
-Shizu_WeakReferences_notifyDestroy
-	(
-		Shizu_State1* state1,
-		Shizu_Object* reference
-	);
+typedef struct Shizu_Gc Shizu_Gc;
 
 /// @since 1.0
-/// @brief Get the referenced Shizu.Object if it is still alive.
-/// @param state A pointer to the Shizu_State value.
-/// @param self A ppointer to the Shizu_WeakReference value.
-/// @return A pointer to the Shizu.Object if it is still alive. A null pointer otherwise.
-Shizu_Object*
-Shizu_WeakReference_get
+/// Startup the "weak references" state.
+/// Called by Shizu_State2_create/Shizu_State2_destroy.
+/// Shutdown the "weak references" state by calling Shizu_WeakReferences_destroy.
+/// This function may invoke Shizu_State1_(push|pop)JumpTarget, Shizu_State1_(jump|setStatus|getStatus) Shizu_State1 is required.
+/// Only one Shizu_WeakReferences object may exist in a process.
+/// @remarks This function requires the "gc" state to be available.
+Shizu_WeakReferences*
+Shizu_WeakReferences_create
   (
-    Shizu_State* state,
-    Shizu_WeakReference* self
+    Shizu_State1* state
+  );
+
+/// @since 1.0
+/// Shutdown the "weak references" module.
+/// This function may only return via regular control flow and not via jump control flow.
+void
+Shizu_WeakReferences_destroy
+  (
+    Shizu_State1* state,
+    Shizu_WeakReferences* self
+  );
+
+void
+Shizu_WeakReferenceState_notifyObjectFinalize
+  (
+    Shizu_State1* state1,
+    Shizu_Gc* gc,
+    Shizu_WeakReferences* self,
+    Shizu_Object* reference
   );
 
 #endif // SHIZU_RUNTIME_WEAKREFERENCE_PRIVATE_H_INCLUDED

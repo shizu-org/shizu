@@ -25,22 +25,21 @@
 // Shizu includes.
 #include "Shizu/Runtime/State1.h"
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Runtime/Locks.h"
-#include "Shizu/Runtime/Type.h"
-
 // Shizu forward declarations.
-
-/// @todo Remove this.
+typedef struct Shizu_Environment Shizu_Environment;
 typedef struct Shizu_Object Shizu_Object;
+typedef struct Shizu_WeakReference Shizu_WeakReference;
 
-/// @todo Remove this.
+typedef struct Shizu_WeakReferences Shizu_WeakReferences;
 typedef struct Shizu_Gc Shizu_Gc;
-
-/// @todo Remove this.
 typedef struct Shizu_Locks Shizu_Locks;
+typedef struct Shizu_Stack Shizu_Stack;
+typedef struct Shizu_Types Shizu_Types;
 
-/// @brief The opaque type of a Shizu Tier 2 state.
+/**
+ * @since 1.0
+ * @brief A type of a "tier 2" state.
+ */
 typedef struct Shizu_State2 Shizu_State2;
 
 /**
@@ -70,6 +69,14 @@ Shizu_State2_relinquish
     Shizu_State2* self
   );
 
+/**
+ * @since 1.0
+ * @brief Push a jump target on the jump target stack.
+ * @param self A pointer to this state.
+ * @param jumpTarget A pointer to a stack allocated jump target.
+ * @undefined @a self does not point to a state.
+ * @undefined @a jumpTarget does not point to a stack allocated jump target.
+ */
 void
 Shizu_State2_pushJumpTarget
   (
@@ -77,12 +84,26 @@ Shizu_State2_pushJumpTarget
     Shizu_JumpTarget* jumpTarget
   );
 
+/**
+ * @since 1.0
+ * @brief Pop a jump target from the jump target stack.
+ * @param self A pointer to this state.
+ * @undefined @a self does not point to a state.
+ * @udefined The jump target stack is empty.
+ */
 void
 Shizu_State2_popJumpTarget
 (
   Shizu_State2* self
 );
 
+/**
+ * @since 1.0
+ * @brief Set the status variable.
+ * @param self A pointer to this state.
+ * @param status The value to set.
+ * @undefined @a self does not point to a state. 
+ */
 void
 Shizu_State2_setStatus
   (
@@ -121,22 +142,81 @@ Shizu_State2_getState1
     Shizu_State2* self
   );
 
+/**
+ * @since 1.0
+ * @brief Get the "types" state component.
+ * @param self A pointer to this state.
+ * @return A pointer to the "types" state component.
+ * The null pointer if the "types" component does not exist.
+ */
 Shizu_Types*
 Shizu_State2_getTypes
   (
     Shizu_State2* self
   );
 
+/**
+ * @since 1.0
+ * @brief Get the "gc" state component.
+ * @param self A pointer to this state.
+ * @return A pointer to the "gc" state component.
+ * The null pointer if the "gc" component does not exist.
+ */
 Shizu_Gc*
 Shizu_State2_getGc
   (
     Shizu_State2* self
   );
 
+/**
+ * @since 1.0
+ * @brief Get the "locks" state component.
+ * @param self A pointer to this state.
+ * @return A pointer to the "locks" state component.
+ * The null pointer if the "locks" component does not exist.
+ */
 Shizu_Locks*
 Shizu_State2_getLocks
   (
     Shizu_State2* self
+  );
+
+/**
+ * @since 1.0
+ * @brief Get the "stack" state component.
+ * @param self A pointer to this state.
+ * @return A pointer to the "stack" state component.
+ * The null pointer if the "stack" component does not exist.
+ */
+Shizu_Stack*
+Shizu_State2_getStack
+  (
+    Shizu_State2* self
+  );
+
+/**
+ * @since 1.0
+ * @brief Get the "weak references" state component.
+ * @param self A pointer to this state.
+ * @return A pointer to the "weak references" state component.
+ * The null pointer if the "weak references" component does not exist.
+ */
+Shizu_WeakReferences*
+Shizu_State2_getWeakReferences
+  (
+    Shizu_State2* self
+  );
+
+Shizu_Environment*
+Shizu_State2_getGlobalEnvironment
+  (
+    Shizu_State2* self
+  );
+
+void
+Shizu_State2_ensureModulesLoaded
+  (
+    Shizu_State2* state
   );
 
 #endif // SHIZU_RUNTIME_STATE2_H_INCLUDED

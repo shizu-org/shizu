@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/CxxProcedure.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -43,7 +43,7 @@
 static void
 Shizu_CxxProcedure_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_CxxProcedure* self
   );
 
@@ -64,12 +64,12 @@ Shizu_defineType(Shizu_CxxProcedure, Shizu_Object);
 static void
 Shizu_CxxProcedure_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_CxxProcedure* self
   )
 { 
   if (self->dl) {
-    Shizu_State1_unrefDl(Shizu_State_getState1(state), self->dl);
+    Shizu_State1_unrefDl(Shizu_State2_getState1(state), self->dl);
     self->dl = NULL;
   }
 }
@@ -77,18 +77,18 @@ Shizu_CxxProcedure_finalize
 Shizu_CxxProcedure*
 Shizu_CxxProcedure_create
   (
-    Shizu_State* state,
-    void (*f)(Shizu_State* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues),
+    Shizu_State2* state,
+    void (*f)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues),
     Shizu_Dl* dl
   )
 {
-  Shizu_Type* type = Shizu_CxxProcedure_getType(state);
+  Shizu_Type* TYPE = Shizu_CxxProcedure_getType(state);
   Shizu_CxxProcedure* self = (Shizu_CxxProcedure*)Shizu_Gc_allocateObject(state, sizeof(Shizu_CxxProcedure));
   self->f = f;
   self->dl = dl;
   if (self->dl) {
-    Shizu_State1_refDl(Shizu_State_getState1(state), self->dl);
+    Shizu_State1_refDl(Shizu_State2_getState1(state), self->dl);
   }
-  ((Shizu_Object*)self)->type = type;
+  ((Shizu_Object*)self)->type = TYPE;
   return self; 
 }

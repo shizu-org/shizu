@@ -38,13 +38,13 @@ Shizu_declareType(Shizu_ByteArray);
 Shizu_ByteArray*
 Shizu_ByteArray_create
   (
-	  Shizu_State* state
+	  Shizu_State2* state
   );
 
 Shizu_Value
 Shizu_ByteArray_getValue
   (
-	  Shizu_State* state,
+	  Shizu_State2* state,
     Shizu_ByteArray* self,
 	  size_t index
   );
@@ -52,14 +52,14 @@ Shizu_ByteArray_getValue
 Shizu_Value
 Shizu_ByteArray_getSize
   (
-	  Shizu_State* state,
+	  Shizu_State2* state,
     Shizu_ByteArray* self
   );
 
 void
 Shizu_ByteArray_insertValue
   (
-	  Shizu_State* state,
+	  Shizu_State2* state,
     Shizu_ByteArray* self,
 	  size_t index,
 	  Shizu_Value const* value
@@ -68,7 +68,7 @@ Shizu_ByteArray_insertValue
 void
 Shizu_ByteArray_appendValue
   (
-	  Shizu_State* state,
+	  Shizu_State2* state,
     Shizu_ByteArray* self,
 	  Shizu_Value const* value
   );
@@ -76,7 +76,7 @@ Shizu_ByteArray_appendValue
 void
 Shizu_ByteArray_prependValue
   (
-	  Shizu_State* state,
+	  Shizu_State2* state,
     Shizu_ByteArray* self,
 	  Shizu_Value const* value
   );
@@ -84,7 +84,7 @@ Shizu_ByteArray_prependValue
 void
 Shizu_ByteArray_insertRawBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self,
     size_t i,
     void const* p,
@@ -94,7 +94,7 @@ Shizu_ByteArray_insertRawBytes
 void
 Shizu_ByteArray_prependRawBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self,
     void const* p,
     size_t n
@@ -103,7 +103,7 @@ Shizu_ByteArray_prependRawBytes
 void
 Shizu_ByteArray_apppendRawBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self,
     void const* p,
     size_t n
@@ -112,21 +112,21 @@ Shizu_ByteArray_apppendRawBytes
 void*
 Shizu_ByteArray_getRawBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self
   );
 
 size_t
 Shizu_ByteArray_getNumberOfRawBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self
   );
 
 Shizu_Boolean
 Shizu_ByteArray_compareRawBytes
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray const* self,
     Shizu_ByteArray const* other
   );

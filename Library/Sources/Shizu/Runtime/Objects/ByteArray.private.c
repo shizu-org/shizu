@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/ByteArray.private.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -43,7 +43,7 @@
 static size_t
 getNewBestCapacity
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		size_t additionalCapacity
 	);
@@ -63,14 +63,14 @@ Shizu_ByteArray_preDestroyType
 static void
 Shizu_ByteArray_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self
   );
 
 static void
 Shizu_ByteArray_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self
   );
 
@@ -98,7 +98,7 @@ typedef struct ByteArrays {
 static size_t
 getNewBestCapacity
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		size_t additionalCapacity
 	)
@@ -108,22 +108,22 @@ getNewBestCapacity
 	}
 
 	ByteArrays* g = NULL;
-	if (Shizu_State1_getNamedStorage(Shizu_State_getState1(state), namedMemoryName, (void**)&g)) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
+	if (Shizu_State1_getNamedStorage(Shizu_State2_getState1(state), namedMemoryName, (void**)&g)) {
+		Shizu_State2_setStatus(state, 1);
+		Shizu_State2_jump(state);
 	}
 	size_t oldCapacity = self->capacity;
 	size_t newCapacity;
 	if (g->maximumCapacity - oldCapacity >= additionalCapacity) {
 		newCapacity = oldCapacity + additionalCapacity;
 	} else {
-		Shizu_State_setStatus(state, Shizu_Status_AllocationFailed);
-		Shizu_State_jump(state);
+		Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+		Shizu_State2_jump(state);
 	}
 	int result = idlib_power_of_two_ge_sz(&newCapacity, newCapacity);
 	if (result) {
-		Shizu_State_setStatus(state, Shizu_Status_AllocationFailed);
-		Shizu_State_jump(state);
+		Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+		Shizu_State2_jump(state);
 	}
 	return newCapacity;
 }
@@ -173,7 +173,7 @@ Shizu_ByteArray_preDestroyType
 static void
 Shizu_ByteArray_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self
   )
 { }
@@ -181,12 +181,12 @@ Shizu_ByteArray_visit
 static void
 Shizu_ByteArray_finalize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self
   )
 {
 	self->size = 0;
-	free(self->elements);
+	Shizu_State1_deallocate(Shizu_State2_getState1(state), self->elements);
 	self->elements = NULL;
 	self->capacity = 0;
 }
@@ -196,7 +196,7 @@ Shizu_defineType(Shizu_ByteArray, Shizu_Object);
 void
 Shizu_ByteArray_construct
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self
 	)
 {
@@ -204,8 +204,8 @@ Shizu_ByteArray_construct
 	Shizu_Object_construct(state, (Shizu_Object*)self);
 	self->elements = malloc(8);
 	if (!self->elements) {
-		Shizu_State_setStatus(state, 1);
-		Shizu_State_jump(state);
+		Shizu_State2_setStatus(state, 1);
+		Shizu_State2_jump(state);
 	}
 	self->size = 0;
 	self->capacity = 8;
@@ -215,7 +215,7 @@ Shizu_ByteArray_construct
 Shizu_ByteArray*
 Shizu_ByteArray_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
   Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
@@ -229,7 +229,7 @@ static Shizu_Value const IndexOutOfBounds = { .tag = Shizu_Value_Tag_Void, .void
 Shizu_Value
 Shizu_ByteArray_getValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		size_t index
 	)
@@ -245,7 +245,7 @@ Shizu_ByteArray_getValue
 Shizu_Value
 Shizu_ByteArray_getSize
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self
 	)
 {
@@ -257,7 +257,7 @@ Shizu_ByteArray_getSize
 void
 Shizu_ByteArray_insertValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		size_t index,
 		Shizu_Value const* value
@@ -267,19 +267,19 @@ Shizu_ByteArray_insertValue
 		return;
 	}
 	if (!Shizu_Value_isInteger32(value)) {
-		Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-		Shizu_State_jump(state);
+		Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+		Shizu_State2_jump(state);
 	}
 	if (Shizu_Value_getInteger32(value) < 0 || Shizu_Value_getInteger32(value) > UINT8_MAX) {
-		Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-		Shizu_State_jump(state);
+		Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+		Shizu_State2_jump(state);
 	}
 	if (self->capacity == self->size) {
 		size_t newCapacity = getNewBestCapacity(state, self, 1);
 		uint8_t* newElements = realloc(self->elements, newCapacity * sizeof(uint8_t));
 		if (!newElements) {
-			Shizu_State_setStatus(state, 1);
-			Shizu_State_jump(state);
+			Shizu_State2_setStatus(state, 1);
+			Shizu_State2_jump(state);
 		}
 		self->elements = newElements;
 		self->capacity = newCapacity;
@@ -297,7 +297,7 @@ Shizu_ByteArray_insertValue
 void
 Shizu_ByteArray_appendValue
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		Shizu_Value const* value
 	)
@@ -308,7 +308,7 @@ Shizu_ByteArray_appendValue
 void
 Shizu_ByteArray_prependValue
 	( 
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		Shizu_Value const* value
 	)
@@ -319,7 +319,7 @@ Shizu_ByteArray_prependValue
 void
 Shizu_ByteArray_insertRawBytes
 	(	
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		size_t i,
 		void const* p,
@@ -330,8 +330,8 @@ Shizu_ByteArray_insertRawBytes
 		size_t newCapacity = getNewBestCapacity(state, self, n - (self->capacity - self->size));
 		uint8_t* newElements = realloc(self->elements, newCapacity * sizeof(uint8_t));
 		if (!newElements) {
-			Shizu_State_setStatus(state, 1);
-			Shizu_State_jump(state);
+			Shizu_State2_setStatus(state, 1);
+			Shizu_State2_jump(state);
 		}
 		self->elements = newElements;
 		self->capacity = newCapacity;
@@ -348,7 +348,7 @@ Shizu_ByteArray_insertRawBytes
 void
 Shizu_ByteArray_prependRawBytes
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		void const* p,
 		size_t n
@@ -360,7 +360,7 @@ Shizu_ByteArray_prependRawBytes
 void
 Shizu_ByteArray_apppendRawBytes
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self,
 		void const* p,
 		size_t n
@@ -372,7 +372,7 @@ Shizu_ByteArray_apppendRawBytes
 void*
 Shizu_ByteArray_getRawBytes
 	(	
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self
 	)
 { return self->elements; }
@@ -380,7 +380,7 @@ Shizu_ByteArray_getRawBytes
 size_t
 Shizu_ByteArray_getNumberOfRawBytes
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray* self
 	)
 { return self->size; }
@@ -388,7 +388,7 @@ Shizu_ByteArray_getNumberOfRawBytes
 Shizu_Boolean
 Shizu_ByteArray_compareRawBytes
 	(
-		Shizu_State* state,
+		Shizu_State2* state,
 		Shizu_ByteArray const* self,
 		Shizu_ByteArray const* other
 	)

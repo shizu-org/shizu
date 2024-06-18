@@ -36,7 +36,7 @@ typedef struct Shizu_Environment_Node Shizu_Environment_Node;
 
 struct Shizu_Environment_Node {
   Shizu_Environment_Node* next;
-  Shizu_String* key;
+  Shizu_String* name;
   Shizu_Value value;
 };
 

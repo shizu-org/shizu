@@ -1,7 +1,7 @@
 #if !defined(SHIZU_RUNTIME_OBJECT_H_INCLUDED)
 #define SHIZU_RUNTIME_OBJECT_H_INCLUDED
 
-#include "Shizu/Runtime/NoReturn.h"
+#include "Shizu/Runtime/CxxUtilities.h"
 #include "Shizu/Runtime/SourceLocationC.h"
 #include "Shizu/Runtime/Type.h"
 #include "Shizu/Runtime/Value.h"
@@ -17,7 +17,7 @@ typedef struct Shizu_State Shizu_State;
 Shizu_Type*
 Shizu_State_getObjectType
   (
-    Shizu_State* self,
+    Shizu_State2* self,
     Shizu_Object* object
   );
 
@@ -28,14 +28,14 @@ Shizu_State_getObjectType
 Shizu_Object_Dispatch*
 Shizu_State_getObjectDispatch
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* object
   );
 
 Shizu_NoReturn() void
 Shizu_Errors_raiseDispatchNotExists
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_SourceLocationC sourceLocationC,
     Shizu_Object* target,
     char const* methodName,
@@ -45,7 +45,7 @@ Shizu_Errors_raiseDispatchNotExists
 Shizu_NoReturn() void
 Shizu_Errors_raiseMethodNotImplemented
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_SourceLocationC sourceLocationC,
     Shizu_Object* target,
     char const* methodName,
@@ -98,8 +98,9 @@ Shizu_declareType(Shizu_Object);
 
 struct Shizu_Object_Dispatch {
   Shizu_Object_Dispatch* parent;
-  Shizu_Integer32(*getHashValue)(Shizu_State* state, Shizu_Object* self);
-  Shizu_Boolean(*isEqualTo)(Shizu_State* state, Shizu_Object* self, Shizu_Object* other);
+  void (*call)(Shizu_State2* state, Shizu_Object* self, uint8_t const* methodNameBytes, size_t numberOfMethodNameBytes, Shizu_Value* returnVallue, Shizu_Integer32 numberOfArguments, Shizu_Value* arguments);
+  Shizu_Integer32(*getHashValue)(Shizu_State2* state, Shizu_Object* self);
+  Shizu_Boolean(*isEqualTo)(Shizu_State2* state, Shizu_Object* self, Shizu_Object* other);
 };
 
 struct Shizu_Object {
@@ -125,9 +126,37 @@ struct Shizu_Object {
 void
 Shizu_Object_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* self
   );
+
+/// @ingroup Object
+/// @brief
+/// Call this Shizu_Object object.
+/// @param state
+/// A pointer to the Shizu_State object.
+/// @param self
+/// A pointer to this Shizu_Object object.
+/// @param methodNameBytes, numberOfMethodNameBytes
+/// UTF-8 method name of the method to call.
+/// @param returnValue
+/// A pointer to a Shizu_Value object receiving the return value.
+/// @param numberOfArguments
+/// The number of arguments.
+/// @param arguments
+/// A pointer to an array of @a numberOfArguments Shizu_Value objects denoting the arguments.
+static inline void
+Shizu_Object_call
+  (
+    Shizu_State2* state,
+    Shizu_Object* self,
+    uint8_t const* methodNameBytes,
+    size_t numberOfMethodNameBytes,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArguments,
+    Shizu_Value* arguments
+  )
+{ Shizu_VirtualCall(Shizu_Object, call, self, methodNameBytes, numberOfMethodNameBytes, returnValue, numberOfArguments, arguments); }
 
 /// @ingroup Object
 /// @brief
@@ -141,7 +170,7 @@ Shizu_Object_construct
 static inline Shizu_Integer32
 Shizu_Object_getHashValue
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* self
   )
 { Shizu_VirtualCallWithReturn(Shizu_Object, getHashValue, self); }
@@ -161,7 +190,7 @@ Shizu_Object_getHashValue
 static inline Shizu_Boolean
 Shizu_Object_isEqualTo
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* self,
     Shizu_Object* other
   )

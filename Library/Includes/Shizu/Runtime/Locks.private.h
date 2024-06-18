@@ -29,21 +29,32 @@
 typedef struct Shizu_Gc Shizu_Gc;
 
 /// @since 1.0
-/// Startup the "locks" module.
-/// Called by Shizu_State_create/Shizu_State_destroy.
+/// @state-constructor
+/// Startup the "locks" state.
+/// Called by Shizu_State2_create/Shizu_State2_destroy.
 /// Shutdown the locks module by calling Shizu_Locks_shutdown.
-/// This function requires the "gc" module to be initialized.
+/// This function may invoke Shizu_State1_(push|pop)JumpTarget, Shizu_State1_(jump|setStatus|getStatus) Shizu_State1 is required.
+/// Only one Shizu_Stack object may exist in a process.
+/// @remarks This function requires the "gc" state to be available.
 Shizu_Locks*
-Shizu_Locks_startup
+Shizu_Locks_create
   ( 
     Shizu_State1* state1
   );
 
 /// @since 1.0
-/// Shutdown the "locks" module.
+/// @state-destructor
+/// Shutdown the "locks" state.
 /// This function may only return via regular control flow and not via jump control flow.
 void
-Shizu_Locks_shutdown
+Shizu_Locks_destroy
+  (
+    Shizu_State1* state1,
+    Shizu_Locks* self
+  );
+
+size_t
+Shizu_Locks_getSize
   (
     Shizu_State1* state1,
     Shizu_Locks* self
@@ -61,9 +72,10 @@ Shizu_Locks_notifyPreMark
   );
 
 void
-Shizu_Locks_notifyDestroy
+Shizu_Locks_notifyObjectFinalize
   (
     Shizu_State1* state1,
+    Shizu_Gc* gc,
     Shizu_Locks* self,
     Shizu_Object* object
   );

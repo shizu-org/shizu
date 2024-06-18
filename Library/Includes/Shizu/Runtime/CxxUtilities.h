@@ -19,16 +19,28 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_DEBUGASSERT_H_INCLUDED)
-#define SHIZU_RUNTIME_DEBUGASSERT_H_INCLUDED
+#if !defined(SHIZU_RUNTIME_CXXUTILITIES_H_INCLUDED)
+#define SHIZU_RUNTIME_CXXUTILITIES_H_INCLUDED
 
 #include "Shizu/Runtime/Configure.h"
+
+// bool, true, false
+#include <stdbool.h>
+
+/// @since 1.0
+/// Function annotation indicating a function does not return normally.
+/// The function either terminates the program (cf. exit) or returns via a jump (cf. longjmp).
+#if Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
+#define Shizu_NoReturn() __declspec(noreturn)
+#else
+#define Shizu_NoReturn()
+#endif
 
 #if defined(_DEBUG)
 
   /// @since 1.0
   /// @internal
-  void
+  Shizu_NoReturn() void
   Shizu_debugAssertionFailed
     (
       char const* file,
@@ -56,4 +68,27 @@
 
 #endif
 
-#endif // SHIZU_RUNTIME_DEBUGASSERT_H_INCLUDED
+/// @since 1.0
+/// @brief Macro aliasing `static_assert`/`_Static_assert`.
+/// @details If the expression @a expression evaluates to logically false then a compilation error is generated with the message @a message.
+/// @param expression A compile-time evaluable expression that can be converted into logically true or logically false.
+/// @param message A string literal.
+#if Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
+
+  #define Shizu_staticAssert(expression, message) \
+    static_assert(expression, message);
+
+#else
+
+  #define Shizu_staticAssert(expression, message) \
+    _Static_assert(expression, message);
+
+#endif
+
+
+/// @since 1.90
+/// @brief Print an error message and terminate the program.
+/// If this is invoked, then the user discovered a bug.
+Shizu_NoReturn() void Shizu_unreachableCodeReached(char const* file, int line);
+
+#endif // SHIZU_RUNTIME_CXXUTILITIES_H_INCLUDED

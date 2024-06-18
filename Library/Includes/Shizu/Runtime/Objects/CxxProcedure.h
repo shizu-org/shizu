@@ -40,7 +40,7 @@ struct Shizu_CxxProcedure_Dispatch {
 struct Shizu_CxxProcedure {
   Shizu_Object _parent;
   Shizu_Dl* dl;
-  void (*f)(Shizu_State* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues);
+  void (*f)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues);
 };
 
 /// @since 1.0
@@ -64,8 +64,8 @@ struct Shizu_CxxProcedure {
 Shizu_CxxProcedure*
 Shizu_CxxProcedure_create
   (
-    Shizu_State* state,
-    void (*fp)(Shizu_State* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues),
+    Shizu_State2* state,
+    void (*fp)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues),
     Shizu_Dl* dl
   );
 

@@ -24,10 +24,6 @@
 
 #include "Shizu/Runtime/JumpTarget.h"
 #include "Shizu/Runtime/Status.h"
-#include "Shizu/Runtime/NoReturn.h"
-
-// bool
-#include <stdbool.h>
 
 #if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
 
@@ -50,19 +46,76 @@
 
 /**
  * @since 1.0
- * The type of a dynamic library (DL).
+ * @breuf The type of a dynamic library (DL).
  */
 typedef struct Shizu_Dl Shizu_Dl;
 
 /**
  * @since 1.0
- * The tier 1 state.
+ * @brief The type of a "tier 1" state
  * Provides
+ * - allocate, deallocate, reallocate heap memory
  * - get/set the error variable
  * - push pop on from the jump target stack, jumping to the top of the jump target stack
  * - get/set process exit flag
  */
 typedef struct Shizu_State1 Shizu_State1;
+
+/**
+ * @since 1.0
+ * @brief Allocate a memory block.
+ * @param state A pointer to the state.
+ * @param n The size, in Bytes, of the memory block to allocate. @a 0 is a valid size for a memory block.
+ * @return A pointer to the memory block on success. The null pointer on failure.
+ * @post
+ * If this function succeeds: A new memory block of size @a n was allocated. The function returned a pointer to that memory block.
+ * If this function fails: No new memory block was allocated. The function returned a null pointer.
+ * @remarks
+ * This function deliberatly does not set the status variable or jump. 
+ */
+void*
+Shizu_State1_allocate
+  (
+    Shizu_State1* state,
+    size_t n
+  );
+
+/**
+ * @since 1.0
+ * @brief Rellocate a memory block.
+ * @param state A pointer to the state.
+ * @param p A pointer to the memory block.
+ * @param n The size, in Bytes, to memory block to allocate. @a 0 is a valid size for a memory block.
+ * @return A pointer to the memory block on success. The null pointer on failure.
+ * @post
+ * If this function succeeds: A new memory block of size @a n was allocated. The function returned a pointer to that memory block.
+ * The first <code>k := min(n,m)</code> Bytes of the memory block are assigned the values of the first @a k Bytes of the old memory block.
+ * The old memory block was deallocated. 
+ * If this function fails: No new memory block was allocated. The old memory block was not deallocated. The function returned a null pointer.
+ * @remarks
+ * This function deliberatly does not set the status variable or jump.
+ */
+void*
+Shizu_State1_reallocate
+  (
+    Shizu_State1* state,
+    void* p,
+    size_t n
+  );
+
+/**
+ * @since 1.0
+ * @brief Deallocate a memory block.
+ * @param state A pointer to the state.
+ * @param p A pointer to the meory block.
+ * @post The memory block was deallocated.
+ */
+void
+Shizu_State1_deallocate
+  (
+    Shizu_State1* state,
+    void *p
+  );
 
 /**
  * @since 1.0
@@ -109,6 +162,7 @@ Shizu_State1_pushJumpTarget
  * @brief Pop a jump target from the jump target stack of a tier 1 state.
  * @param state A pointer to the tier 1 state.
  * @pre The jump target stack is not empty.
+ * @undefined The jump target stack is empty.
  */
 void
 Shizu_State1_popJumpTarget
@@ -121,6 +175,7 @@ Shizu_State1_popJumpTarget
  * @brief Jump to the jump target at the top of the jump target stack of a tier 1 state.
  * @param state A pointer to the tier 1 state.
  * @pre The jump target stack is not empty.
+ * @undefined The jump target stack is empty.
  */
 Shizu_NoReturn() void
 Shizu_State1_jump
@@ -147,7 +202,7 @@ Shizu_State1_setStatus
  * @param state A pointer to the tier 1 state.
  * @return The value assigned to the variable.
  */
-int
+Shizu_Status
 Shizu_State1_getStatus
   (
     Shizu_State1* state

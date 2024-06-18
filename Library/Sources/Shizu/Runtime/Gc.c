@@ -23,13 +23,13 @@
 #include "Shizu/Runtime/Gc.h"
 
 #include "Shizu/Runtime/Object.h"
-#include "Shizu/Runtime/DebugAssert.h"
+#include "Shizu/Runtime/CxxUtilities.h"
 #include "Shizu/Runtime/Type.private.h"
 
 Shizu_Type*
 Shizu_State_getObjectType
   (
-    Shizu_State* self,
+    Shizu_State2* self,
     Shizu_Object* object
   )
 {
@@ -42,11 +42,10 @@ Shizu_State_getObjectType
 Shizu_Object_Dispatch*
 Shizu_State_getObjectDispatch
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Object* object
   )
 {
   Shizu_Type* type = Shizu_State_getObjectType(state, object);
   return type->dispatch;
 }
-

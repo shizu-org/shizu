@@ -27,13 +27,13 @@
 #endif
 
 #include "Shizu/Runtime/Configure.h"
-typedef struct Shizu_State Shizu_State;
+typedef struct Shizu_State2 Shizu_State2;
 typedef struct Shizu_String Shizu_String;
 
 Shizu_String*
 Shizu_getWorkingDirectory
   (
-    Shizu_State* state
+    Shizu_State2* state
   );
 
 #endif // SHIZU_RUNTIME_GETWORKINGDIRECTORY_H_INCLUDED
