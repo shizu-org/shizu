@@ -17,6 +17,13 @@ a composition of three state objects.
 - modules
 - includes the `Shizu_State2` tier
 
+## Environments
+The runtime maintains "types" and "values".
+There are two kinds of values "object values" and "scalar values".
+
+Each "type" and each "object" has an "environment" which essentially is a mapping from a "names" (which are "object values") to a "value"s.
+Environments are also "object values".
+
 ## FAQ
 - **Q**: Why can't I manipulate the Shizu.State3 tier during GC visit or finalize?
 - **A**: The manipulation of the Shizu.State3 tier could violate GC invariants in GC visit.
