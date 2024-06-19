@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Compiler/Object.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -43,7 +43,7 @@ Shizu_defineType(Compiler_Object, Shizu_Object);
 void
 Compiler_Object_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Object* self
   )
 {

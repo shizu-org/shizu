@@ -23,32 +23,21 @@ cmake_minimum_required(VERSION 3.20)
 
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
-set(name Shizu.Runtime.Modules.Compiler)
-Shizu_beginDynamicLibrary()
+set(name Shizu.Runtime.Modules.Compiler.Tests.Parser)
+Shizu_beginExecutable()
 
 list(APPEND ${name}.source_files Sources/Main.c)
 
-list(APPEND ${name}.source_files Sources/Compiler/Object.c)
-list(APPEND ${name}.header_files Includes/Compiler/Object.h)
-list(APPEND ${name}.source_files Sources/Compiler/Ast.c)
-list(APPEND ${name}.header_files Includes/Compiler/Ast.h)
-list(APPEND ${name}.source_files Sources/Compiler/Token.c)
-list(APPEND ${name}.header_files Includes/Compiler/Token.h)
-list(APPEND ${name}.source_files Sources/Compiler/Scanner.c)
-list(APPEND ${name}.header_files Includes/Compiler/Scanner.h)
-list(APPEND ${name}.source_files Sources/Compiler/Parser.c)
-list(APPEND ${name}.header_files Includes/Compiler/Parser.h)
-list(APPEND ${name}.source_files Sources/Compiler/Atoms.c)
-list(APPEND ${name}.header_files Includes/Compiler/Atoms.h)
-
-Shizu_endDynamicLibrary()
-
-# Setup the list of prerequisite modules.
-set_target_properties(${name} PROPERTIES prerequisiteModules Shizu.Runtime.Modules.FileSystem)
+Shizu_endExecutable()
 
 target_link_libraries(${name} Shizu.Runtime)
 add_dependencies(${name} Shizu.Runtime)
-get_target_property(prerequisiteModules ${name} prerequisiteModules)
+
+add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
+
+get_target_property(prerequisiteModules Shizu.Runtime.Modules.Compiler prerequisiteModules)
+list(APPEND prerequisiteModules "Shizu.Runtime.Modules.Compiler")
+
 message(STATUS " - adding prerequisite modules")
 foreach (prerequisiteModule ${prerequisiteModules})
   message(STATUS " - - ${name} <- ${prerequisiteModule}")
@@ -56,9 +45,16 @@ foreach (prerequisiteModule ${prerequisiteModules})
   copy_plugin(${name} ${prerequisiteModule})
 endforeach()
 
-# For each MyTarget in this list and your executable target YourTarget you need to copy <$TARGET_FILE:MyTarget> to <TARGET_FILE_DIR:YourTarget>.
-set(modules "")
-get_target_property(modules Shizu.Runtime modules)
-#message(STATUS "${name} modules: ${modules}")
-list(APPEND modules ${name})
-set_target_properties(Shizu.Runtime PROPERTIES modules "${modules}")
+get_target_property(source_dir ${name} SOURCE_DIR)
+message(STATUS " - ${name} source dir: ${source_dir}")
+file(GLOB_RECURSE assets_to_copy RELATIVE ${source_dir}/Assets ${source_dir}/Assets/*.* )
+message(STATUS " - ${name} assets: ${assets_to_copy}")
+foreach (asset_to_copy ${assets_to_copy})
+    add_custom_command(
+    TARGET ${name} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${name}>/Assets
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different                                     # which executes "cmake - E copy_if_different..."
+            ${source_dir}/Assets/${asset_to_copy}                                     # file to copy
+            $<TARGET_FILE_DIR:${name}>/Assets/${asset_to_copy}
+    )
+endforeach()

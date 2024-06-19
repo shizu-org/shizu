@@ -1,9 +1,7 @@
 #if !defined(COMPILER_OBJECT_H_INCLUDED)
 #define COMPILER_OBJECT_H_INCLUDED
 
-#include "Shizu/Runtime/Type.h"
-#include "Shizu/Runtime/Gc.h"
-#include "Shizu/Runtime/Object.h"
+#include "Shizu/Runtime/Include.h"
 
 Shizu_declareType(Compiler_Object)
 
@@ -18,7 +16,7 @@ struct Compiler_Object {
 void
 Compiler_Object_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Object* self
   );
 

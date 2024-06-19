@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.20)
 
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
-set(name Shizu.Runtime.Modules.Compiler.Tests)
+set(name Shizu.Runtime.Modules.Compiler.Tests.Scanner)
 Shizu_beginExecutable()
 
 list(APPEND ${name}.source_files Sources/Main.c)

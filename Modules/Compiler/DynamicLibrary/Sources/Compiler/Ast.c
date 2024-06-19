@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Compiler/Ast.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -31,12 +31,12 @@ Shizu_defineEnumerationType(Compiler_AstType);
 static void
 Compiler_Ast_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Ast* self
   )
 {
   if (self->text) {
-    Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)self->text);
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
   }
 }
 
@@ -57,7 +57,7 @@ Shizu_defineType(Compiler_Ast, Compiler_Object);
 void
 Compiler_Ast_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Ast* self,
     Compiler_AstType type,
     Shizu_String* text
@@ -73,7 +73,7 @@ Compiler_Ast_construct
 Compiler_Ast*
 Compiler_Ast_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_AstType type,
     Shizu_String* text
   )

@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Compiler/Token.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
@@ -31,12 +31,12 @@ Shizu_defineEnumerationType(Compiler_TokenType);
 static void
 Compiler_Token_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Token* self
   )
 {
   if (self->text) {
-    Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)self->text);
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
   }
 }
 
@@ -57,7 +57,7 @@ Shizu_defineType(Compiler_Token, Compiler_Object);
 void
 Compiler_Token_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Token* self,
     Compiler_TokenType type,
     Shizu_String* text
@@ -73,7 +73,7 @@ Compiler_Token_construct
 Compiler_Token*
 Compiler_Token_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_TokenType type,
     Shizu_String* text
   )

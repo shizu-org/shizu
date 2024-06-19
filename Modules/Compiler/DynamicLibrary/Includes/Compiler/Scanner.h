@@ -24,20 +24,20 @@ struct Compiler_Scanner {
 void
 Compiler_Scanner_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Scanner* self
   );
 
 Compiler_Scanner*
 Compiler_Scanner_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   );
 
 void
 Compiler_Scanner_setInput
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Scanner* self,
     Shizu_String* input
   );
@@ -52,7 +52,14 @@ Compiler_Scanner_getInput
 void
 Compiler_Scanner_step
   (
-    Shizu_State* state,
+    Shizu_State2* state,
+    Compiler_Scanner* self
+  );
+
+Compiler_TokenType
+Compiler_Scanner_getTokenType
+  (
+    Shizu_State2* state,
     Compiler_Scanner* self
   );
 

@@ -22,27 +22,38 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Compiler/Scanner.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-#include <string.h>
+#include "idlib/byte_sequence.h"
 #include "Shizu/Runtime/Objects/String.h"
 
 static void
 Compiler_Scanner_visit
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Scanner* self
-  )
-{ 
-  if (self->buffer) {
-    Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)self->buffer);
-  }
-  if (self->input) {
-    Shizu_Gc_visitObject(Shizu_State_getState1(state), Shizu_State_getGc(state), (Shizu_Object*)self->input);
-  }
-}
+  );
+
+static void
+Compiler_Scanner_initializeDispatch
+  (
+    Shizu_State* state,
+    Compiler_Scanner_Dispatch* self
+  );
+
+static void
+Compiler_Scanner_callImpl
+  (
+    Shizu_State2* state,
+    Compiler_Scanner* self,
+    uint8_t const* methodNameBytes,
+    size_t numberOfMethodNameBytes,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArguments,
+    Shizu_Value* arguments
+  );
 
 static Shizu_TypeDescriptor const Compiler_Scanner_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
@@ -52,23 +63,106 @@ static Shizu_TypeDescriptor const Compiler_Scanner_Type = {
   .visit = (Shizu_OnVisitCallback*)&Compiler_Scanner_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Compiler_Scanner_Dispatch),
-  .dispatchInitialize = NULL,
+  .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)&Compiler_Scanner_initializeDispatch,
   .dispatchUninitialize = NULL,
 };
 
 Shizu_defineType(Compiler_Scanner, Compiler_Object);
 
+static void
+Compiler_Scanner_visit
+  (
+    Shizu_State2* state,
+    Compiler_Scanner* self
+  )
+{
+  if (self->buffer) {
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->buffer);
+  }
+  if (self->input) {
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->input);
+  }
+}
+
+static void
+Compiler_Scanner_initializeDispatch
+  (
+    Shizu_State* state,
+    Compiler_Scanner_Dispatch* self
+  )
+{
+  ((Shizu_Object_Dispatch*)self)->call = (void (*)(Shizu_State2*, Shizu_Object*, uint8_t const*, size_t, Shizu_Value*, Shizu_Integer32, Shizu_Value*)) & Compiler_Scanner_callImpl;
+}
+
+static void
+Compiler_Scanner_callImpl
+  (
+    Shizu_State2* state,
+    Compiler_Scanner* self,
+    uint8_t const* methodNameBytes,
+    size_t numberOfMethodNameBytes,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArguments,
+    Shizu_Value* arguments
+  )
+{ 
+  if (numberOfMethodNameBytes == sizeof("step") - 1) {
+    int8_t result;
+    idlib_byte_sequence_compare(&result, methodNameBytes, "step", sizeof("step") - 1);
+    if (!result) {
+      if (0 != numberOfArguments) {
+        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_jump(state);
+      }
+      Compiler_Scanner_step(state, self);
+      Shizu_Value_setVoid(returnValue, Shizu_Void_Void);
+      return;
+    }
+  }
+  if (numberOfMethodNameBytes == sizeof("setInput") - 1) {
+    int8_t result;
+    idlib_byte_sequence_compare(&result, methodNameBytes, "setInput", sizeof("setInput") - 1);
+    if (!result) {
+      if (1 != numberOfArguments) {
+        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_jump(state);
+      }
+      if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&arguments[0])->type, Shizu_String_getType(state))) {
+        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_jump(state);
+      }
+      Compiler_Scanner_setInput(state, self, (Shizu_String*)Shizu_Value_getObject(&arguments[0]));
+      Shizu_Value_setVoid(returnValue, Shizu_Void_Void);
+      return;
+    }
+  }
+  if (numberOfMethodNameBytes == sizeof("getTokenType") - 1) {
+    int8_t result;
+    idlib_byte_sequence_compare(&result, methodNameBytes, "getTokenType", sizeof("getTokenType") - 1);
+    if (!result) {
+      if (0 != numberOfArguments) {
+        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_jump(state);
+      }
+      Shizu_Value_setInteger32(returnValue, Compiler_Scanner_getTokenType(state, self));
+      return;
+    }
+  }
+  Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+  Shizu_State2_jump(state);
+}
+
 void
 Compiler_Scanner_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Scanner* self
   )
 {
   Shizu_Type* TYPE = Compiler_Scanner_getType(state);
   Compiler_Object_construct(state, (Compiler_Object*)self);
   self->buffer = Shizu_ByteArray_create(state);
-  self->input = Shizu_String_create(state, "", strlen(""));
+  self->input = Shizu_String_create(state, "", sizeof("") - 1);
   self->start = Shizu_String_getBytes(state, self->input);
   self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
   self->current = self->start;
@@ -79,7 +173,7 @@ Compiler_Scanner_construct
 Compiler_Scanner*
 Compiler_Scanner_create
   (
-    Shizu_State* state
+    Shizu_State2* state
   )
 {
   Shizu_Type* TYPE = Compiler_Scanner_getType(state);
@@ -91,7 +185,7 @@ Compiler_Scanner_create
 void
 Compiler_Scanner_setInput
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Scanner* self,
     Shizu_String* input
   )
@@ -137,7 +231,7 @@ isAlpha
     return false;
   }
   return ('a' <= *x && *x <= 'z')
-      && ('A' <= *x && *x <= 'Z');
+      || ('A' <= *x && *x <= 'Z');
 }
 
 static inline bool
@@ -164,7 +258,7 @@ isWhitespace
     return false;
   }
   return ' ' == *x
-      && '\t' == *x;
+      || '\t' == *x;
 }
 
 static inline bool
@@ -178,13 +272,77 @@ isNewline
     return false;
   }
   return '\n' == *x
-      && '\r' == *x;
+      || '\r' == *x;
+}
+
+static inline void
+scanDoubleQuotedString
+  (
+    Shizu_State2* state,
+    Compiler_Scanner* self
+  )
+{
+  self->current++;
+  bool lastWasSlash = false;
+  while (true) {
+    if (self->current == self->end) {
+      // Unclosed string literal.
+      self->tokenType = Compiler_TokenType_Error;
+      return;
+    }
+    if ('"' == *self->current) {
+      self->current++;
+      break;
+    }
+    if (isNewline(self->end, self->current)) {
+      // Unclosed string literal.
+      self->tokenType = Compiler_TokenType_Error;
+      return;
+    }
+    if (lastWasSlash) {
+      switch (*self->current) {
+        case '\\': {
+          lastWasSlash = false;
+          self->current++;
+          continue;
+        } break;
+        case 'n': {
+          lastWasSlash = false;
+          self->current++;
+          continue;
+        } break;
+        case 'r':{
+          lastWasSlash = false;
+          self->current++;
+          continue;
+        } break;
+        case '"': {
+          lastWasSlash = false;
+          self->current++;
+          continue;
+        } break;
+        default: {
+          // Unknown escape sequence.
+          self->tokenType = Compiler_TokenType_Error;
+          return;
+        } break;
+      }
+    } else if ('\\' == *self->current) {
+      lastWasSlash = true;
+      self->current++;
+      continue;
+    } else {
+      self->current++;
+      continue;
+    }
+  }
+  self->tokenType = Compiler_TokenType_String;
 }
 
 void
 Compiler_Scanner_step
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Scanner* self
   )
 {
@@ -215,6 +373,10 @@ Compiler_Scanner_step
     return;
   }
   switch (*self->current) {
+    case '"': {
+      scanDoubleQuotedString(state, self);
+      return;
+    } break;
     case '(': {
       self->tokenType = Compiler_TokenType_LeftParenthesis;
       self->current++;
@@ -288,13 +450,13 @@ Compiler_Scanner_step
    if (isAlpha(self->end, self->current)) {
      do {
       self->current++;
-     } while (isUnderscore(self->end, self->current) && isAlpha(self->end, self->current));
+     } while (isUnderscore(self->end, self->current) || isDigit(self->end, self->current) || isAlpha(self->end, self->current));
    }
    self->tokenType = Compiler_TokenType_Name;
   } else if (isAlpha(self->end, self->current)) {
     do {
       self->current++;
-    } while (isUnderscore(self->end, self->current) && isAlpha(self->end, self->current));
+    } while (isUnderscore(self->end, self->current) || isDigit(self->end, self->current) || isAlpha(self->end, self->current));
     self->tokenType = Compiler_TokenType_Name;
   } else if (isDigit(self->end, self->current)) {
     do {
@@ -302,7 +464,15 @@ Compiler_Scanner_step
     } while (isDigit(self->end, self->current));
     self->tokenType = Compiler_TokenType_Integer;
   } else {
-    Shizu_State_setStatus(state, Shizu_Status_LexicalError);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_LexicalError);
+    Shizu_State2_jump(state);
   }
 }
+
+Compiler_TokenType
+Compiler_Scanner_getTokenType
+  (
+    Shizu_State2* state,
+    Compiler_Scanner* self
+  )
+{ return self->tokenType; }

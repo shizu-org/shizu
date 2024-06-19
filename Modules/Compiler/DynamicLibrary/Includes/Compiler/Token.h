@@ -8,10 +8,19 @@ Shizu_declareEnumerationType(Compiler_TokenType);
 enum Compiler_TokenType  {
   Compiler_TokenType_StartOfInput,
   Compiler_TokenType_EndOfInput,
+  Compiler_TokenType_Error,
+  Compiler_TokenType_SingleLineComment,
+  // `procedure`
+  Compiler_TokenType_ProcedureKeyword,
+  // `class`
   Compiler_TokenType_ClassKeyword,
+  // `method`
   Compiler_TokenType_MethodKeyword,
+  // `constructor`
   Compiler_TokenType_ConstructorKeyword,
+  // `if`
   Compiler_TokenType_IfKeyword,
+  // `else`
   Compiler_TokenType_ElseKeyword,
   Compiler_TokenType_Name,
   Compiler_TokenType_LeftParenthesis,
@@ -24,8 +33,8 @@ enum Compiler_TokenType  {
   Compiler_TokenType_Minus,
   Compiler_TokenType_Star,
   Compiler_TokenType_Slash,
-  Compiler_TokenType_SingleLineComment,
   Compiler_TokenType_Integer,
+  Compiler_TokenType_String,
   Compiler_TokenType_Real,
   Compiler_TokenType_EndOfLine,
 };
@@ -45,7 +54,7 @@ struct Compiler_Token {
 void
 Compiler_Token_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Token* self,
     Compiler_TokenType type,
     Shizu_String* text
@@ -54,7 +63,7 @@ Compiler_Token_construct
 Compiler_Token*
 Compiler_Token_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_TokenType type,
     Shizu_String* text
   );

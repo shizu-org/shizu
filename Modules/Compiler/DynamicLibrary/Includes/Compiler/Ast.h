@@ -6,9 +6,11 @@
 Shizu_declareEnumerationType(Compiler_AstType);
 
 enum Compiler_AstType {
-  Compiler_AstType_ClassDef,
-  Compiler_AstType_MethodDef,
-  Compiler_AstType_ConstructorDef,
+  Compiler_AstType_Class,
+  Compiler_AstType_File,
+  Compiler_AstType_Method,
+  Compiler_AstType_Program,
+  Compiler_AstType_Constructor,
 };
 
 Shizu_declareType(Compiler_Ast)
@@ -26,7 +28,7 @@ struct Compiler_Ast {
 void
 Compiler_Ast_construct
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Ast* self,
     Compiler_AstType type,
     Shizu_String* text
@@ -35,7 +37,7 @@ Compiler_Ast_construct
 Compiler_Ast*
 Compiler_Ast_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_AstType type,
     Shizu_String* text
   );
