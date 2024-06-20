@@ -30,15 +30,15 @@
 void
 setFileContents
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
   )
 {
   if (!returnValue || 2 != numberOfArgumentValues) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_String* path = Shizu_Value_getStringArgument(state, argumentValues + 0);
   path = Shizu_toNativePath(state, path);
@@ -47,8 +47,8 @@ setFileContents
   idlib_status status = idlib_set_file_contents_memory_mapped(Shizu_String_getBytes(state, path), Shizu_ByteArray_getRawBytes(state, byteArray), Shizu_ByteArray_getNumberOfRawBytes(state, byteArray));
   if (status) {
     fprintf(stderr, "%s:%d: %s failed with %"PRIu32"\n", __FILE__, __LINE__, "idlib_set_file_contents_memory_mapped", status);
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   Shizu_Value_setVoid(returnValue, Shizu_Void_Void);
 }

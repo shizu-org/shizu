@@ -25,7 +25,7 @@
 #include "idlib/file_system.h"
 
 typedef struct Context {
-  Shizu_State* state;
+  Shizu_State2* state;
   Shizu_String* path;
 } Context;
 
@@ -38,34 +38,34 @@ callback
   )
 {
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(context->state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(context->state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
     context->path = Shizu_String_create(context->state, bytes, numberOfBytes);
   }
-  Shizu_State_popJumpTarget(context->state);
+  Shizu_State2_popJumpTarget(context->state);
   return true;
 }
 
 void
 getWorkingDirectory
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
   )
 {
   if (!returnValue || !argumentValues || 0 != numberOfArgumentValues) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Context context = {
     .state = state,
     .path = NULL,
   };
   if (idlib_get_working_directory(&context, (idlib_get_working_directory_callback*)&callback)) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   Shizu_Value_setObject(returnValue, (Shizu_Object*)context.path);
 }

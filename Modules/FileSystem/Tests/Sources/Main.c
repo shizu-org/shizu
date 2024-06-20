@@ -9,22 +9,22 @@
 // strlen
 #include <string.h>
 
-static void testSetFileContents1(Shizu_State* state, Shizu_String* relativePath, Shizu_ByteArray* contents) {
+static void testSetFileContents1(Shizu_State2* state, Shizu_String* relativePath, Shizu_ByteArray* contents) {
   Shizu_Value returnValue;
   Shizu_Value argumentValues[2];
   Shizu_CxxProcedure* p;
-  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   // Compute the path.
   p = Shizu_Environment_getCxxProcedure(state, environment, Shizu_String_create(state, "getWorkingDirectory", strlen("getWorkingDirectory")));
   p->f(state, &returnValue, 0, argumentValues);
   if (!Shizu_Value_isObject(&returnValue)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_Value_getObject(&returnValue)->type,
-    Shizu_String_getType(state))) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&returnValue)->type,
+                               Shizu_String_getType(state))) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_String* path = (Shizu_String*)Shizu_Value_getObject(&returnValue);
   // Get the directory separator.
@@ -45,46 +45,47 @@ static void testSetFileContents1(Shizu_State* state, Shizu_String* relativePath,
   Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)path);
   p->f(state, &returnValue, 1, &argumentValues[0]);
   if (!Shizu_Value_isObject(&returnValue)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_Value_getObject(&returnValue)->type,
-                                                                                          Shizu_ByteArray_getType(state))) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&returnValue)->type,
+                               Shizu_ByteArray_getType(state))) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_ByteArray* received = (Shizu_ByteArray*)Shizu_Value_getObject(&returnValue);
   // Compare the written and the received file contents.
   if (!Shizu_ByteArray_compareRawBytes(state, received, contents)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
 }
 
-static void testSetFileContentsEmpty(Shizu_State* state) {
+static void testSetFileContentsEmpty(Shizu_State2* state) {
   Shizu_ByteArray* contents = Shizu_ByteArray_create(state);
   testSetFileContents1(state, Shizu_String_create(state, "output-empty.txt", strlen("output-empty.txt")), contents);
 }
 
-static void testSetFileContentsNonEmpty(Shizu_State* state) {
+static void testSetFileContentsNonEmpty(Shizu_State2* state) {
   Shizu_ByteArray* contents = Shizu_ByteArray_create(state);
   Shizu_ByteArray_apppendRawBytes(state, contents, "Hello, World!", strlen("Hello, World!"));
   testSetFileContents1(state, Shizu_String_create(state, "output-non-empty.txt", strlen("output-non-empty.txt")), contents);
 }
 
-static void testGetFileContents(Shizu_State* state,  Shizu_String* relativePath, Shizu_ByteArray* expected) {
+static void testGetFileContents(Shizu_State2* state,  Shizu_String* relativePath, Shizu_ByteArray* expected) {
   Shizu_Value returnValue;
   Shizu_Value argumentValues[2];
-  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   Shizu_CxxProcedure* p = Shizu_Environment_getCxxProcedure(state, environment, Shizu_String_create(state, "getWorkingDirectory", strlen("getWorkingDirectory")));
   p->f(state, &returnValue, 0, argumentValues);
   if (!Shizu_Value_isObject(&returnValue)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_Value_getObject(&returnValue)->type, Shizu_String_getType(state))) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&returnValue)->type,
+                               Shizu_String_getType(state))) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_String* path = (Shizu_String*)Shizu_Value_getObject(&returnValue);
   // Get the directory separator.
@@ -96,24 +97,24 @@ static void testGetFileContents(Shizu_State* state,  Shizu_String* relativePath,
   Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)path);
   p->f(state, &returnValue, 1, &argumentValues[0]);
   if (!Shizu_Value_isObject(&returnValue)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_Value_getObject(&returnValue)->type,
-    Shizu_ByteArray_getType(state))) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&returnValue)->type,
+                               Shizu_ByteArray_getType(state))) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_ByteArray* received = (Shizu_ByteArray*)Shizu_Value_getObject(&returnValue);
   // Compare the written and the received file contents.
   if (!Shizu_ByteArray_compareRawBytes(state, received, expected)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
 }
 
-static void testGetFileContentsEmpty(Shizu_State* state) {
-  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
+static void testGetFileContentsEmpty(Shizu_State2* state) {
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
   Shizu_String* relativePath = Shizu_String_create(state, "Assets", strlen("Assets"));
   relativePath = Shizu_String_concatenate(state, relativePath, directorySeparator);
@@ -122,8 +123,8 @@ static void testGetFileContentsEmpty(Shizu_State* state) {
   testGetFileContents(state, relativePath, expected);
 }
 
-static void testGetFileContentsNonEmpty(Shizu_State* state) {
-  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State_getGlobals(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
+static void testGetFileContentsNonEmpty(Shizu_State2* state) {
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
   Shizu_String* directorySeparator = Shizu_Environment_getString(state, environment, Shizu_String_create(state, "directorySeparator", strlen("directorySeparator")));
   Shizu_String* relativePath = Shizu_String_create(state, "Assets", strlen("Assets"));
   relativePath = Shizu_String_concatenate(state, relativePath, directorySeparator);
@@ -134,26 +135,26 @@ static void testGetFileContentsNonEmpty(Shizu_State* state) {
 }
 
 int main(int argc, char** argv) {
-  Shizu_State* state = NULL;
-  if (Shizu_State_create(&state)) {
+  Shizu_State2* state = NULL;
+  if (Shizu_State2_acquire(&state)) {
     return EXIT_FAILURE;
   }
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_State_ensureModulesLoaded(state);
+    Shizu_State2_ensureModulesLoaded(state);
     (*testGetFileContentsEmpty)(state);
     (*testGetFileContentsNonEmpty)(state);
     (*testSetFileContentsEmpty)(state);
     (*testSetFileContentsNonEmpty)(state);
-    Shizu_State_popJumpTarget(state);
+    Shizu_State2_popJumpTarget(state);
   } else {
-    Shizu_State_popJumpTarget(state);
-    Shizu_State_destroy(state);
+    Shizu_State2_popJumpTarget(state);
+    Shizu_State2_relinquish(state);
     state = NULL;
     return EXIT_FAILURE;
   }
-  Shizu_State_destroy(state);
+  Shizu_State2_relinquish(state);
   state = NULL;
   return EXIT_SUCCESS;
 }

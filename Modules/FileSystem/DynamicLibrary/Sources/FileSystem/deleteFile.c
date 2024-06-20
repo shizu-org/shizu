@@ -30,23 +30,23 @@
 void
 deleteFile
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
   )
 {
   if (!returnValue || !argumentValues || 1 != numberOfArgumentValues) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_String* path = Shizu_Value_getStringArgument(state, argumentValues + 0);
   path = Shizu_toNativePath(state, path);
   idlib_status status = idlib_delete_file(Shizu_String_getBytes(state, path));
   if (IDLIB_SUCCESS != status && IDLIB_FILE_NOT_FOUND != status) {
     fprintf(stderr, "%s:%d: %s failed with %"PRIu32"\n", __FILE__, __LINE__, "idlib_delete_file", status);
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   // Return true if the file was deleted, return false if the file was not found.
   Shizu_Value_setBoolean(returnValue, IDLIB_SUCCESS == status);

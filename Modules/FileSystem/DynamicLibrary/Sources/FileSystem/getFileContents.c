@@ -25,7 +25,7 @@
 #include "idlib/file_system.h"
 
 typedef struct Context {
-  Shizu_State* state;
+  Shizu_State2* state;
   Shizu_Status status;
   Shizu_ByteArray* byteArray;
   Shizu_String* path;
@@ -40,14 +40,14 @@ callback
   )
 {
   Shizu_JumpTarget jumpTarget;
-  Shizu_State_pushJumpTarget(context->state, &jumpTarget);
+  Shizu_State2_pushJumpTarget(context->state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
     Shizu_ByteArray_apppendRawBytes(context->state, context->byteArray, bytes, numberOfBytes);
-    Shizu_State_popJumpTarget(context->state);
+    Shizu_State2_popJumpTarget(context->state);
     return true;
   } else {
-    Shizu_State_popJumpTarget(context->state);
-    context->status = Shizu_State_getStatus(context->state);
+    Shizu_State2_popJumpTarget(context->state);
+    context->status = Shizu_State2_getStatus(context->state);
     return false;
   }
 }
@@ -55,15 +55,15 @@ callback
 void
 getFileContents
   ( 
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
   )
 {
   if (!returnValue || 1 != numberOfArgumentValues) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_String *path = Shizu_Value_getStringArgument(state, argumentValues + 0);
   path = Shizu_toNativePath(state, path);
@@ -74,8 +74,8 @@ getFileContents
   context.status = Shizu_Status_NoError;
   idlib_status status = idlib_get_file_contents_memory_mapped(Shizu_String_getBytes(state, path), &context, (idlib_get_file_contents_callback*)&callback);
   if (status || context.status) {
-    Shizu_State_setStatus(state, context.status ? context.status : Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, context.status ? context.status : Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   Shizu_Value_setObject(returnValue, (Shizu_Object*)context.byteArray);
 }

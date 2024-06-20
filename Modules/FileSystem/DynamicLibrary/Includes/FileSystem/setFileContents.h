@@ -30,7 +30,7 @@
 void
 setFileContents
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues

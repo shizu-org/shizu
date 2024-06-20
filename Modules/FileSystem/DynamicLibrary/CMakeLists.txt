@@ -28,9 +28,6 @@ Shizu_beginDynamicLibrary()
 
 list(APPEND ${name}.source_files Sources/Main.c)
 
-list(APPEND ${name}.source_files Sources/FileSystem.c)
-list(APPEND ${name}.header_files Includes/FileSystem.h)
-
 list(APPEND ${name}.source_files Sources/FileSystem/getWorkingDirectory.c)
 list(APPEND ${name}.header_files Includes/FileSystem/getWorkingDirectory.h)
 

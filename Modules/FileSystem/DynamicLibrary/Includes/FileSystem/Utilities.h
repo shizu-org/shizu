@@ -27,21 +27,21 @@
 Shizu_ByteArray*
 Shizu_Value_getByteArrayArgument
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* value
   );
 
 Shizu_String*
 Shizu_Value_getStringArgument
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* value
   );
 
 Shizu_String*
 Shizu_toNativePath
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* path
   );
 

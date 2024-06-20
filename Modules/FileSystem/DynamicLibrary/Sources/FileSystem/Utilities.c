@@ -26,19 +26,19 @@
 Shizu_ByteArray*
 Shizu_Value_getByteArrayArgument
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* value
   )
 {
   Shizu_Type* type = Shizu_ByteArray_getType(state);
   if (!type) {
     // Cannot be a Shizu.ByteArray as no value of that type was instantiate anyway.
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_State_getObjectType(state, Shizu_Value_getObject(value)), type)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_State_getObjectType(state, Shizu_Value_getObject(value)), type)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   return (Shizu_ByteArray*)Shizu_Value_getObject(value);
 }
@@ -46,24 +46,24 @@ Shizu_Value_getByteArrayArgument
 Shizu_String*
 Shizu_Value_getStringArgument
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Value* value
   )
 {
   Shizu_Type* type = Shizu_String_getType(state);
   if (!type) {
     // Cannot be a Shizu.String as no value of that type was instantiate anyway.
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   if (!Shizu_Value_isObject(value)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   Shizu_Object* object = Shizu_Value_getObject(value);
-  if (!Shizu_Types_isSubTypeOf(Shizu_State_getState1(state), Shizu_State_getTypes(state), Shizu_State_getObjectType(state, object), type)) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_State_getObjectType(state, object), type)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   return (Shizu_String*)Shizu_Value_getObject(value);
 }
@@ -71,7 +71,7 @@ Shizu_Value_getStringArgument
 Shizu_String*
 Shizu_toNativePath
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_String* path
   )
 {
@@ -82,12 +82,12 @@ Shizu_toNativePath
                                                  Shizu_String_getBytes(state, zeroTerminator), Shizu_String_getNumberOfBytes(state, zeroTerminator),
                                                  &found, &index);
   if (status) {
-    Shizu_State_setStatus(state, Shizu_Status_EnvironmentFailed);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
   }
   if (found) {
-    Shizu_State_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State_jump(state);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_jump(state);
   }
   path = Shizu_String_concatenate(state, path, zeroTerminator);
   return path;
