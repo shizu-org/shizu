@@ -42,7 +42,7 @@ Compiler_Parser_visit
 static void
 Compiler_Parser_initializeDispatch
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Parser_Dispatch* self
   );
 
@@ -87,7 +87,7 @@ Compiler_Parser_visit
 static void
 Compiler_Parser_initializeDispatch
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Parser_Dispatch* self
   )
 {

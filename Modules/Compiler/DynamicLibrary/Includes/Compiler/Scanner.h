@@ -45,7 +45,7 @@ Compiler_Scanner_setInput
 Shizu_String*
 Compiler_Scanner_getInput
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Compiler_Scanner* self
   );
 
