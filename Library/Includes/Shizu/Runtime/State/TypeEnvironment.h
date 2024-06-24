@@ -68,7 +68,7 @@ _TypeEnvironments_uninitialize
 static inline Shizu_Environment*
 _TpeEnvironments_getTypeEnvironment
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Type* type,
     Shizu_Boolean create
   )

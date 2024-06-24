@@ -8,7 +8,7 @@
 typedef struct Shizu_Object Shizu_Object;
 typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
 typedef struct Shizu_Type Shizu_Type;
-typedef struct Shizu_State Shizu_State;
+typedef struct Shizu_State2 Shizu_State2;
 
 /// @brief Get the Shizu_Type value of a Shizu_Object value.
 /// @param self A pointer to the Shizu_State object.

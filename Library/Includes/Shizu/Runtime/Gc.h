@@ -28,7 +28,6 @@
 typedef struct Shizu_Gc Shizu_Gc;
 typedef struct Shizu_State1 Shizu_State1;
 typedef struct Shizu_State2 Shizu_State2;
-typedef struct Shizu_State Shizu_State;
 
 /// @since 1.0
 /// Allocate an object of the specified size, in Bytes.

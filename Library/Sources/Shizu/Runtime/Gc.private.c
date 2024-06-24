@@ -22,7 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Gc.private.h"
 
-#include "Shizu/Runtime/State.h"
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Object.h"
 #include "Shizu/Runtime/Type.private.h"
 #include "Shizu/Runtime/CxxUtilities.h"

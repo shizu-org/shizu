@@ -32,7 +32,6 @@
 typedef struct Shizu_State1 Shizu_State1;
 typedef struct Shizu_State2 Shizu_State2;
 typedef struct Shizu_Dl Shizu_Dl;
-typedef struct Shizu_State Shizu_State;
 typedef struct Shizu_Object Shizu_Object;
 typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
 typedef struct Shizu_Type Shizu_Type;

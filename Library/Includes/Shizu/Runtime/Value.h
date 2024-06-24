@@ -41,7 +41,6 @@
 #define Shizu_MaybeReference(T) T*
 
 typedef struct Shizu_State2 Shizu_State2;
-typedef struct Shizu_State Shizu_State;
 
 
 
