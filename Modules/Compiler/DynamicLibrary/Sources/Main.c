@@ -17,7 +17,7 @@
 #include "Compiler/Parser.h"
 #include "Compiler/Scanner.h"
 
-static void
+/* Must not be "static". dladr fails otherwise. */ void
 createScanner
   (
     Shizu_State2* state,
@@ -33,7 +33,7 @@ createScanner
   Shizu_Value_setObject(returnValue, (Shizu_Object*)Compiler_Scanner_create(state));
 }
 
-static void
+/* Must not be "static". dladr fails otherwise. */ void
 createParser
   (
     Shizu_State2* state,
