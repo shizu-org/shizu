@@ -31,7 +31,7 @@ Shizu_declareType(Shizu_Map);
 
 /// @since 1.0
 /// @brief Create a Shizu_Map value.
-/// @param state A pointer to a Shizu_State value.
+/// @param state A pointer to a Shizu_State2 value.
 /// @return A pointer to the Shizu_Map value.
 /// @undefined state does not point to a Shizu_State value.
 Shizu_Map*

@@ -64,7 +64,7 @@ typedef struct Shizu_State1 Shizu_State1;
 /**
  * @since 1.0
  * @brief Allocate a memory block.
- * @param state A pointer to the state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param n The size, in Bytes, of the memory block to allocate. @a 0 is a valid size for a memory block.
  * @return A pointer to the memory block on success. The null pointer on failure.
  * @post
@@ -83,7 +83,7 @@ Shizu_State1_allocate
 /**
  * @since 1.0
  * @brief Rellocate a memory block.
- * @param state A pointer to the state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param p A pointer to the memory block.
  * @param n The size, in Bytes, to memory block to allocate. @a 0 is a valid size for a memory block.
  * @return A pointer to the memory block on success. The null pointer on failure.
@@ -106,7 +106,7 @@ Shizu_State1_reallocate
 /**
  * @since 1.0
  * @brief Deallocate a memory block.
- * @param state A pointer to the state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param p A pointer to the meory block.
  * @post The memory block was deallocated.
  */
@@ -119,7 +119,7 @@ Shizu_State1_deallocate
 
 /**
  * @since 1.0
- * @brief Acquire a refeference to the tier 1 state.
+ * @brief Acquire a refeference to the Shizu_State1 value.
  * @param RETURN A pointer to a <code>Shizu_State1*</code> variable.
  * @return @a 0 on success. A non-zero value on failure.
  * @success The caller acquire a reference to the <code>Shizu_State1</code> value.
@@ -133,8 +133,8 @@ Shizu_State1_acquire
 
 /**
  * @since 1.0
- * @brief Relinquish a refeference to the tier 1 state.
- * @param self A pointer to a <code>Shizu_State1</code> value.
+ * @brief Relinquish a refeference to the Shizu_State1 value.
+ * @param self A pointer to a Shizu_State1 value..
  * @return @a 0 on success. A non-zero value on failure.
  * @success The caller relinquished his reference to the <code>Shizu_State1</code> value.
  */
@@ -147,7 +147,7 @@ Shizu_State1_relinquish
 /**
  * @since 1.0
  * @brief Push a jump target on the jump target stack of a tier 1 state.
- * @param state A pointer to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param jumpTarget A pointer to the jump target.
  */
 void
@@ -160,7 +160,7 @@ Shizu_State1_pushJumpTarget
 /**
  * @since 1.0
  * @brief Pop a jump target from the jump target stack of a tier 1 state.
- * @param state A pointer to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @pre The jump target stack is not empty.
  * @undefined The jump target stack is empty.
  */
@@ -172,8 +172,8 @@ Shizu_State1_popJumpTarget
 
 /**
  * @since 1.0
- * @brief Jump to the jump target at the top of the jump target stack of a tier 1 state.
- * @param state A pointer to the tier 1 state.
+ * @brief Jump to the jump target at the top of the jump target stack of a Shizu_State1 value.
+ * @param state A pointer to a Shizu_State1 value.
  * @pre The jump target stack is not empty.
  * @undefined The jump target stack is empty.
  */
@@ -185,8 +185,8 @@ Shizu_State1_jump
 
 /**
  * @since 1.0
- * @brief Set the status variable of a tier 1 state.
- * @param state A pointer to the tier 1 state.
+ * @brief Set the status variable of a Shizu_State1 value.
+ * @param state A pointer to a Shizu_State1 value.
  * @param status The value to assign to the variable.
  */
 void
@@ -198,8 +198,8 @@ Shizu_State1_setStatus
 
 /**
  * @since 1.0
- * @brief Get the status variable of a tier 1 state.
- * @param state A pointer to the tier 1 state.
+ * @brief Get the status variable of a Shizu_State1 value.
+ * @param state A pointer to a Shizu_State1 value.
  * @return The value assigned to the variable.
  */
 Shizu_Status
@@ -210,8 +210,8 @@ Shizu_State1_getStatus
 
 /**
  * @since 1.0
- * @brief Set the process exit requested variable of a tier 1 state.
- * @param state A pointer to the tier 1 state.
+ * @brief Set the process exit requested variable of a Shizu_State1 value.
+ * @param state A pointer to a Shizu_State1 value.
  * @param processExitRequested The value to assign to the variable.
  */
 void
@@ -223,8 +223,8 @@ Shizu_State1_setProcessExitRequested
 
 /**
  * @since 1.0
- * @brief Get the process exist requested variable of a tier 1 state.
- * @param state A pointer to the tier 1 state.
+ * @brief Get the process exist requested variable of a Shizu_State1 value.
+ * @param state A pointer to a Shizu_State1 value.
  * @return The value assigned to the variable.
  */
 bool
@@ -236,7 +236,7 @@ Shizu_State1_getProcessExitRequested
 /**
  * @since 1.0
  * @brief Get or load a DL.
- * @param state A pointer to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param path The path to the DL (a C string).
  * @param load If @a true the DL is loaded if it is not loaded yet.
  * @return The DL on success if it exists. The null pointer oterwise.
@@ -252,7 +252,7 @@ Shizu_State1_getOrLoadDl
 /**
  * @since 1.0
  * @brief Get a DL by its name.
- * @param state A pointer to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param name The name of the DL (as C string).
  * @return A pointer to the DL if a DL with the given name exists. The null pointer otherwise.
  */
@@ -266,7 +266,7 @@ Shizu_State1_getDlByName
 /**
  * @since 1.0
  * @brief Get the DL which is defining a object.
- * @param state A pointer to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param p The address of the object.
  * @return A pointer to the DL if a DL defining the object exists. the null pointer otherwise.
  */
@@ -280,7 +280,7 @@ Shizu_State1_getDlByAdr
 /**
  * @since 1.0
  * @brief Acquire a reference to a DL.
- * @param state A pointer to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param dl A pointer to the DL.
  */
 void
@@ -293,7 +293,7 @@ Shizu_State1_refDl
 /**
  * @since 1.0
  * @brief Relinquish a reference to a DL.
- * @param state A pinter to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param dl A pointer to the DL.
  */
 void
@@ -306,7 +306,7 @@ Shizu_State1_unrefDl
 /**
  * @since 1.0
  * @brief Load a symbol from a DL.
- * @param state A pointer to the tier 1 state.
+ * @param state A pointer to a Shizu_State1 value.
  * @param dl A pointer to the DL.
  * @param name The name of the symbol (a C string).
  * @return A pointer to the symbol if it was found. The null pointer otherwise.

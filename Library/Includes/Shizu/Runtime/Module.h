@@ -67,7 +67,7 @@ Shizu_Module_getUpdate
 /// @detail
 /// Load the module if it was not loaded already.
 /// Do nothing if the module was already loaded.
-/// @param state A pointer to the state.
+/// @param state A pointer to a Shizu_State2 state.
 /// @param self A pointer to this module.
 void
 Shizu_Module_ensureLoaded
@@ -80,7 +80,7 @@ Shizu_Module_ensureLoaded
 /// @detail
 /// Unload the module if it was loaded.
 /// Do nothing if the module was not loaded.
-/// @param state A pointer to the state.
+/// @param state A pointer to a Shizu_State2 state.
 /// @param self A pointer to this module.
 void
 Shizu_Module_ensureUnloaded
@@ -90,7 +90,7 @@ Shizu_Module_ensureUnloaded
   );
 
 /// @brief Get if this module is loaded.
-/// @param state A pointer to the state.
+/// @param state A pointer to a Shizu_State2 state.
 /// @param self A pointer to this module.
 /// @return @a Shizu_Boolean_True if this module is loaded. @a Shizu_boolean_False if this module is not loaded.
 Shizu_Boolean

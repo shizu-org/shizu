@@ -35,7 +35,7 @@ Shizu_declareType(Shizu_Environment);
 
 /// @since 1.0
 /// @brief Create a Shizu_Environment value.
-/// @param state A pointer to a Shizu_State value.
+/// @param state A pointer to a Shizu_State2 value.
 /// @return A pointer to the Shizu_Environment value.
 /// @undefined state does not point to a Shizu_State value.
 Shizu_Environment*
@@ -46,7 +46,7 @@ Shizu_Environment_create
 
 /// @since 1.0
 /// @brief Get the size of this Shizu_Environment value.
-/// @param state A pointer to a Shizu_State value.
+/// @param state A pointer to a Shizu_State2 value.
 /// @param self A poiner too this Shizu_Environment value.
 /// @return The size of this Shizu_Environment object. Guaranteed to be smaller than or equal to the minimum of SIZE_MAX and Shizu_Integer32_Greatest.
 /// @undefined @a state does not point to a Shizu_State value.
@@ -59,7 +59,7 @@ Shizu_Environment_getSize
 
 /// @since 1.0
 /// @brief Define (if not yet defined) ans assign a variable in this environment.
-/// @param state A pointer to a Shizu_State value.
+/// @param state A pointer to a Shizu_State2 value.
 /// @param name The name of the variable.
 /// @param value The value.
 /// @success The variable is defined in this environment and has th specified value assigned.
@@ -249,7 +249,7 @@ Shizu_Environment_getWeakReference
 
 /// @since 1.0
 /// @brief Get if a variable is defined in this environment.
-/// @param state A pointer to a Shizu_State value.
+/// @param state A pointer to a Shizu_State2 value.
 /// @return @a Shizu_Boolean_True if the variable is defined in this environment. @a Shizu_Boolean_False otherwise.
 /// @undefined @a state does not point to a Shizu_State value.
 Shizu_Boolean

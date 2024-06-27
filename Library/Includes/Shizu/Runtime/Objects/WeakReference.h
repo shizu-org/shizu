@@ -35,7 +35,7 @@ Shizu_declareType(Shizu_WeakReference);
 
 /// @since 1.0
 /// @brief Create a Shizu_WeakReference value.
-/// @param state A pointer to the Shizu_State object.
+/// @param state A pointer to a Shizu_State2 object.
 /// @param reference A pointer to a Shizu_Object value or a null pointer.
 /// @return A pointer to the Shizu_WeakReference value.
 Shizu_WeakReference*

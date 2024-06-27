@@ -25,6 +25,8 @@
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
   #error("Do not include `Shizu/Runtime/Locks.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
+// size_t
+#include <stddef.h>
 #include "Shizu/Runtime/Locks.h"
 typedef struct Shizu_Gc Shizu_Gc;
 

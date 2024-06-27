@@ -121,7 +121,7 @@ struct Shizu_Object {
 };
 
 /// @brief Construct this Shizu_Object value.
-/// @param state A pointer to the Shizu_State object.
+/// @param state A pointer to a Shizu_State2 state.
 /// @param self A pointer to this Shizu_Object.
 void
 Shizu_Object_construct

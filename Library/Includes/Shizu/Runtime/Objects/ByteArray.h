@@ -32,7 +32,7 @@ Shizu_declareType(Shizu_ByteArray);
 
 /// @since 1.0
 /// @brief Create a Shizu_ByteArray value.
-/// @param state A pointer to a Shizu_State value.
+/// @param state A pointer to a Shizu_State2 value.
 /// @return A pointer to the Shizu_ByteArray value.
 /// @undefined state does not point to a Shizu_State value.
 Shizu_ByteArray*

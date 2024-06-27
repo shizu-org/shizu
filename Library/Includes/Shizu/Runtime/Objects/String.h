@@ -31,7 +31,7 @@ Shizu_declareType(Shizu_String);
 
 /// @since 1.0
 /// @brief Create a Shizu_String value from the specified sequence of Bytes.
-/// @param state A pointer to a Shizu_State value.
+/// @param state A pointer to a Shizu_State2 value.
 /// @param bytes A pointer to an array of @a numberOfBytes bytes.
 /// @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
 /// @return A pointer to the Shizu_String value.
@@ -47,7 +47,7 @@ Shizu_String_create
 
 /// @since 0.1
 /// @brief Concatenate two string.
-/// @param state A pointer to the state.
+/// @param state A pointer to a Shizu_State2 value.
 /// @param self A pointer to this Shizu_String value.
 /// @param other A pointer to another Shizu_String value.
 /// @return The string representing the concatenation of the this Shizu_String value (the prefix) with the other Shizu_String value (the suffix).

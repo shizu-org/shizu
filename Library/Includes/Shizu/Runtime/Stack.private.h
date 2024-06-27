@@ -45,7 +45,8 @@ Shizu_Stack_create
 /// @since 1.0
 /// @state-destructor
 /// @brief Shutdown the "stack" state.
-/// This function may only return via regular control flow and not via jump control flow.
+/// @param state A pointer to a Shizu_State2 value. 
+/// This function returns only via regular control flow and not via jump control flow.
 void
 Shizu_Stack_destroy
   (
@@ -55,7 +56,7 @@ Shizu_Stack_destroy
 
 /// @since 1.0
 /// @brief Invoked to notify the "stack" module to perform pre-marking.
-/// @param state A pointer to the Shizu_State object. 
+/// @param state A pointer to a Shizu_State2 value. 
 void
 Shizu_Stack_notifyPreMark
   (
