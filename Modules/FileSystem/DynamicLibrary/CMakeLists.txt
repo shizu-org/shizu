@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.20)
 
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
-set(name Shizu.Runtime.Modules.FileSystem)
+set(name ${moduleName})
 Shizu_beginDynamicLibrary()
 
 list(APPEND ${name}.source_files Sources/Main.c)
