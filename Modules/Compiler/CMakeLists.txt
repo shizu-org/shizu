@@ -19,6 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
+set(moduleName Shizu.Runtime.Modules.Compiler)
 add_subdirectory(DynamicLibrary)
 add_subdirectory(Tests/Scanner)
 add_subdirectory(Tests/Parser)

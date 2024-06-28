@@ -19,15 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#define SHIZU_RUNTIME_PRIVATE (1)
 #include "Compiler/Scanner.h"
 
-#include "Shizu/Runtime/State2.h"
-#include "Shizu/Runtime/State1.h"
-#include "Shizu/Runtime/Gc.h"
-
 #include "idlib/byte_sequence.h"
-#include "Shizu/Runtime/Objects/String.h"
 
 static void
 Compiler_Scanner_visit
@@ -412,6 +406,11 @@ Compiler_Scanner_step
       self->current++;
       return;
     } break;
+    case ';': {
+      self->tokenType = Compiler_TokenType_Semicolon;
+      self->current++;
+      return;
+    } break;
     case '+': {
       self->tokenType = Compiler_TokenType_Plus;
       self->current++;
@@ -424,6 +423,11 @@ Compiler_Scanner_step
     } break;
     case '*': {
       self->tokenType = Compiler_TokenType_Star;
+      self->current++;
+      return;
+    } break;
+    case '=': {
+      self->tokenType = Compiler_TokenType_Equal;
       self->current++;
       return;
     } break;

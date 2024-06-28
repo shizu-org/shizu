@@ -1,11 +1,10 @@
 #if !defined(COMPILER_SCANNER_H_INCLUDED)
 #define COMPILER_SCANNER_H_INCLUDED
 
-#include "Shizu/Runtime/Objects/ByteArray.h"
 #include "Compiler/Object.h"
 #include "Compiler/Token.h"
 
-Shizu_declareType(Compiler_Scanner)
+Shizu_declareType(Compiler_Scanner);
 
 struct Compiler_Scanner_Dispatch {
   Compiler_Object_Dispatch _parent;

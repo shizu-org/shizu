@@ -37,6 +37,8 @@ enum Compiler_TokenType  {
   Compiler_TokenType_String,
   Compiler_TokenType_Real,
   Compiler_TokenType_EndOfLine,
+  Compiler_TokenType_Semicolon,
+  Compiler_TokenType_Equal,
 };
 
 Shizu_declareType(Compiler_Token)

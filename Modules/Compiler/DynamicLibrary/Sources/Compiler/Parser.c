@@ -19,18 +19,12 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#define SHIZU_RUNTIME_PRIVATE (1)
 #include "Compiler/Parser.h"
-
-#include "Shizu/Runtime/State2.h"
-#include "Shizu/Runtime/State1.h"
-#include "Shizu/Runtime/Gc.h"
 
 #include "Compiler/Ast.h"
 #include "Compiler/Scanner.h"
 
 #include "idlib/byte_sequence.h"
-#include "Shizu/Runtime/Objects/String.h"
 
 static void
 Compiler_Parser_visit

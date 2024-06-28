@@ -19,12 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#define SHIZU_RUNTIME_PRIVATE (1)
 #include "Compiler/Ast.h"
-
-#include "Shizu/Runtime/State2.h"
-#include "Shizu/Runtime/State1.h"
-#include "Shizu/Runtime/Gc.h"
 
 Shizu_defineEnumerationType(Compiler_AstType);
 

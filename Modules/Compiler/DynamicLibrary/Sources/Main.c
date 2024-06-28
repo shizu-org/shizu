@@ -14,6 +14,7 @@
   #error("operating system not (yet) supported")
 #endif
 
+#include "Compiler/Ast.h"
 #include "Compiler/Parser.h"
 #include "Compiler/Scanner.h"
 
