@@ -1,0 +1,75 @@
+/*
+  Shizu Runtime
+  Copyright (C) 2024 Michael Heilmann. All rights reserved.
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
+#if !defined(DATADEFINITIONLANGUAGE_TOKEN_H_INCLUDED)
+#define DATADEFINITIONLANGUAGE_TOKEN_H_INCLUDED
+
+#include "Shizu/Runtime/Include.h"
+
+Shizu_declareEnumerationType(TokenType);
+
+enum TokenType  {
+  TokenType_StartOfInput,
+  TokenType_EndOfInput,
+  TokenType_Error,
+  TokenType_SingleLineComment,
+  TokenType_Name,
+  TokenType_LeftCurlyBracket,
+  TokenType_RightCurlyBracket,
+  TokenType_LeftSquareBracket,
+  TokenType_RightSquareBracket,
+  TokenType_Comma,
+  TokenType_Integer,
+  TokenType_String,
+  TokenType_Real,
+  TokenType_Colon,
+};
+
+Shizu_declareType(Token);
+
+struct Token_Dispatch {
+  Shizu_Object_Dispatch _parent;
+};
+
+struct Token {
+  Shizu_Object _parent;
+  TokenType type;
+  Shizu_String* text;
+};
+
+void
+Token_construct
+  (
+    Shizu_State2* state,
+    Token* self,
+    TokenType type,
+    Shizu_String* text
+  );
+
+Token*
+Token_create
+  (
+    Shizu_State2* state,
+    TokenType type,
+    Shizu_String* text
+  );
+
+#endif // DATADEFINITIONLANGUAGE_TOKEN_H_INCLUDED

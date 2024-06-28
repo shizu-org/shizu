@@ -19,6 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-add_subdirectory(FileSystem)
-add_subdirectory(Compiler)
-add_subdirectory(DataDefinitionLanguage)
+set(moduleName Shizu.Runtime.Modules.DataDefinitionLanguage)
+add_subdirectory(DynamicLibrary)
+add_subdirectory(Tests/Scanner)
+add_subdirectory(Tests/Parser)
