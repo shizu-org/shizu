@@ -36,12 +36,24 @@ macro(copy_plugin target module)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different                                     # which executes "cmake -E copy_if_different..."
             $<TARGET_FILE:${module}>                                                  # file to copy
             $<TARGET_FILE_DIR:${target}>                                              # target directory
+    DEPENDS $<TARGET_FILE:${module}> 
   )
 endmacro()
 
-macro(copy_assets target module)
-  file(GLOB_RECURSE assets_to_copy RELATIVE $<SOURCE_DIR:${module}>/Assets $<SOURCE_DIR:${module}>/Assets/*.* )
-  message(STATUS " - ${module} assets: ${assets_to_copy}")
+macro(copy_assets name)
+  get_target_property(source_dir_foo ${name} SOURCE_DIR)
+  message(STATUS "- [copy_assets] ${name} source dir: ${source_dir_foo}")
+  file(GLOB_RECURSE assets_to_copy_foo RELATIVE ${source_dir_foo}/Assets ${source_dir_foo}/Assets/*.* )
+  message(STATUS "- [copy_assets] ${name} assets: ${assets_to_copy_foo}")
+  foreach (asset_to_copy_foo ${assets_to_copy_foo})
+    add_custom_command(
+      TARGET ${name} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${name}>/Assets
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different                                     # which executes "cmake - E copy_if_different..."
+              ${source_dir_foo}/Assets/${asset_to_copy_foo}                                 # file to copy
+              $<TARGET_FILE_DIR:${name}>/Assets/${asset_to_copy_foo}
+    )
+  endforeach()
 endmacro()
 
 include(FetchContent)

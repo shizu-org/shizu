@@ -93,21 +93,21 @@ Shizu_defineType(Shizu_WeakReference, Shizu_Object);
 typedef struct WeakReferenceNode WeakReferenceNode;
 
 struct WeakReferenceNode {
-	WeakReferenceNode* next;
-	/// @brief A pointer to the object or the null pointer.
-	Shizu_Object* reference;
-	/// @brief The hash value of the address of the managed object.
-	size_t hashValue;
-	/// @brief A pointer to the weak reference.
-	Shizu_WeakReference* weakReference;
+  WeakReferenceNode* next;
+  /// @brief A pointer to the object or the null pointer.
+  Shizu_Object* reference;
+  /// @brief The hash value of the address of the managed object.
+  size_t hashValue;
+  /// @brief A pointer to the weak reference.
+  Shizu_WeakReference* weakReference;
 };
 
 struct Shizu_WeakReferences {
-	Shizu_WeakReference** buckets;
-	size_t size;
-	size_t capacity;
+  Shizu_WeakReference** buckets;
+  size_t size;
+  size_t capacity;
   size_t minimalCapacity;
-	size_t maximalCapacity;
+  size_t maximalCapacity;
 };
 
 Shizu_WeakReferences*

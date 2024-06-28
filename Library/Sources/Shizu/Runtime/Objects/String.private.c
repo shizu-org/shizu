@@ -181,24 +181,24 @@ Shizu_String_create
 
 Shizu_String*
 Shizu_String_concatenate
-	(
-		Shizu_State2* state,
-		Shizu_String* self,
-		Shizu_String* other
-	)
+  (
+    Shizu_State2* state,
+    Shizu_String* self,
+    Shizu_String* other
+  )
 {
-	// The string would be too long.
-	if (SIZE_MAX - self->numberOfBytes < other->numberOfBytes) {
+  // The string would be too long.
+  if (SIZE_MAX - self->numberOfBytes < other->numberOfBytes) {
     Shizu_State2_setStatus(state, 1);
     Shizu_State2_jump(state);
-	}
+  }
   size_t hashValue = self->numberOfBytes + other->numberOfBytes;
-	for (size_t i = 0, n = self->numberOfBytes; i < n; ++i) {
-		hashValue = (hashValue << 5) ^ (hashValue >> 3) | (size_t)self->bytes[i];
-	}
-	for (size_t i = 0, n = other->numberOfBytes; i < n; ++i) {
-		hashValue = (hashValue << 5) ^ (hashValue >> 3) | (size_t)other->bytes[i];
-	}
+  for (size_t i = 0, n = self->numberOfBytes; i < n; ++i) {
+    hashValue = (hashValue << 5) ^ (hashValue >> 3) | (size_t)self->bytes[i];
+  }
+  for (size_t i = 0, n = other->numberOfBytes; i < n; ++i) {
+    hashValue = (hashValue << 5) ^ (hashValue >> 3) | (size_t)other->bytes[i];
+  }
   Shizu_Type* TYPE = Shizu_String_getType(state);
   Shizu_String* new = (Shizu_String*)Shizu_Gc_allocateObject(state, sizeof(Shizu_String));
   Shizu_Object_construct(state, (Shizu_Object*)new);
@@ -210,11 +210,11 @@ Shizu_String_concatenate
     Shizu_State2_jump(state);
   }
   new->hashValue = hashValue;
-	new->numberOfBytes = numberOfBytes;
-	memcpy(new->bytes, self->bytes, self->numberOfBytes);
-	memcpy(new->bytes + self->numberOfBytes, other->bytes, other->numberOfBytes);
+  new->numberOfBytes = numberOfBytes;
+  memcpy(new->bytes, self->bytes, self->numberOfBytes);
+  memcpy(new->bytes + self->numberOfBytes, other->bytes, other->numberOfBytes);
   ((Shizu_Object*)new)->type = TYPE;
-	return new;
+  return new;
 }
 
 char const*

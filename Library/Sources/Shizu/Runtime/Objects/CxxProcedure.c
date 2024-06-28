@@ -48,15 +48,15 @@ Shizu_CxxProcedure_finalize
   );
 
 static Shizu_TypeDescriptor const Shizu_CxxProcedure_Type = {
-	.postCreateType = (Shizu_PostCreateTypeCallback*) NULL,
-	.preDestroyType = (Shizu_PreDestroyTypeCallback*) NULL,
-	.visitType = NULL,
-	.size = sizeof(Shizu_CxxProcedure),
+  .postCreateType = (Shizu_PostCreateTypeCallback*) NULL,
+  .preDestroyType = (Shizu_PreDestroyTypeCallback*) NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_CxxProcedure),
   .visit = (Shizu_OnVisitCallback*) NULL,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_CxxProcedure_finalize,
-	.dispatchSize = sizeof(Shizu_CxxProcedure_Dispatch),
-	.dispatchInitialize = NULL,
-	.dispatchUninitialize = NULL,
+  .dispatchSize = sizeof(Shizu_CxxProcedure_Dispatch),
+  .dispatchInitialize = NULL,
+  .dispatchUninitialize = NULL,
 };
 
 Shizu_defineType(Shizu_CxxProcedure, Shizu_Object);

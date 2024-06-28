@@ -90,9 +90,6 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Status.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/CxxUtilities.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/CxxUtilities.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/SourceLocationC.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/SourceLocationC.h)
-
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/getWorkingDirectory.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/getWorkingDirectory.h)
 

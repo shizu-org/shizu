@@ -2,7 +2,6 @@
 #define SHIZU_RUNTIME_OBJECT_H_INCLUDED
 
 #include "Shizu/Runtime/CxxUtilities.h"
-#include "Shizu/Runtime/SourceLocationC.h"
 #include "Shizu/Runtime/Type.h"
 #include "Shizu/Runtime/Value.h"
 typedef struct Shizu_Object Shizu_Object;

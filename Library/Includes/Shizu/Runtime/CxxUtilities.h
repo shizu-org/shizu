@@ -27,6 +27,23 @@
 // bool, true, false
 #include <stdbool.h>
 
+// size_t
+#include <stddef.h>
+
+typedef struct Shizu_SourceLocationC {
+  char const* file;
+  int line;
+} Shizu_SourceLocationC;
+
+#define Shizu_SourceFileC() \
+  __FILE__
+
+#define Shizu_SourceLineC() \
+  __LINE__
+
+#define Shizu_SourceLocationC() \
+  (Shizu_SourceLocationC) {. file = Shizu_SourceFileC(), .line = Shizu_SourceLineC() }
+
 /// @since 1.0
 /// Function annotation indicating a function does not return normally.
 /// The function either terminates the program (cf. exit) or returns via a jump (cf. longjmp).
