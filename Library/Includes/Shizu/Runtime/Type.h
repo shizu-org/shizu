@@ -23,6 +23,7 @@
 #define SHIZU_RUNTIME_TYPE_H_INCLUDED
 
 #include "Shizu/Runtime/Configure.h"
+#include "Shizu/Runtime/Value.h"
 
 // bool
 #include <stdbool.h>
@@ -92,6 +93,7 @@ struct Shizu_TypeDescriptor {
   Shizu_PostCreateTypeCallback* postCreateType;
   Shizu_PreDestroyTypeCallback* preDestroyType;
   Shizu_VisitTypeCallback* visitType;
+
   size_t size;
   Shizu_OnVisitCallback* visit;
   Shizu_OnFinalizeCallback* finalize;

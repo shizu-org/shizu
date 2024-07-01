@@ -111,7 +111,10 @@ Shizu_Module_ensureLibraryLoaded
       fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_load", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
       Shizu_State2_jump(state);
     }
-    (*f)(state);
+    Shizu_Value returnValue;
+    Shizu_Value_setVoid(&returnValue, Shizu_Void_Void);
+    Shizu_Value argumentValues[1];
+    (*f)(state, &returnValue, 0, &argumentValues[0]);
     Shizu_State2_popJumpTarget(state);
   } else {
     Shizu_State2_popJumpTarget(state);
@@ -209,7 +212,10 @@ Shizu_Module_ensureLoaded
         fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_load", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
         Shizu_State2_jump(state);
       }
-      (*f)(state);
+      Shizu_Value returnValue;
+      Shizu_Value_setVoid(&returnValue, Shizu_Void_Void);
+      Shizu_Value argumentValues[1];
+      (*f)(state, &returnValue, 0, &argumentValues[0]);
       Shizu_State2_popJumpTarget(state);
     } else {
       Shizu_State2_popJumpTarget(state);
@@ -237,7 +243,10 @@ Shizu_Module_ensureUnloaded
         fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_unload", (int)Shizu_String_getNumberOfBytes(state, self->path), Shizu_String_getBytes(state, self->path));
         Shizu_State2_jump(state);
       }
-      (*f)(state);
+      Shizu_Value returnValue;
+      Shizu_Value_setVoid(&returnValue, Shizu_Void_Void);
+      Shizu_Value argumentValues[1];
+      (*f)(state, &returnValue, 0, &argumentValues[0]);
       Shizu_State2_popJumpTarget(state);
     } else {
       Shizu_State2_popJumpTarget(state);

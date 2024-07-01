@@ -89,7 +89,7 @@ Shizu_Stack_pushCxxFunction
   (
     Shizu_State1* state,
     Shizu_Stack* self,
-    Shizu_Reference(Shizu_CxxFunction) cxxFunctionValue
+    Shizu_CxxFunction* cxxFunctionValue
   )
 {
   Shizu_Value value;

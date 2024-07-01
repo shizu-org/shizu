@@ -72,6 +72,15 @@ Shizu_Environment_finalize
     Shizu_Environment* self
   );
 
+static void
+Shizu_Environment_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 static Shizu_TypeDescriptor const Shizu_Environment_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_Environment_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_Environment_preDestroyType,
@@ -140,7 +149,7 @@ Shizu_Environment_visit
   }
 }
 
-void
+static void
 Shizu_Environment_finalize
   (
     Shizu_State2* state,
@@ -159,6 +168,39 @@ Shizu_Environment_finalize
   self->buckets = NULL;
 }
 
+static void
+Shizu_Environment_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (1 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isObject(&argumentValues[0])) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Environment* SELF = (Shizu_Environment*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Type* TYPE = Shizu_Environment_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)SELF);
+  SELF->buckets = malloc(sizeof(Shizu_Environment_Node*) * 8);
+  if (!SELF->buckets) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  for (size_t i = 0, n = 8; i < n; ++i) {
+    SELF->buckets[i] = NULL;
+  }
+  SELF->size = 0;
+  SELF->capacity = 8;
+  ((Shizu_Object*)SELF)->type = TYPE;
+}
+
 Shizu_defineType(Shizu_Environment, Shizu_Object);
 
 void
@@ -168,19 +210,10 @@ Shizu_Environment_construct
     Shizu_Environment* self
   )
 {
-  Shizu_Type* TYPE = Shizu_Environment_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->buckets = malloc(sizeof(Shizu_Environment_Node*) * 8);
-  if (!self->buckets) {
-    Shizu_State2_setStatus(state, 1);
-    Shizu_State2_jump(state);
-  }
-  for (size_t i = 0, n = 8; i < n; ++i) {
-    self->buckets[i] = NULL;
-  }
-  self->size = 0;
-  self->capacity = 8;
-  ((Shizu_Object*)self)->type = TYPE;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
+  Shizu_Environment_constructImpl(state, &returnValue, 1, &argumentValues[0]);
 }
 
 Shizu_Environment*
@@ -263,21 +296,21 @@ Shizu_Environment_getObject
     Shizu_Type* type
   )
 {
-  if (!self || !name || !type) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State2_jump(state); 
-  }
+  Shizu_debugAssert(NULL != state);
+  Shizu_debugAssert(NULL != self);
+  Shizu_debugAssert(NULL != name);
+  Shizu_debugAssert(NULL != type);
   if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), type, Shizu_Object_getType(state))) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state); 
   }
   Shizu_Value value = Shizu_Environment_get(state, self, name);
   if (!Shizu_Value_isObject(&value)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&value)->type, type)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   return Shizu_Value_getObject(&value);
@@ -293,7 +326,7 @@ Shizu_Environment_getBoolean
 {
   Shizu_Value value = Shizu_Environment_get(state, self, name);
   if (!Shizu_Value_isBoolean(&value)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   return Shizu_Value_getBoolean(&value);
@@ -333,7 +366,7 @@ Shizu_Environment_getInteger32
 {
   Shizu_Value value = Shizu_Environment_get(state, self, name);
   if (!Shizu_Value_isInteger32(&value)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   return Shizu_Value_getInteger32(&value);

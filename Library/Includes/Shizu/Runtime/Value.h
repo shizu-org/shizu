@@ -24,6 +24,7 @@
 
 
 
+#include "Shizu/Runtime/Configure.h"
 
 // int32_t, INT32_MIN, INT32_MAX
 #include <inttypes.h>
@@ -34,11 +35,10 @@
 // FLT_MAX
 #include <float.h>
 
-#include "Shizu/Runtime/Configure.h"
+// Forward declaration.
+typedef struct Shizu_Value Shizu_Value;
 
-#define Shizu_Reference(T) T*
 
-#define Shizu_MaybeReference(T) T*
 
 typedef struct Shizu_State2 Shizu_State2;
 
@@ -50,11 +50,6 @@ typedef bool Shizu_Boolean;
 #define Shizu_Boolean_True (true)
 
 #define Shizu_Boolean_False (false)
-
-
-
-
-typedef void (Shizu_CxxFunction)(Shizu_State2* state);
 
 
 
@@ -109,6 +104,11 @@ typedef struct Shizu_WeakReference Shizu_WeakReference;
 
 
 
+typedef void (Shizu_CxxFunction)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues);
+
+
+
+
 typedef struct Shizu_Value Shizu_Value;
 
 #define Shizu_Value_Tag_Boolean (0)
@@ -127,13 +127,15 @@ struct Shizu_Value {
   uint8_t tag;
   union {
     Shizu_Boolean booleanValue;
-    Shizu_Reference(Shizu_CxxFunction) cxxFunctionValue;
+    Shizu_CxxFunction* cxxFunctionValue;
     Shizu_Float32 float32Value;
     Shizu_Integer32 integer32Value;
     Shizu_Object* objectValue;
     Shizu_Void voidValue;
   };
 };
+
+#define Shizu_Value_Initializer() (Shizu_Value){ .tag = Shizu_Value_Tag_Void, .voidValue = Shizu_Void_Void }
 
 Shizu_Boolean
 Shizu_Value_getBoolean
@@ -154,7 +156,7 @@ Shizu_Value_setBoolean
     Shizu_Boolean booleanValue
   );
 
-Shizu_Reference(Shizu_CxxFunction)
+Shizu_CxxFunction*
 Shizu_Value_getCxxFunction
   (
     Shizu_Value const* self
@@ -170,7 +172,7 @@ void
 Shizu_Value_setCxxFunction
   (
     Shizu_Value* self,
-    Shizu_Reference(Shizu_CxxFunction) cxxFunctionValue
+    Shizu_CxxFunction* cxxFunctionValue
   );
 
 Shizu_Float32
@@ -211,7 +213,7 @@ Shizu_Value_setInteger32
     Shizu_Integer32 integer32Value
   );
 
-Shizu_Reference(Shizu_Object)
+Shizu_Object*
 Shizu_Value_getObject
   (
     Shizu_Value const* self
@@ -227,7 +229,7 @@ void
 Shizu_Value_setObject
   (
     Shizu_Value* self,
-    Shizu_Reference(Shizu_Object) objectValue
+    Shizu_Object* objectValue
   );
 
 Shizu_Void

@@ -74,6 +74,15 @@ Shizu_ByteArray_finalize
     Shizu_ByteArray* self
   );
 
+static void
+Shizu_ByteArray_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 static Shizu_TypeDescriptor const Shizu_ByteArray_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_ByteArray_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_ByteArray_preDestroyType,
@@ -191,6 +200,36 @@ Shizu_ByteArray_finalize
   self->capacity = 0;
 }
 
+static void
+Shizu_ByteArray_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (1 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isObject(&argumentValues[0])) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_ByteArray* SELF = (Shizu_ByteArray*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)SELF);
+  SELF->elements = malloc(8);
+  if (!SELF->elements) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  SELF->size = 0;
+  SELF->capacity = 8;
+  ((Shizu_Object*)SELF)->type = TYPE;
+}
+
 Shizu_defineType(Shizu_ByteArray, Shizu_Object);
 
 void
@@ -200,16 +239,10 @@ Shizu_ByteArray_construct
     Shizu_ByteArray* self
   )
 {
-  Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->elements = malloc(8);
-  if (!self->elements) {
-    Shizu_State2_setStatus(state, 1);
-    Shizu_State2_jump(state);
-  }
-  self->size = 0;
-  self->capacity = 8;
-  ((Shizu_Object*)self)->type = TYPE;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
+  Shizu_ByteArray_constructImpl(state, &returnValue, 1, &argumentValues[0]);
 }
 
 Shizu_ByteArray*
@@ -267,11 +300,11 @@ Shizu_ByteArray_insertValue
     return;
   }
   if (!Shizu_Value_isInteger32(value)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   if (Shizu_Value_getInteger32(value) < 0 || Shizu_Value_getInteger32(value) > UINT8_MAX) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentOutOfRange);
     Shizu_State2_jump(state);
   }
   if (self->capacity == self->size) {

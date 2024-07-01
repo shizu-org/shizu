@@ -74,11 +74,30 @@ Shizu_CxxProcedure_finalize
   }
 }
 
+void
+Shizu_CxxProcedure_construct
+  (
+    Shizu_State2* state,
+    Shizu_CxxProcedure* self,
+    Shizu_CxxFunction* f,
+    Shizu_Dl* dl
+  )
+{
+  Shizu_Type* TYPE = Shizu_CxxProcedure_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  self->f = f;
+  self->dl = dl;
+  if (self->dl) {
+    Shizu_State1_refDl(Shizu_State2_getState1(state), self->dl);
+  }
+  ((Shizu_Object*)self)->type = TYPE;
+}
+
 Shizu_CxxProcedure*
 Shizu_CxxProcedure_create
   (
     Shizu_State2* state,
-    void (*f)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues),
+    Shizu_CxxFunction* f,
     Shizu_Dl* dl
   )
 {

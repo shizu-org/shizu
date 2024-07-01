@@ -56,7 +56,7 @@ Shizu_Value_setBoolean
   self->tag = Shizu_Value_Tag_Boolean;
 }
 
-Shizu_Reference(Shizu_CxxFunction)
+Shizu_CxxFunction*
 Shizu_Value_getCxxFunction
   (
     Shizu_Value const* self
@@ -80,10 +80,11 @@ void
 Shizu_Value_setCxxFunction
   (
     Shizu_Value* self,
-    Shizu_Reference(Shizu_CxxFunction) cxxFunctionValue
+    Shizu_CxxFunction* cxxFunctionValue
   )
 {
   Shizu_debugAssert(NULL != self);
+  Shizu_debugAssert(NULL != cxxFunctionValue);
   self->cxxFunctionValue = cxxFunctionValue;
   self->tag = Shizu_Value_Tag_CxxFunction;
 }
@@ -152,7 +153,7 @@ Shizu_Value_setInteger32
   self->tag = Shizu_Value_Tag_Integer32;
 }
 
-Shizu_Reference(Shizu_Object)
+Shizu_Object*
 Shizu_Value_getObject
   (
     Shizu_Value const* self
@@ -176,10 +177,11 @@ void
 Shizu_Value_setObject
   (
     Shizu_Value* self,
-    Shizu_Reference(Shizu_Object) objectValue
+    Shizu_Object* objectValue
   )
 {
   Shizu_debugAssert(NULL != self);
+  Shizu_debugAssert(NULL != objectValue);
   self->objectValue = objectValue;
   self->tag = Shizu_Value_Tag_Object;
 }

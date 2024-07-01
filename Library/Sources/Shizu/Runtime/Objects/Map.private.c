@@ -22,7 +22,6 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Objects/Map.private.h"
 
-
 #include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
@@ -68,6 +67,15 @@ Shizu_Map_finalize
   (
     Shizu_State2* state,
     Shizu_Map* self
+  );
+
+static void
+Shizu_Map_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
   );
 
 static Shizu_TypeDescriptor const Shizu_Map_Type = {
@@ -163,6 +171,39 @@ Shizu_Map_finalize
   self->buckets = NULL;
 }
 
+static void
+Shizu_Map_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (1 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isObject(&argumentValues[0])) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Map* SELF = (Shizu_Map*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Type* TYPE = Shizu_Map_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)SELF);
+  SELF->buckets = malloc(sizeof(Shizu_Map_Node*) * 8);
+  if (!SELF->buckets) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  for (size_t i = 0, n = 8; i < n; ++i) {
+    SELF->buckets[i] = NULL;
+  }
+  SELF->size = 0;
+  SELF->capacity = 8;
+  ((Shizu_Object*)SELF)->type = TYPE;
+}
+
 Shizu_defineType(Shizu_Map, Shizu_Object);
 
 void
@@ -172,19 +213,10 @@ Shizu_Map_construct
     Shizu_Map* self
   )
 {
-  Shizu_Type* TYPE = Shizu_Map_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->buckets = malloc(sizeof(Shizu_Map_Node*) * 8);
-  if (!self->buckets) {
-    Shizu_State2_setStatus(state, 1);
-    Shizu_State2_jump(state);
-  }
-  for (size_t i = 0, n = 8; i < n; ++i) {
-    self->buckets[i] = NULL;
-  }
-  self->size = 0;
-  self->capacity = 8;
-  ((Shizu_Object*)self)->type = TYPE;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
+  Shizu_Map_constructImpl(state, &returnValue, 1, &argumentValues[0]);
 }
 
 Shizu_Map*

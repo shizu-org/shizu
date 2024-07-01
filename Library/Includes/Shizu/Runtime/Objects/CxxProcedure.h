@@ -39,33 +39,56 @@ struct Shizu_CxxProcedure_Dispatch {
 
 struct Shizu_CxxProcedure {
   Shizu_Object _parent;
+  Shizu_CxxFunction* f;
   Shizu_Dl* dl;
-  void (*f)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues);
 };
+
+/// @since 1.0
+/// @brief
+/// Construct a Shizu_CxxProcedure value.
+/// @param state
+/// A pointer to a Shizu_State2 value.
+/// @param self
+/// A pointer to the Shizu_CxxProcedure object.
+/// @param f
+/// A pointer to a Shizu_CxxFunction value.
+/// @param dl
+/// The null pointer if the Shizu_CxxFunction value is defined in the main module.
+/// A pointer to the Shizu_Dl object in which the Cxx function is defined.
+/// @undefined
+/// - @a f is not a null pointer and does not point to Shizu_CxxFunction value.
+/// - the Shizu_CxxFunction valuen is not defined in the main module and @a dl does not point to the DL object in which the Shizu_CxxFunction value is defined.
+/// - @a state does not point to a Shizu_State value.
+void
+Shizu_CxxProcedure_construct
+  (
+    Shizu_State2* state,
+    Shizu_CxxProcedure* self,
+    Shizu_CxxFunction* f,
+    Shizu_Dl* dl
+  );
 
 /// @since 1.0
 /// @brief
 /// Create a Shizu_CxxProcedure value.
 /// @param state
-/// A pointer to a Shizu_State value.
-/// @param fd
-/// A pointer to a Cxx function.
+/// A pointer to a Shizu_State2 value.
+/// @param f
+/// A pointer to a Shizu_CxxFunction value.
 /// @param dl
-/// The null pointer if the Cxx function is defined in the main module.
+/// The null pointer if the Shizu_CxxFunction value is defined in the main module.
 /// A pointer to the Shizu_Dl object in which the Cxx function is defined.
 /// @return
 /// A pointer to the Shizu_CxxProcedure value.
 /// @undefined
-/// @a p is not a null pointer and does not point to a conforming Cxx function.
-/// @undefined
-/// The Cxx function is not defined in the main module and @a dl does not point to the DL object in which the Cxx function is defined.
-/// @undefined
-/// @a state does not point to a Shizu_State value.
+/// - @a f is not a null pointer and does not point to Shizu_CxxFunction value.
+/// - the Shizu_CxxFunction value is not defined in the main module and @a dl does not point to the DL object in which the Shizu_CxxFunction value is defined.
+/// - @a state does not point to a Shizu_State value.
 Shizu_CxxProcedure*
 Shizu_CxxProcedure_create
   (
     Shizu_State2* state,
-    void (*fp)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues),
+    Shizu_CxxFunction* f,
     Shizu_Dl* dl
   );
 

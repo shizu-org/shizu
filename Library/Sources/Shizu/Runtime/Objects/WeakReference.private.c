@@ -65,6 +65,15 @@ hashPointer
     void* p
   );
 
+static void
+Shizu_WeakReference_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 struct Shizu_WeakReference_Dispatch {
   Shizu_Object_Dispatch _parent;
 };
@@ -259,6 +268,46 @@ hashPointer
   )
 { return (size_t)(uintptr_t)p; }
 
+static void
+Shizu_WeakReference_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isObject(&argumentValues[0])) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Object* reference = NULL;
+  if (Shizu_Value_isObject(&argumentValues[1])) {
+    reference = (Shizu_Object*)Shizu_Value_getObject(&argumentValues[1]);
+  } else if (Shizu_Value_isVoid(&argumentValues[1])) {
+    reference = NULL;
+  } else {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_WeakReference* SELF = (Shizu_WeakReference*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)SELF);
+  Shizu_WeakReferences* g = Shizu_State2_getWeakReferences(state);
+  // Add the weak reference to the hash table.
+  size_t hashValue = hashPointer(reference);
+  size_t hashIndex = hashValue % g->capacity;
+  SELF->reference = reference;
+  SELF->next = g->buckets[hashIndex];
+  g->buckets[hashIndex] = SELF;
+  g->size++;
+  ((Shizu_Object*)SELF)->type = TYPE;
+}
+
 void
 Shizu_WeakReference_construct
   (
@@ -267,17 +316,13 @@ Shizu_WeakReference_construct
     Shizu_Object* reference
   )
 {
-  Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  Shizu_WeakReferences* g = Shizu_State2_getWeakReferences(state);
-  // Add the weak reference to the hash table.
-  size_t hashValue = hashPointer(reference);
-  size_t hashIndex = hashValue % g->capacity;
-  self->reference = reference;
-  self->next = g->buckets[hashIndex];
-  g->buckets[hashIndex] = self;
-  g->size++;
-  ((Shizu_Object*)self)->type = TYPE;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() };
+  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
+  if (NULL != reference) {
+    Shizu_Value_setObject(&argumentValues[1], reference);
+  }
+  Shizu_WeakReference_constructImpl(state, &returnValue, 2, &argumentValues[0]);
 }
 
 Shizu_WeakReference*

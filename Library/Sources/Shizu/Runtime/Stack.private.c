@@ -297,7 +297,7 @@ Shizu_Stack_getBoolean
   }
   Shizu_Value* value = self->elements + self->size - index - 1;
   if (!Shizu_Value_isBoolean(value)) {
-    Shizu_State1_setStatus(state, Shizu_Status_TypeError);
+    Shizu_State1_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State1_jump(state);
   }
   return Shizu_Value_getBoolean(value);
@@ -318,7 +318,7 @@ Shizu_Stack_getCxxFunction
   }
   Shizu_Value* value = self->elements + self->size - index - 1;
   if (!Shizu_Value_isCxxFunction(value)) {
-    Shizu_State1_setStatus(state, Shizu_Status_TypeError);
+    Shizu_State1_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State1_jump(state);
   }
   return Shizu_Value_getCxxFunction(value);
@@ -339,7 +339,7 @@ Shizu_Stack_getFloat32
   }
   Shizu_Value* value = self->elements + self->size - index - 1;
   if (!Shizu_Value_isFloat32(value)) {
-    Shizu_State1_setStatus(state, Shizu_Status_TypeError);
+    Shizu_State1_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State1_jump(state);
   }
   return Shizu_Value_getFloat32(value);
@@ -360,13 +360,13 @@ Shizu_Stack_getInteger32
   }
   Shizu_Value* value = self->elements + self->size - index - 1;
   if (!Shizu_Value_isInteger32(value)) {
-    Shizu_State1_setStatus(state, Shizu_Status_TypeError);
+    Shizu_State1_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State1_jump(state);
   }
   return Shizu_Value_getInteger32(value);
 }
 
-Shizu_Reference(Shizu_Object)
+Shizu_Object*
 Shizu_Stack_getObject
   (
     Shizu_State1* state,
@@ -381,7 +381,7 @@ Shizu_Stack_getObject
   }
   Shizu_Value* value = self->elements + self->size - index - 1;
   if (!Shizu_Value_isObject(value)) {
-    Shizu_State1_setStatus(state, Shizu_Status_TypeError);
+    Shizu_State1_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State1_jump(state);
   }
   return Shizu_Value_getObject(value);
@@ -402,7 +402,7 @@ Shizu_Stack_getVoid
   }
   Shizu_Value* value = self->elements + self->size - index - 1;
   if (!Shizu_Value_isVoid(value)) {
-    Shizu_State1_setStatus(state, Shizu_Status_TypeError);
+    Shizu_State1_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State1_jump(state);
   }
   return Shizu_Value_getVoid(value);

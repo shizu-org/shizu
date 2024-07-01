@@ -69,6 +69,15 @@ Shizu_List_finalize
     Shizu_List* self
   );
 
+static void
+Shizu_List_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 static Shizu_TypeDescriptor const Shizu_List_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_List_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_List_preDestroyType,
@@ -151,6 +160,36 @@ Shizu_List_finalize
   self->capacity = 0;
 }
 
+static void
+Shizu_List_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (1 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isObject(&argumentValues[0])) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_List* SELF = (Shizu_List*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Type* TYPE = Shizu_List_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)SELF);
+  SELF->elements = malloc(8 * sizeof(Shizu_Value));
+  if (!SELF->elements) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  SELF->size = 0;
+  SELF->capacity = 8;
+  ((Shizu_Object*)SELF)->type = TYPE;
+}
+
 Shizu_defineType(Shizu_List, Shizu_Object);
 
 void
@@ -160,16 +199,10 @@ Shizu_List_construct
     Shizu_List* self
   )
 {
-  Shizu_Type* TYPE = Shizu_List_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->elements = malloc(8 * sizeof(Shizu_Value));
-  if (!self->elements) {
-    Shizu_State2_setStatus(state, 1);
-    Shizu_State2_jump(state);
-  }
-  self->size = 0;
-  self->capacity = 8;
-  ((Shizu_Object*)self)->type = TYPE;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
+  Shizu_List_constructImpl(state, &returnValue, 1, &argumentValues[0]);
 }
 
 Shizu_List*

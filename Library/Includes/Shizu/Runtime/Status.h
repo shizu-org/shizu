@@ -28,14 +28,31 @@ typedef enum Shizu_Status Shizu_Status;
 
 enum Shizu_Status {
 
+  /// @brief No error.
   Shizu_Status_NoError = 0,
-
-  Shizu_Status_ArgumentInvalid,
+  /// @brief The type of an argument is invalid.
+  Shizu_Status_ArgumentTypeInvalid,
+  /// @brief The number of arguments is invalid.
+  Shizu_Status_NumberOfArgumentsInvalid,
+  /// @brief A numeric argument value is out of range.
+  Shizu_Status_ArgumentOutOfRange,
+  /// @brief A non-numeric argument value is invalid.
+  Shizu_Status_ArgumentValueInvalid,
+  /// @brief A method was not found.
+  Shizu_Status_MethodNotFound,
+  /// @brief An allocation failed.
+  Shizu_Status_AllocationFailed,
+  /// @brief A runtime test failed.
+  Shizu_Status_RuntimeTestFailed,
+  /// @brief A lexical error occurred.
+  Shizu_Status_LexicalError,
+  /// @brief A syntactical error occurred.
+  Shizu_Status_SyntacticalError,
+  /// @brief A semantical error occurred.
+  Shizu_Status_SemanticalError,
   
   Shizu_Status_OperationInvalid,
   
-  Shizu_Status_AllocationFailed,
-
   Shizu_Status_UnreachabelCodeReached,
 
   Shizu_Status_StackOverflow,
@@ -44,16 +61,14 @@ enum Shizu_Status {
 
   Shizu_Status_StackIndexOutOfBounds,
 
-  /// Unable to perform an operation because a value is of the wrong type.
-  Shizu_Status_TypeError,
+
+
+  /// Status value indicating an encoding is invalid.
+  Shizu_Status_InvalidEncoding,
   
   Shizu_Status_StackCorruption,
     
-  Shizu_Status_LexicalError,
 
-  Shizu_Status_SyntacticalError,
-
-  Shizu_Status_SemanticalError,
 
   Shizu_Status_EnvironmentFailed,
 
