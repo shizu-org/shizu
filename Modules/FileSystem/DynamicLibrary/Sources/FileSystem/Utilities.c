@@ -31,13 +31,9 @@ Shizu_Value_getByteArrayArgument
   )
 {
   Shizu_Type* type = Shizu_ByteArray_getType(state);
-  if (!type) {
-    // Cannot be a Shizu.ByteArray as no value of that type was instantiate anyway.
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State2_jump(state);
-  }
+  Shizu_debugAssert(NULL != type);
   if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_State_getObjectType(state, Shizu_Value_getObject(value)), type)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   return (Shizu_ByteArray*)Shizu_Value_getObject(value);
@@ -51,18 +47,14 @@ Shizu_Value_getStringArgument
   )
 {
   Shizu_Type* type = Shizu_String_getType(state);
-  if (!type) {
-    // Cannot be a Shizu.String as no value of that type was instantiate anyway.
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
-    Shizu_State2_jump(state);
-  }
+  Shizu_debugAssert(NULL != type);
   if (!Shizu_Value_isObject(value)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   Shizu_Object* object = Shizu_Value_getObject(value);
   if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_State_getObjectType(state, object), type)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   return (Shizu_String*)Shizu_Value_getObject(value);
@@ -86,7 +78,7 @@ Shizu_toNativePath
     Shizu_State2_jump(state);
   }
   if (found) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentValueInvalid);
     Shizu_State2_jump(state);
   }
   path = Shizu_String_concatenate(state, path, zeroTerminator);

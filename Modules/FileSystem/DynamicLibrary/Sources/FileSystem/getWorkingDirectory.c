@@ -55,8 +55,11 @@ getWorkingDirectory
     Shizu_Value* argumentValues
   )
 {
-  if (!returnValue || !argumentValues || 0 != numberOfArgumentValues) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+  Shizu_debugAssert(NULL != state);
+  Shizu_debugAssert(NULL != returnValue);
+  Shizu_debugAssert(NULL != argumentValues);
+  if (0 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);
   }
   Context context = {

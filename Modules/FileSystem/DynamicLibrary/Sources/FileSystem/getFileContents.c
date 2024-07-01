@@ -61,8 +61,9 @@ getFileContents
     Shizu_Value* argumentValues
   )
 {
-  if (!returnValue || 1 != numberOfArgumentValues) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+  Shizu_debugAssert(NULL != returnValue);
+  if (1 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);
   }
   Shizu_String *path = Shizu_Value_getStringArgument(state, argumentValues + 0);
