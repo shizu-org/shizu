@@ -8,7 +8,7 @@ Create a `Shizu_String` object.
 Shizu_String*
 Shizu_String_create
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     void const* bytes,
     size_t numberOfBytes
   );
@@ -19,10 +19,10 @@ Create  a `Shizu_String` object from the specified array of Bytes.
 This function checks if the Bytes are a valid UTF8 string.
 
 *Parameters*
-- `state` A pointer to a `Shizu_State` object.
+- `state` A pointer to a `Shizu_State2` object.
 - `bytes` A pointer to an array of Bytes.
 - `numberOfBytes` The number of Bytes in the array pointed to by `bytes`.
 
 *Error*
-- `Shizu_Error_InvalidArgument` `bytes` is a null pointer
-- `Shizu_Error_Encoding` The Bytes are not a valid UTF8 string.
+- `Shizu_Status_InvalidArgument` `bytes` is a null pointer
+- `Shizu_Status_InvalidEncoding` The Bytes are not a valid UTF8 string.

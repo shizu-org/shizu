@@ -84,11 +84,11 @@ Find below the *Shizu Runtime* C Interface in alphabetic oder.
 - [Shizu_Stack_pushInteger32](Stack/Shizu_Stack_pushInteger32.md)
 - [Shizu_Stack_pushObject](Stack/Shizu_Stack_pushObject.md)
 - [Shizu_Stack_pushVoid](Stack/Shizu_Stack_pushVoid.md)
-- [Shizu_State](Shizu_State.md)
-- [Shizu_State_create](Shizu_State_create.md)
-- [Shizu_State_destroy](Shizu_State_destroy.md)
-- [Shizu_State_popJumpTarget](Shizu_State_popJumpTarget.md)
-- [Shizu_State_pushJumpTarget](Shizu_State_pushJumpTarget.md)
+- [Shizu_State2](Shizu_State2.md)
+- [Shizu_State2_create](Shizu_State2_create.md)
+- [Shizu_State2_destroy](Shizu_State2_destroy.md)
+- [Shizu_State2_popJumpTarget](Shizu_State2_popJumpTarget.md)
+- [Shizu_State2_pushJumpTarget](Shizu_State2_pushJumpTarget.md)
 - [Shizu_String](Shizu_String.md)
 
 *T*

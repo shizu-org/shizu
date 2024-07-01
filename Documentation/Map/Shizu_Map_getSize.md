@@ -8,7 +8,7 @@ Get the size of a `Shizu_Map` value.
 size_t
 Shizu_Map_getSize
   (
-    Shizu_State* state,
+    Shizu_State2* state,
     Shizu_Map* self
   );
 ```
