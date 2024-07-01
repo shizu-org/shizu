@@ -114,7 +114,7 @@ Ast_getChild
 {
   Shizu_Value value = Shizu_List_getValue(state, self->children, index);
   if (!Shizu_Value_isObject(&value)) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
   return (Ast*)Shizu_Value_getObject(&value);

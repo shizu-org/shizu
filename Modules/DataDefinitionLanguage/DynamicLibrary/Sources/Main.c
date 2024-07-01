@@ -29,7 +29,7 @@ createScanner
   )
 {
   if (0 != numberOfArgumentValues) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);
   }
   Shizu_Value_setObject(returnValue, (Shizu_Object*)Scanner_create(state));
@@ -45,7 +45,7 @@ createParser
   )
 {
   if (0 != numberOfArgumentValues) {
-    Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);
   }
   Shizu_Value_setObject(returnValue, (Shizu_Object*)Parser_create(state));
@@ -71,7 +71,10 @@ getOrCreateEnvironment
 Shizu_Module_Export void
 Shizu_ModuleLibrary_load
   (
-    Shizu_State2* state
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
   )
 {
   Shizu_Dl* dl = NULL;
@@ -170,7 +173,10 @@ Shizu_ModuleLibrary_load
 Shizu_Module_Export void
 Shizu_ModuleLibrary_unload
   (
-    Shizu_State2* state
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
   )
 {
   fprintf(stdout, "[Module : DataDefinitionLanguage] unloaded\n");
@@ -189,6 +195,9 @@ Shizu_ModuleLibrary_getName
 Shizu_Module_Export void
 Shizu_ModuleLibrary_update
   (
-    Shizu_State2* state
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
   )
 { fprintf(stdout, "[Module : DataDefinitionLanguage] update\n"); }
