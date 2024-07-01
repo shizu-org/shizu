@@ -105,7 +105,7 @@ Compiler_Scanner_callImpl
     idlib_byte_sequence_compare(&result, methodNameBytes, "step", sizeof("step") - 1);
     if (!result) {
       if (0 != numberOfArguments) {
-        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
         Shizu_State2_jump(state);
       }
       Compiler_Scanner_step(state, self);
@@ -118,11 +118,11 @@ Compiler_Scanner_callImpl
     idlib_byte_sequence_compare(&result, methodNameBytes, "setInput", sizeof("setInput") - 1);
     if (!result) {
       if (1 != numberOfArguments) {
-        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
         Shizu_State2_jump(state);
       }
       if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Value_getObject(&arguments[0])->type, Shizu_String_getType(state))) {
-        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
         Shizu_State2_jump(state);
       }
       Compiler_Scanner_setInput(state, self, (Shizu_String*)Shizu_Value_getObject(&arguments[0]));
@@ -135,14 +135,14 @@ Compiler_Scanner_callImpl
     idlib_byte_sequence_compare(&result, methodNameBytes, "getTokenType", sizeof("getTokenType") - 1);
     if (!result) {
       if (0 != numberOfArguments) {
-        Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+        Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
         Shizu_State2_jump(state);
       }
       Shizu_Value_setInteger32(returnValue, Compiler_Scanner_getTokenType(state, self));
       return;
     }
   }
-  Shizu_State2_setStatus(state, Shizu_Status_ArgumentInvalid);
+  Shizu_State2_setStatus(state, Shizu_Status_MethodNotFound);
   Shizu_State2_jump(state);
 }
 
