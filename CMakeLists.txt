@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.29)
 
 # Set the project name.
 project(Shizu.Runtime LANGUAGES C)
@@ -30,31 +30,66 @@ set(name "Shizu.Runtime")
 
 # Copy the files of the rendition to the interpreter binary directory.
 # rendition_name The rendition name.
-macro(copy_plugin target module)
+function(on_plugin target module)
+  set(SOURCE_FILE $<TARGET_FILE:${module}>)
+  set(TARGET_FILE $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:${module}>)
+  # ${target} now depends on ${module}.
+  #add_dependencies(${target} ${SOURCE_FILE})
+  message(STATUS "[on_plugin] ${target} depends on ${module}")
+  add_dependencies(${target} ${module})
   add_custom_command(
-    TARGET ${target} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different                                     # which executes "cmake -E copy_if_different..."
-            $<TARGET_FILE:${module}>                                                  # file to copy
-            $<TARGET_FILE_DIR:${target}>                                              # target directory
-    DEPENDS $<TARGET_FILE:${module}> 
-  )
-endmacro()
+    TARGET ${target} POST_BUILD   
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${SOURCE_FILE}
+            ${TARGET_FILE}
+    DEPENDS ${SOURCE_FILE}
+    COMMENT "[on plugin] copying ${SOURCE_FILE} to ${TARGET_FILE}"   )
+endfunction()
 
-macro(copy_assets name)
-  get_target_property(source_dir_foo ${name} SOURCE_DIR)
-  message(STATUS "- [copy_assets] ${name} source dir: ${source_dir_foo}")
-  file(GLOB_RECURSE assets_to_copy_foo RELATIVE ${source_dir_foo}/Assets ${source_dir_foo}/Assets/*.* )
-  message(STATUS "- [copy_assets] ${name} assets: ${assets_to_copy_foo}")
-  foreach (asset_to_copy_foo ${assets_to_copy_foo})
+function(on_plugins target)
+  # Get the prerequisite modules of the target.
+  get_target_property(prerequisiteModules ${target} prerequisiteModules)
+  
+  # Expand the prerequisite modules transitively.
+  # For each prerequisite module A: Include any direct prerequisite
+  set(CONTINUE TRUE)
+  WHILE(CONTINUE)
+	set(CONTINUE FALSE)
+	get_target_property(xl ${target} prerequisiteModules)
+    foreach (x ${xl})
+		get_target_property(yl ${x} prerequisiteModules)
+		foreach (y ${yl})
+			if (NOT "${y}" IN_LIST xl)
+			  message(STATUS "adding ${y} to ${xl}")
+			  list(APPEND xl ${y})
+			  set(CONTINUE TRUE)
+			endif()
+		endforeach()
+    endforeach()
+    set_target_properties(${target} PROPERTIES prerequisiteModules "${xl}")
+  ENDWHILE()
+  
+  get_target_property(xl ${target} prerequisiteModules)
+  foreach (x ${xl})
+    on_plugin(${target} ${x})
+  endforeach()
+endfunction()
+
+function(on_assets name)
+  get_target_property(source_dir ${name} SOURCE_DIR)
+  message(STATUS "- [on_assets] ${name} source dir: ${source_dir}")
+  file(GLOB_RECURSE assets_to_copy RELATIVE ${source_dir}/Assets ${source_dir}/Assets/*.* )
+  message(STATUS "- [on_assets] ${name} assets: ${assets_to_copy}")
+  foreach (asset_to_copy ${assets_to_copy})
     add_custom_command(
       TARGET ${name} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${name}>/Assets
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different                                     # which executes "cmake - E copy_if_different..."
-              ${source_dir_foo}/Assets/${asset_to_copy_foo}                                 # file to copy
-              $<TARGET_FILE_DIR:${name}>/Assets/${asset_to_copy_foo}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different                                 # which executes "cmake - E copy_if_different..."
+              ${source_dir}/Assets/${asset_to_copy}                                 # file to copy
+              $<TARGET_FILE_DIR:${name}>/Assets/${asset_to_copy}
     )
   endforeach()
-endmacro()
+endfunction()
 
 include(FetchContent)
 

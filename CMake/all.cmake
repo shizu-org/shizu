@@ -100,6 +100,7 @@ macro(Shizu_endExecutable)
   source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.source_files})
   
   set_property(TARGET ${name} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+  set_property(TARGET ${name} PROPERTY prerequisiteModules "")
   
   # We must define -rdynamic under Linux.
   if (${${name}.operating_system} STREQUAL ${${name}.operating_system_linux})
@@ -136,6 +137,8 @@ macro(Shizu_endDynamicLibrary)
   target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Includes")
 
   target_sources(${name} PRIVATE ${${name}.configuration_files} ${${name}.header_files} ${${name}.source_files})
+  
+  set_property(TARGET ${name} PROPERTY prerequisiteModules "")
 
   Shizu_configureWarningsAndErrors(${name})
   source_group(TREE ${CMAKE_CURRENT_BINARY_DIR} FILES ${${name}.configuration_files})
@@ -143,3 +146,4 @@ macro(Shizu_endDynamicLibrary)
   source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.source_files})
 
 endmacro()
+
