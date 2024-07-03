@@ -18,6 +18,8 @@
 #include "FileSystem/getFileContents.h"
 #include "FileSystem/getWorkingDirectory.h"
 #include "FileSystem/setFileContents.h"
+#include "FileSystem/isAbsolutePath.h"
+#include "FileSystem/isRelativePath.h"
 
 Shizu_Module_Export void
 Shizu_ModuleLibrary_load
@@ -40,68 +42,39 @@ Shizu_ModuleLibrary_load
   }
   environment = Shizu_Environment_getEnvironment(state, environment, Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
 
-  Shizu_State2_pushJumpTarget(state, &jumpTarget);
-  if (!setjmp(jumpTarget.environment)) {
-    dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &deleteFile);
-    Shizu_Value value;
-    Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &deleteFile, dl));
-    Shizu_Environment_set(state, environment, Shizu_String_create(state, "deleteFile", strlen("deleteFile")), &value);
-    Shizu_State2_popJumpTarget(state);
-    Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
-  } else {
-    Shizu_State2_popJumpTarget(state);
-    if (dl) {
-      Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
-    }
-    Shizu_State2_jump(state);
-  }
+  typedef struct FunctionInfo {
+    char const* name;
+    Shizu_CxxFunction* function; 
+  } FunctionInfo;
 
-  Shizu_State2_pushJumpTarget(state, &jumpTarget);
-  if (!setjmp(jumpTarget.environment)) {
-    dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &getFileContents);
-    Shizu_Value value;
-    Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &getFileContents, dl));
-    Shizu_Environment_set(state, environment, Shizu_String_create(state, "getFileContents", strlen("getFileContents")), &value);
-    Shizu_State2_popJumpTarget(state);
-    Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
-  } else {
-    Shizu_State2_popJumpTarget(state);
-    if (dl) {
-      Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
-    }
-    Shizu_State2_jump(state);
-  }
+  static const FunctionInfo g_functions[] = {
+    { "deleteFile", &deleteFile },
+    { "getFileContents", &getFileContents },
+    { "getWorkingDirectory", &getWorkingDirectory },
+    { "setFileContents", &setFileContents },
+    { "isAbsolutePath", &isAbsolutePath },
+    { "isRelativePath", &isRelativePath },
+  };
+  static const size_t g_numberOfFunctions = sizeof(g_functions) / sizeof(FunctionInfo);
 
-  Shizu_State2_pushJumpTarget(state, &jumpTarget);
-  if (!setjmp(jumpTarget.environment)) {
-    dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &getWorkingDirectory);
-    Shizu_Value value;
-    Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &getWorkingDirectory, dl));
-    Shizu_Environment_set(state, environment, Shizu_String_create(state, "getWorkingDirectory", strlen("getWorkingDirectory")), &value);
-    Shizu_State2_popJumpTarget(state);
-    Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
-  } else {
-    Shizu_State2_popJumpTarget(state);
-    if (dl) {
+  for (size_t i = 0, n = g_numberOfFunctions; i < n; ++i) {
+    FunctionInfo const* functionInfo = &(g_functions[i]);
+    Shizu_State2_pushJumpTarget(state, &jumpTarget);
+    if (!setjmp(jumpTarget.environment)) {
+      dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), functionInfo->function);
+      Shizu_Value value;
+      Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, functionInfo->function, dl));
+      Shizu_Environment_set(state, environment, Shizu_String_create(state, functionInfo->name, strlen(functionInfo->name)), &value);
+      Shizu_State2_popJumpTarget(state);
       Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
+    } else {
+      Shizu_State2_popJumpTarget(state);
+      if (dl) {
+        Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
+      }
+      Shizu_State2_jump(state);
     }
-    Shizu_State2_jump(state);
-  }
 
-  Shizu_State2_pushJumpTarget(state, &jumpTarget);
-  if (!setjmp(jumpTarget.environment)) {
-    dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &setFileContents);
-    Shizu_Value value;
-    Shizu_Value_setObject(&value, (Shizu_Object*)Shizu_CxxProcedure_create(state, &setFileContents, dl));
-    Shizu_Environment_set(state, environment, Shizu_String_create(state, "setFileContents", strlen("setFileContents")), &value);
-    Shizu_State2_popJumpTarget(state);
-    Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
-  } else {
-    Shizu_State2_popJumpTarget(state);
-    if (dl) {
-      Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
-    }
-    Shizu_State2_jump(state);
   }
 
   Shizu_State2_pushJumpTarget(state, &jumpTarget);

@@ -19,30 +19,31 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-cmake_minimum_required(VERSION 3.20)
-
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
 set(name "${moduleName}.Tests")
 Shizu_beginExecutable()
 
-list(APPEND ${name}.source_files Sources/Main.c)
+list(APPEND ${name}.source_files Sources/FileSystem/Tests/Main.c Sources/FileSystem/Tests/getFileContents.c Sources/FileSystem/Tests/setFileContents.c)
 
 Shizu_endExecutable()
+
+source_group(TREE ${CMAKE_CURRENT_BINARY_DIR} FILES ${${name}.configuration_files})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.header_files})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.source_files})
+
+target_include_directories(${name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Sources)
+target_include_directories(${name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Sources)
 
 target_link_libraries(${name} Shizu.Runtime)
 add_dependencies(${name} Shizu.Runtime)
 
 add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
 
-get_target_property(prerequisiteModules ${moduleName} prerequisiteModules)
+# Add the module being tested to the prerequisite modules of this test.
+get_target_property(prerequisiteModules ${name} prerequisiteModules)
 list(APPEND prerequisiteModules "${moduleName}")
+set_target_properties(${name} PROPERTIES prerequisiteModules "${prerequisiteModules}")
 
-message(STATUS " - adding prerequisite modules")
-foreach (prerequisiteModule ${prerequisiteModules})
-  message(STATUS " - - ${name} <- ${prerequisiteModule}")
-  add_dependencies(${name} ${prerequisiteModule})
-  copy_plugin(${name} ${prerequisiteModule})
-endforeach()
-
-copy_assets(${name})
+on_plugins(${name})
+on_assets(${name})

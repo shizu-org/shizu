@@ -72,3 +72,4 @@ getWorkingDirectory
   }
   Shizu_Value_setObject(returnValue, (Shizu_Object*)context.path);
 }
+

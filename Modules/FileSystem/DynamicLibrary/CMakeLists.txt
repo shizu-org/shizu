@@ -19,8 +19,6 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-cmake_minimum_required(VERSION 3.20)
-
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
 set(name ${moduleName})
@@ -39,6 +37,12 @@ list(APPEND ${name}.header_files Includes/FileSystem/getFileContents.h)
 
 list(APPEND ${name}.source_files Sources/FileSystem/deleteFile.c)
 list(APPEND ${name}.header_files Includes/FileSystem/deleteFile.h)
+
+list(APPEND ${name}.source_files Sources/FileSystem/isAbsolutePath.c)
+list(APPEND ${name}.header_files Includes/FileSystem/isAbsolutePath.h)
+
+list(APPEND ${name}.source_files Sources/FileSystem/isRelativePath.c)
+list(APPEND ${name}.header_files Includes/FileSystem/isRelativePath.h)
 
 list(APPEND ${name}.source_files Sources/FileSystem/Utilities.c)
 list(APPEND ${name}.header_files Includes/FileSystem/Utilities.h)
