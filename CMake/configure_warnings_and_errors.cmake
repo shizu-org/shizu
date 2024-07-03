@@ -47,4 +47,5 @@ macro(Shizu_configureWarningsAndErrors target)
 
   endif()
 
+endmacro()
 endmacro()

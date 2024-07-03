@@ -5,7 +5,7 @@
 *Shizu Runtime* requires
 - *make* Version 4.3.0 or better.
 - *gcc* Version 11.4.0 or better.
-- *cmake* Version 3.22.1 or better.
+- *cmake* Version 3.29.6 or better.
 - *git* version 2.39.2 or better.
 - Optional: *gdb* Version 12.1 or better.
 

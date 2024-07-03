@@ -5,7 +5,7 @@
 *Shizu* requires
 - *Microsoft Visual Studio Community 2022* Version 17.9.2 or better.
   *Microsoft Visual Studio Community 2022* is available at [https://visualstudio.microsoft.com/vs/community/](https://visualstudio.microsoft.com/vs/community/).
-- *Kitware CMake* Version 3.28.3 or better.
+- *Kitware CMake* Version 3.29.6 or better.
   *Kitware CMake* is available at [https://cmake.org/](https://cmake.org/).
 
 ## Building the program
