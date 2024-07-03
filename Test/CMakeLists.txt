@@ -19,5 +19,5 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-add_subdirectory(fundamental)
-add_subdirectory(bytearray)
+add_subdirectory(Fundamental)
+add_subdirectory(ByteArray)

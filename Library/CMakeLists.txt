@@ -19,8 +19,6 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-cmake_minimum_required(VERSION 3.20)
-
 set(name ${Shizu.Runtime.project-name})
 
 Shizu_beginLibrary()
