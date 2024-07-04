@@ -49,7 +49,7 @@ Compiler_Scanner_callImpl
     Shizu_Value* arguments
   );
 
-static Shizu_TypeDescriptor const Compiler_Scanner_Type = {
+static Shizu_ObjectTypeDescriptor const Compiler_Scanner_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -61,7 +61,7 @@ static Shizu_TypeDescriptor const Compiler_Scanner_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Compiler_Scanner, Compiler_Object);
+Shizu_defineObjectType(Compiler_Scanner, Compiler_Object);
 
 static void
 Compiler_Scanner_visit
@@ -99,7 +99,7 @@ Compiler_Scanner_callImpl
     Shizu_Integer32 numberOfArguments,
     Shizu_Value* arguments
   )
-{ 
+{
   if (numberOfMethodNameBytes == sizeof("step") - 1) {
     int8_t result;
     idlib_byte_sequence_compare(&result, methodNameBytes, "step", sizeof("step") - 1);
@@ -355,13 +355,13 @@ Compiler_Scanner_step
       self->current++;
       char old = *self->current;
       if (isNewline(self->end, self->current) && old != *self->current) {
-        self->current++; 
+        self->current++;
       }
     } while (isNewline(self->end, self->current));
     self->tokenType = Compiler_TokenType_EndOfLine;
     return;
   }
-  
+
   if (self->current == self->end) {
     self->tokenType = Compiler_TokenType_EndOfInput;
     return;

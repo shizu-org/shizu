@@ -3,12 +3,12 @@
 
 #include "Shizu/Runtime/Include.h"
 
-Shizu_declareType(Compiler_Object)
+Shizu_declareObjectType(Compiler_Object)
 
 struct Compiler_Object_Dispatch {
   Shizu_Object_Dispatch _parent;
 };
-       
+
 struct Compiler_Object {
   Shizu_Object _parent;
 };

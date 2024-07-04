@@ -52,7 +52,7 @@ Compiler_Parser_callImpl
     Shizu_Value* arguments
   );
 
-static Shizu_TypeDescriptor const Compiler_Parser_Type = {
+static Shizu_ObjectTypeDescriptor const Compiler_Parser_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -64,7 +64,7 @@ static Shizu_TypeDescriptor const Compiler_Parser_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Compiler_Parser, Compiler_Object);
+Shizu_defineObjectType(Compiler_Parser, Compiler_Object);
 
 static void
 Compiler_Parser_visit
@@ -72,7 +72,7 @@ Compiler_Parser_visit
     Shizu_State2* state,
     Compiler_Parser* self
   )
-{ 
+{
   if (self->scanner) {
     Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->scanner);
   }

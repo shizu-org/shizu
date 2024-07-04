@@ -4,7 +4,7 @@
 #include "Compiler/Object.h"
 #include "Compiler/Token.h"
 
-Shizu_declareType(Compiler_Scanner);
+Shizu_declareObjectType(Compiler_Scanner);
 
 struct Compiler_Scanner_Dispatch {
   Compiler_Object_Dispatch _parent;

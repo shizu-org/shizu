@@ -35,7 +35,7 @@ Compiler_Ast_visit
   }
 }
 
-static Shizu_TypeDescriptor const Compiler_Ast_Type = {
+static Shizu_ObjectTypeDescriptor const Compiler_Ast_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -47,7 +47,7 @@ static Shizu_TypeDescriptor const Compiler_Ast_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Compiler_Ast, Compiler_Object);
+Shizu_defineObjectType(Compiler_Ast, Compiler_Object);
 
 void
 Compiler_Ast_construct

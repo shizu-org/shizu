@@ -17,7 +17,7 @@ Compiler_Atom_visit
     Compiler_Atom* self
   );
 
-static Shizu_TypeDescriptor const Compiler_Atom_Type = {
+static Shizu_ObjectTypeDescriptor const Compiler_Atom_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -29,7 +29,7 @@ static Shizu_TypeDescriptor const Compiler_Atom_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Compiler_Atom, Compiler_Object);
+Shizu_defineObjectType(Compiler_Atom, Compiler_Object);
 
 static void
 Compiler_Atom_finalize
@@ -112,7 +112,7 @@ Compiler_Atoms_visit
     Compiler_Atoms* self
   );
 
-static Shizu_TypeDescriptor const Compiler_Atoms_Type = {
+static Shizu_ObjectTypeDescriptor const Compiler_Atoms_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -124,7 +124,7 @@ static Shizu_TypeDescriptor const Compiler_Atoms_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Compiler_Atoms, Compiler_Object);
+Shizu_defineObjectType(Compiler_Atoms, Compiler_Object);
 
 static void
 Compiler_Atoms_finalize
@@ -132,7 +132,7 @@ Compiler_Atoms_finalize
     Shizu_State2* state,
     Compiler_Atoms* self
   )
-{ 
+{
   if (self->buckets) {
     Shizu_State1_deallocate(Shizu_State2_getState1(state), self->buckets);
     self->buckets = NULL;

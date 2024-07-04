@@ -41,7 +41,7 @@ enum Compiler_TokenType  {
   Compiler_TokenType_Equal,
 };
 
-Shizu_declareType(Compiler_Token)
+Shizu_declareObjectType(Compiler_Token)
 
 struct Compiler_Token_Dispatch {
   Compiler_Object_Dispatch _parent;

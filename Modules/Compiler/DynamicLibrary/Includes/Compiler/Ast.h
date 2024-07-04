@@ -13,7 +13,7 @@ enum Compiler_AstType {
   Compiler_AstType_Constructor,
 };
 
-Shizu_declareType(Compiler_Ast)
+Shizu_declareObjectType(Compiler_Ast)
 
 struct Compiler_Ast_Dispatch {
   Compiler_Object_Dispatch _parent;

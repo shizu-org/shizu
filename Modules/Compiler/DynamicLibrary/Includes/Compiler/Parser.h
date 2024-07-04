@@ -5,7 +5,7 @@
 typedef struct Compiler_Ast Compiler_Ast;
 typedef struct Compiler_Scanner Compiler_Scanner;
 
-Shizu_declareType(Compiler_Parser);
+Shizu_declareObjectType(Compiler_Parser);
 
 struct Compiler_Parser_Dispatch {
   Compiler_Object_Dispatch _parent;

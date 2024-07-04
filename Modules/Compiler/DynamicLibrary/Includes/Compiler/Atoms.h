@@ -3,7 +3,7 @@
 
 #include "Compiler/Object.h"
 
-Shizu_declareType(Compiler_Atom);
+Shizu_declareObjectType(Compiler_Atom);
 
 struct Compiler_Atom_Dispatch {
   Compiler_Object_Dispatch _parent;
@@ -32,7 +32,7 @@ Compiler_Atom_create
     Shizu_ByteArray* bytes
   );
 
-Shizu_declareType(Compiler_Atoms);
+Shizu_declareObjectType(Compiler_Atoms);
 
 struct Compiler_Atoms_Dispatch {
   Compiler_Object_Dispatch _parent;

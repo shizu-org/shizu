@@ -21,7 +21,7 @@
 
 #include "Compiler/Object.h"
 
-static Shizu_TypeDescriptor const Compiler_Object_Type = {
+static Shizu_ObjectTypeDescriptor const Compiler_Object_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -33,7 +33,7 @@ static Shizu_TypeDescriptor const Compiler_Object_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Compiler_Object, Shizu_Object);
+Shizu_defineObjectType(Compiler_Object, Shizu_Object);
 
 void
 Compiler_Object_construct

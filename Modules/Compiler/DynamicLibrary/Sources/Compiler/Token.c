@@ -35,7 +35,7 @@ Compiler_Token_visit
   }
 }
 
-static Shizu_TypeDescriptor const Compiler_Token_Type = {
+static Shizu_ObjectTypeDescriptor const Compiler_Token_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -47,7 +47,7 @@ static Shizu_TypeDescriptor const Compiler_Token_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Compiler_Token, Compiler_Object);
+Shizu_defineObjectType(Compiler_Token, Compiler_Object);
 
 void
 Compiler_Token_construct
