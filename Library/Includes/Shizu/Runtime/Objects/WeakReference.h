@@ -31,7 +31,7 @@
 /// @todo Rename to "Shizu_WeakReferencesState".
 typedef struct Shizu_WeakReferences Shizu_WeakReferences;
 
-Shizu_declareType(Shizu_WeakReference);
+Shizu_declareObjectType(Shizu_WeakReference);
 
 /// @since 1.0
 /// @brief Create a Shizu_WeakReference value.

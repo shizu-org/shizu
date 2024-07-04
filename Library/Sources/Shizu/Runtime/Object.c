@@ -19,7 +19,7 @@ Shizu_Error_emitMethodCallContext
 {
   // Cxx file.
   fprintf(f, "file: %s", sourceLocationC.file);
-  
+
   // Cxx line.
   fprintf(f, ", ");
   fprintf(f, "line: %d", sourceLocationC.line);
@@ -111,7 +111,7 @@ Shizu_Object_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_TypeDescriptor const Shizu_Object_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_Object_Type = {
   .postCreateType = NULL,
   .preDestroyType = NULL,
   .visitType = NULL,
@@ -147,9 +147,7 @@ Shizu_Object_isEqualToImpl
     Shizu_Object* self,
     Shizu_Object* other
   )
-{
-  return self == other;
-}
+{ return self == other; }
 
 static void
 Shizu_Object_initializeDispatch
@@ -173,14 +171,14 @@ Shizu_Object_getType
                                                "Shizu_Object",
                                                sizeof("Shizu_Object") - 1);
   if (!type) {
-    type = Shizu_Types_createType(Shizu_State2_getState1(state),
-                                  Shizu_State2_getTypes(state),
-                                  "Shizu_Object",
-                                  sizeof("Shizu_Object") - 1,
-                                  NULL,
-                                  NULL,
-                                  &Shizu_Object_typeDestroyed,
-                                  &Shizu_Object_Type);
+    type = Shizu_Types_createObjectType(Shizu_State2_getState1(state),
+                                        Shizu_State2_getTypes(state),
+                                        "Shizu_Object",
+                                        sizeof("Shizu_Object") - 1,
+                                        NULL,
+                                        NULL,
+                                        &Shizu_Object_typeDestroyed,
+                                        &Shizu_Object_Type);
   }
   return type;
 }

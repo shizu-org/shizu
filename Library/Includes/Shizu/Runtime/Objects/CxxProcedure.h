@@ -27,11 +27,11 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 
-/// @todo 
+/// @todo
 /// Add calling modes:
 /// "tier2" (requires at least tier 2 state)
 /// "tier3" (requires at least tier 3 state)
-Shizu_declareType(Shizu_CxxProcedure);
+Shizu_declareObjectType(Shizu_CxxProcedure);
 
 struct Shizu_CxxProcedure_Dispatch {
   Shizu_Object_Dispatch _parent;

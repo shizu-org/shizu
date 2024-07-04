@@ -47,7 +47,7 @@ Shizu_Gc_create
 {
   Shizu_Gc* self = Shizu_State1_allocate(state1, sizeof(Shizu_Gc));
   if (!self) {
-    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
   }
   self->all = NULL;
@@ -170,7 +170,7 @@ Shizu_Gc_allocateObject
   Shizu_Object* self = Shizu_State1_allocate(Shizu_State2_getState1(state), size);
   if (!self) {
     fprintf(stderr, "%s:%d: unable to allocate `%zu` Bytes\n", __FILE__, __LINE__, size);
-    Shizu_State1_setStatus(Shizu_State2_getState1(state), 1);
+    Shizu_State1_setStatus(Shizu_State2_getState1(state), Shizu_Status_AllocationFailed);
     Shizu_State1_jump(Shizu_State2_getState1(state));
   }
   Shizu_Gc* gc = Shizu_State2_getGc(state);
@@ -267,7 +267,7 @@ Shizu_Gc_run
     Shizu_Gc_SweepInfo* sweepInfo
   )
 {
-  Shizu_debugAssert(NULL == self->gray); 
+  Shizu_debugAssert(NULL == self->gray);
   notifyPreMarkHooks(state, self);
   // Mark.
   while (self->gray) {
@@ -279,7 +279,7 @@ Shizu_Gc_run
     if (!Shizu_Object_isBlack(object)) {
       Shizu_Object_setBlack(object);
       Shizu_debugAssert(NULL != object->type->descriptor->visit);
-      object->type->descriptor->visit(state, object);
+      object->type->objectType.descriptor->visit(state, object);
     }
   }
   // Sweep.
@@ -295,10 +295,10 @@ Shizu_Gc_run
       //       Investigage if there is a relevant performance gain when only one hash table is used?
       notifyObjectFinalizeHooks(state, self, object);
       while (object->type) {
-        if (object->type->descriptor->finalize) {
-          object->type->descriptor->finalize(state, object);
+        if (object->type->objectType.descriptor->finalize) {
+          object->type->objectType.descriptor->finalize(state, object);
         }
-        object->type = object->type->parentType;
+        object->type = object->type->objectType.parentType;
       }
       dead++;
       free(object);
@@ -325,7 +325,7 @@ Shizu_Gc_visitObject
   )
 {
   if (Shizu_Object_isWhite(object)) {
-    if (object->type->descriptor->visit) {
+    if (object->type->objectType.descriptor->visit) {
       // If there is a visit function, put the object in the gray list and color it gray.
       Shizu_Object_setGray(object);
       Shizu_debugAssert(NULL == object->gray);
@@ -364,7 +364,7 @@ Shizu_Gc_addPreMarkHook
     Shizu_Gc_PreMarkCallbackContext* context,
     Shizu_Gc_PreMarkCallbackFunction* function
   )
-{ 
+{
   PreMarkHookNode* node = Shizu_State1_allocate(state, sizeof(PreMarkHookNode));
   if (!node) {
     Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
@@ -386,7 +386,7 @@ Shizu_Gc_removePreMarkHook
     Shizu_Gc_PreMarkCallbackFunction* function
   )
 {
-  if (gc->preMarkHooks.running) { 
+  if (gc->preMarkHooks.running) {
     PreMarkHookNode* node = gc->preMarkHooks.nodes;
     while (node) {
       if (node->context == context && node->function == function) {
@@ -419,7 +419,7 @@ Shizu_Gc_addObjectFinalizeHook
     Shizu_Gc_ObjectFinalizeCallbackContext* context,
     Shizu_Gc_ObjectFinalizeCallbackFunction* function
   )
-{ 
+{
   ObjectFinalizeHookNode* node = Shizu_State1_allocate(state, sizeof(ObjectFinalizeHookNode));
   if (!node) {
     Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);

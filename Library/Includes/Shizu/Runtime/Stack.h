@@ -190,6 +190,14 @@ Shizu_Stack_isObject
   );
 
 bool
+Shizu_Stack_isType
+  (
+    Shizu_State1* state,
+    Shizu_Stack* self,
+    size_t index
+  );
+
+bool
 Shizu_Stack_isVoid
   (
     Shizu_State1* state,
@@ -231,6 +239,14 @@ Shizu_Stack_getInteger32
 
 Shizu_Object*
 Shizu_Stack_getObject
+  (
+    Shizu_State1* state,
+    Shizu_Stack* self,
+    size_t index
+  );
+
+Shizu_Type*
+Shizu_Stack_getType
   (
     Shizu_State1* state,
     Shizu_Stack* self,

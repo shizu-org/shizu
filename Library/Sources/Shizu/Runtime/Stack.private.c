@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/CxxUtilities.h"
 #include "Shizu/Runtime/Gc.h"
 
-// malloc, free
-#include <malloc.h>
-
 struct Shizu_Stack {
   Shizu_Value* elements;
   size_t size;
@@ -83,12 +80,12 @@ Shizu_Stack_destroy
   )
 {
   self->size = 0;
-  
-  free(self->elements);
+
+  Shizu_State1_deallocate(state, self->elements);
   self->elements = NULL;
   self->capacity = 0;
-  
-  free(self);
+
+  Shizu_State1_deallocate(state, self);
   self = NULL;
 }
 

@@ -93,7 +93,7 @@ Shizu_Errors_raiseMethodNotImplemented
   } \
   return dispatch->METHOD(state, __VA_ARGS__);
 
-Shizu_declareType(Shizu_Object);
+Shizu_declareObjectType(Shizu_Object);
 
 struct Shizu_Object_Dispatch {
   Shizu_Object_Dispatch* parent;

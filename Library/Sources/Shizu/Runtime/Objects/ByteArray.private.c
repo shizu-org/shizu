@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-// malloc, free
-#include <malloc.h>
-
 // memcmp, memcpy
 #include <string.h>
 
@@ -83,7 +80,7 @@ Shizu_ByteArray_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_TypeDescriptor const Shizu_ByteArray_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_ByteArray_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_ByteArray_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_ByteArray_preDestroyType,
   .visitType = NULL,
@@ -230,7 +227,7 @@ Shizu_ByteArray_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineType(Shizu_ByteArray, Shizu_Object);
+Shizu_defineObjectType(Shizu_ByteArray, Shizu_Object);
 
 void
 Shizu_ByteArray_construct
@@ -322,7 +319,7 @@ Shizu_ByteArray_insertValue
             self->elements + index + 1,
             sizeof(uint8_t) * (self->size - index));
   }
-  
+
   self->elements[index] = (uint8_t)Shizu_Value_getInteger32(value);
   self->size++;
 }
@@ -340,7 +337,7 @@ Shizu_ByteArray_appendValue
 
 void
 Shizu_ByteArray_prependValue
-  ( 
+  (
     Shizu_State2* state,
     Shizu_ByteArray* self,
     Shizu_Value const* value
@@ -351,7 +348,7 @@ Shizu_ByteArray_prependValue
 
 void
 Shizu_ByteArray_insertRawBytes
-  (  
+  (
     Shizu_State2* state,
     Shizu_ByteArray* self,
     size_t i,
@@ -404,7 +401,7 @@ Shizu_ByteArray_apppendRawBytes
 
 void*
 Shizu_ByteArray_getRawBytes
-  (  
+  (
     Shizu_State2* state,
     Shizu_ByteArray* self
   )

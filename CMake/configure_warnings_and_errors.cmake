@@ -19,13 +19,18 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# For MSVC: Turn on several warnings.
+# For GCC: Turn several warnings into errors.
+# For MSVC: Turn several warnings into errors.
 macro(Shizu_configureWarningsAndErrors target)
+  if (NOT DEFINED ${target}.compiler_c)
+    message(FATAL_ERROR "please execute detect_compiler before Shizu_configureWarningsAndErrors")
+  endif()
+  if (${${target}.compiler_c} STREQUAL ${${target}.compiler_c_gcc})
+    target_compile_options(${target} BEFORE PRIVATE "-Werror=implicit-function-declaration")
+  endif()
 
-  if(MSVC)
-
+  if(${${target}.compiler_c} STREQUAL ${${target}.compiler_c_msvc})
     set(${target}.compile_options "")
-
     # C4090:  'opertion' : different 'modifier' qualifiers
     list(APPEND ${target}.compile_options "/we4090")
     # C4133: 'function' incompatible types - from 'type1' to 'type2'

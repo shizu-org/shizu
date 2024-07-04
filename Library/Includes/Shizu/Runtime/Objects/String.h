@@ -27,7 +27,7 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 
-Shizu_declareType(Shizu_String);
+Shizu_declareObjectType(Shizu_String);
 
 /// @since 1.0
 /// @brief Create a Shizu_String value from the specified sequence of Bytes.

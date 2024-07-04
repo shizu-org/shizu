@@ -27,11 +27,13 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 typedef struct Shizu_CxxProcedure Shizu_CxxProcedure;
-typedef struct Shizu_Environment Shizu_Environment;
+typedef struct Shizu_Map Shizu_Map;
+typedef struct Shizu_List Shizu_List;
 typedef struct Shizu_String Shizu_String;
 typedef struct Shizu_WeakReference Shizu_WeakReference;
 
-Shizu_declareType(Shizu_Environment);
+
+Shizu_declareObjectType(Shizu_Environment);
 
 /// @since 1.0
 /// @brief Create a Shizu_Environment value.

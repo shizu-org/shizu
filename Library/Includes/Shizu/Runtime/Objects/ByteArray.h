@@ -28,7 +28,7 @@
 #include "Shizu/Runtime/Object.h"
 
 /// Shizu_ByteArray is ued to transfer Bytes between the managed and the environment.
-Shizu_declareType(Shizu_ByteArray);
+Shizu_declareObjectType(Shizu_ByteArray);
 
 /// @since 1.0
 /// @brief Create a Shizu_ByteArray value.
@@ -38,47 +38,47 @@ Shizu_declareType(Shizu_ByteArray);
 Shizu_ByteArray*
 Shizu_ByteArray_create
   (
-	  Shizu_State2* state
+    Shizu_State2* state
   );
 
 Shizu_Value
 Shizu_ByteArray_getValue
   (
-	  Shizu_State2* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self,
-	  size_t index
+    size_t index
   );
 
 Shizu_Value
 Shizu_ByteArray_getSize
   (
-	  Shizu_State2* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self
   );
 
 void
 Shizu_ByteArray_insertValue
   (
-	  Shizu_State2* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self,
-	  size_t index,
-	  Shizu_Value const* value
+    size_t index,
+    Shizu_Value const* value
   );
 
 void
 Shizu_ByteArray_appendValue
   (
-	  Shizu_State2* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self,
-	  Shizu_Value const* value
+    Shizu_Value const* value
   );
 
 void
 Shizu_ByteArray_prependValue
   (
-	  Shizu_State2* state,
+    Shizu_State2* state,
     Shizu_ByteArray* self,
-	  Shizu_Value const* value
+    Shizu_Value const* value
   );
 
 void

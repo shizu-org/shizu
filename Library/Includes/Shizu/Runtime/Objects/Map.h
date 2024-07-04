@@ -27,7 +27,7 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 
-Shizu_declareType(Shizu_Map);
+Shizu_declareObjectType(Shizu_Map);
 
 /// @since 1.0
 /// @brief Create a Shizu_Map value.

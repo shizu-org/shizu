@@ -23,11 +23,11 @@
 #define SHIZU_RUNTIME_LIST_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
-	#error("Do not include `Shizu/Runtime/Objects/List.h` directly. Include `Shizu/Runtime/Include.h` instead.")
+  #error("Do not include `Shizu/Runtime/Objects/List.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Object.h"
 
-Shizu_declareType(Shizu_List);
+Shizu_declareObjectType(Shizu_List);
 
 /// @since 1.0
 /// @brief Create a Shizu_List value.
@@ -42,45 +42,45 @@ Shizu_List_create
 
 Shizu_Value
 Shizu_List_getValue
-	(
-		Shizu_State2* state,
-		Shizu_List* self,
-		size_t index
-	);
+  (
+    Shizu_State2* state,
+    Shizu_List* self,
+    size_t index
+  );
 
 /// @since 1.0
 /// @brief Get the size of this Shizu_List object.
 size_t
 Shizu_List_getSize
-	(
-		Shizu_State2* state,
-		Shizu_List* self
-	);
+  (
+    Shizu_State2* state,
+    Shizu_List* self
+  );
 
 void
 Shizu_List_insertValue
-	(
-		Shizu_State2* state,
-		Shizu_List* self,
-		size_t index,
-		Shizu_Value const* value
-	);
+  (
+    Shizu_State2* state,
+    Shizu_List* self,
+    size_t index,
+    Shizu_Value const* value
+  );
 
 void
 Shizu_List_appendValue
-	(
-		Shizu_State2* state,
-		Shizu_List* self,
-		Shizu_Value const* value
-	);
+  (
+    Shizu_State2* state,
+    Shizu_List* self,
+    Shizu_Value const* value
+  );
 
 void
 Shizu_List_prependValue
-	( 
-		Shizu_State2* state,
-		Shizu_List* self,
-		Shizu_Value const* value
-	);
+  (
+    Shizu_State2* state,
+    Shizu_List* self,
+    Shizu_Value const* value
+  );
 
 /**
  * @since 0.1
@@ -92,15 +92,15 @@ Shizu_List_prependValue
  */
 static inline void
 Shizu_List_appendBoolean
-	(
-		Shizu_State2* state,
-		Shizu_List* list,
-		Shizu_Boolean element
-	)
+  (
+    Shizu_State2* state,
+    Shizu_List* list,
+    Shizu_Boolean element
+  )
 {
-	Shizu_Value value;
-	Shizu_Value_setBoolean(&value, element);
-	Shizu_List_appendValue(state, list, &value);
+  Shizu_Value value;
+  Shizu_Value_setBoolean(&value, element);
+  Shizu_List_appendValue(state, list, &value);
 }
 
 /**
@@ -114,15 +114,15 @@ Shizu_List_appendBoolean
  */
 static inline void
 Shizu_List_appendCxxFunction
-	(
-		Shizu_State2* state,
-		Shizu_List* list,
-		Shizu_CxxFunction* element
-	)
+  (
+    Shizu_State2* state,
+    Shizu_List* list,
+    Shizu_CxxFunction* element
+  )
 {
-	Shizu_Value value;
-	Shizu_Value_setCxxFunction(&value, element);
-	Shizu_List_appendValue(state, list, &value);
+  Shizu_Value value;
+  Shizu_Value_setCxxFunction(&value, element);
+  Shizu_List_appendValue(state, list, &value);
 }
 
 /**
@@ -135,15 +135,15 @@ Shizu_List_appendCxxFunction
  */
 static inline void
 Shizu_List_appendInteger32
-	(
-		Shizu_State2* state,
-		Shizu_List* list,
-		Shizu_Integer32 element
-	)
+  (
+    Shizu_State2* state,
+    Shizu_List* list,
+    Shizu_Integer32 element
+  )
 {
-	Shizu_Value value;
-	Shizu_Value_setInteger32(&value, element);
-	Shizu_List_appendValue(state, list, &value);
+  Shizu_Value value;
+  Shizu_Value_setInteger32(&value, element);
+  Shizu_List_appendValue(state, list, &value);
 }
 
 /**
@@ -157,15 +157,15 @@ Shizu_List_appendInteger32
  */
 static inline void
 Shizu_List_appendObject
-	(
-		Shizu_State2* state,
-		Shizu_List* list,
-		Shizu_Object* element
-	)
+  (
+    Shizu_State2* state,
+    Shizu_List* list,
+    Shizu_Object* element
+  )
 {
-	Shizu_Value value;
-	Shizu_Value_setObject(&value, element);
-	Shizu_List_appendValue(state, list, &value);
+  Shizu_Value value;
+  Shizu_Value_setObject(&value, element);
+  Shizu_List_appendValue(state, list, &value);
 }
 
 /**
@@ -179,15 +179,15 @@ Shizu_List_appendObject
  */
 static inline void
 Shizu_List_appendVoid
-	(
-		Shizu_State2* state,
-		Shizu_List* self,
-		Shizu_Void element
-	)
+  (
+    Shizu_State2* state,
+    Shizu_List* self,
+    Shizu_Void element
+  )
 {
-	Shizu_Value value;
-	Shizu_Value_setVoid(&value, element);
-	Shizu_List_appendValue(state, self, &value);
+  Shizu_Value value;
+  Shizu_Value_setVoid(&value, element);
+  Shizu_List_appendValue(state, self, &value);
 }
 
 #endif // SHIZU_RUNTIME_LIST_H_INCLUDED

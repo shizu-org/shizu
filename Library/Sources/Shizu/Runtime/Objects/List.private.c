@@ -78,7 +78,7 @@ Shizu_List_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_TypeDescriptor const Shizu_List_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_List_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_List_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_List_preDestroyType,
   .visitType = NULL,
@@ -190,7 +190,7 @@ Shizu_List_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineType(Shizu_List, Shizu_Object);
+Shizu_defineObjectType(Shizu_List, Shizu_Object);
 
 void
 Shizu_List_construct
@@ -308,7 +308,7 @@ Shizu_List_appendValue
 
 void
 Shizu_List_prependValue
-  ( 
+  (
     Shizu_State2* state,
     Shizu_List* self,
     Shizu_Value const* value

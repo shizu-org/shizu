@@ -104,8 +104,8 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Object.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Object.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/State/TypeEnvironment.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/State/TypeEnvironment.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Types/_SmallTypeArray.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Types/_SmallTypeArray.h)
 
 # Configuration variables for 'Configure.h.in'.
 if (${${name}.operating_system} STREQUAL ${${name}.operating_system_windows})

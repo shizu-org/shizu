@@ -25,8 +25,9 @@
 #include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Gc.h"
 #include "Shizu/Runtime/Object.h"
+typedef struct Shizu_String Shizu_String;
 
-Shizu_declareType(Shizu_Module);
+Shizu_declareObjectType(Shizu_Module);
 
 struct Shizu_Module_Dispatch {
   Shizu_Object_Dispatch _parent;
@@ -35,7 +36,7 @@ struct Shizu_Module_Dispatch {
 struct Shizu_Module {
   Shizu_Object _parent;
 
-  // The path to the module dl file. 
+  // The path to the module dl file.
   Shizu_String* path;
 
   // Pointer to the dl object if the dl is loaded. The null pointer otherwise.

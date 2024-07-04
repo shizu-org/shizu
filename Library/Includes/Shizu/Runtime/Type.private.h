@@ -29,23 +29,47 @@
 #include "Shizu/Runtime/Type.h"
 #include "Shizu/Runtime/Types/_SmallTypeArray.h"
 
+/// This flag is set for the "Object" and derived type types.
+#define Shizu_TypeFlags_ObjectType (1)
+
+/// This flag is set for "Boolean", "CxxFunction", "Float32", "Integer32", and "Void" types.
+#define Shizu_TypeFlags_PrimitiveType (2)
+
 /// This flag is set after a succesfull call to Shizu_OnPostCreateTypeCallback function for a type.
 /// If the call is not successful, this flag is not set in that type.
 /// If this flag is set in a type before that type is destroyed, the Shizu_OnPreDestroyTypeCallback function (if any) is invoked and this flag is cleared for that type.
 #define Shizu_TypeFlags_PostTypeCreationInvoked (4)
 
-// This flag is set after a successful call to the Shizu_OnDispatchInitialize function of the type. If the call is not successful, the flag is not set.
-// A successful call to Shizu_OnDispatchUninitialize clears the flag.
-#define Shizu_TypeFlags_DispatchInitialized (2)
+/// This flag is set after a successful call to the Shizu_OnDispatchInitialize function of the type. If the call is not successful, the flag is not set.
+/// A successful call to Shizu_OnDispatchUninitialize clears the flag.
+#define Shizu_TypeFlags_DispatchInitialized (8)
 
 typedef struct Shizu_Type Shizu_Type;
 
 typedef struct Shizu_Types Shizu_Types;
 
+typedef struct Shizu_PrimitiveTypeNode {
+  // Pointer to the type descriptor.
+  Shizu_PrimitiveTypeDescriptor const* descriptor;
+} Shizu_PrimitiveTypeNode;
+
+typedef struct Shizu_ObjectTypeNode {
+  // Pointer to the type descriptor.
+  Shizu_ObjectTypeDescriptor const* descriptor;
+  // A pointer to the dispatch if Shizu_TypeFlags_DispatchInitialized is set in flags.
+  // The null pointer otherwise.
+  Shizu_Object_Dispatch* dispatch;
+  // The parent type of this type (null only for the "Object" type).
+  Shizu_Type* parentType;
+  // The array of pointers to child types of this type.
+  SmallTypeArray children;
+} Shizu_ObjectTypeNode;
+
 struct Shizu_Type {
   Shizu_Type* next;
-  Shizu_Type* parentType;
+  // The flags of this type.
   uint8_t flags;
+  // The name of this type.
   struct {
     size_t hashValue;
     // The number of Bytes including the zero terminator.
@@ -53,15 +77,15 @@ struct Shizu_Type {
     // A pointer to an array of @a numberOfBytes containing a zero-terminated C string.
     char* bytes;
   } name;
-  Shizu_OnTypeDestroyedCallback* typeDestroyed;
-  Shizu_TypeDescriptor const* descriptor;
-  // The array of pointers to child types of this type.
-  SmallTypeArray children;
   // A pointer to the DL from which the type originates from or the null pointer.
   Shizu_Dl* dl;
-  // A pointer to the dispatch if Shizu_TypeFlags_DispatchInitialized is set in flags.
-  // The null pointer otherwise.
-  Shizu_Object_Dispatch* dispatch;
+  // A pointer to a "type destroyed" callback function or the null pointer.
+  Shizu_OnTypeDestroyedCallback* typeDestroyed;
+
+  union {
+    Shizu_ObjectTypeNode objectType;
+    Shizu_PrimitiveTypeNode primitiveType;
+  };
 };
 
 struct Shizu_Types{
@@ -110,7 +134,7 @@ Shizu_Types_onPostCreateType
 
 // Ensure the type scoped data is uninitialized.
 // If the Shizu_TypeFlags_PostCreateTypeInvoked is set, this function invokes the Shizu_OnPreDestroyTypeCallback if it exists.
-// If this function does not exist or the call to this function succeeds, it will set clear the Shizu_TypeFlags_PostCreateTypeInvoked flag.  
+// If this function does not exist or the call to this function succeeds, it will set clear the Shizu_TypeFlags_PostCreateTypeInvoked flag.
 void
 Shizu_Types_onPreDestroyType
   (
@@ -142,7 +166,7 @@ Shizu_Types_ensureDispatchUninitialized
 // Furthermore, the type must have zero children.
 void
 Shizu_Type_destroy
-  (  
+  (
     Shizu_State1* state1,
     Shizu_Types* self,
     Shizu_Type* type

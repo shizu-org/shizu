@@ -25,6 +25,24 @@
 #include "Shizu/Runtime/Type.private.h"
 
 bool
+Shizu_Type_isObjectType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  )
+{ return (Shizu_TypeFlags_ObjectType == (Shizu_TypeFlags_ObjectType & x->flags)); }
+
+bool
+Shizu_Type_isPrimitiveType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  )
+{ return (Shizu_TypeFlags_PrimitiveType == (Shizu_TypeFlags_PrimitiveType & x->flags)); }
+
+bool
 Shizu_Types_isSubTypeOf
   (
     Shizu_State1* state1,
@@ -33,12 +51,20 @@ Shizu_Types_isSubTypeOf
     Shizu_Type const* y
   )
 {
+  if (0 == (Shizu_TypeFlags_ObjectType & x->flags)) {
+    // "x" cannot be subtype of any type except of itself.
+    return x == y;
+  }
+  if (0 == (Shizu_TypeFlags_ObjectType & y->flags)) {
+    // "y" cannot be supertype of any type except of itself.
+    return x == y;
+  }
   Shizu_Type const* z = x;
   do {
     if (z == y) {
       break;
     }
-    z = z->parentType;
+    z = z->objectType.parentType;
   } while (z);
   return NULL != z;
 }
@@ -52,12 +78,23 @@ Shizu_Types_isTrueSubTypeOf
     Shizu_Type const* y
   )
 {
+  if (0 == (Shizu_TypeFlags_ObjectType & x->flags)) {
+    // "x" cannot be subtype of any type except of itself.
+    // However, not type can be a true subtype of itself.
+    return false;
+  }
+  if (0 == (Shizu_TypeFlags_ObjectType & y->flags)) {
+    // "y" cannot be supertype of any type except of itself.
+    // However, not type can be a true supertype of itself.
+    return false;
+  }
+
   Shizu_Type const* z = x;
   do {
-    if (z->parentType == y) {
+    if (z->objectType.parentType == y) {
       break;
     }
-    z = z->parentType;
+    z = z->objectType.parentType;
   } while (z);
   return NULL != z;
 }
@@ -70,12 +107,16 @@ Shizu_Types_getParentType
     Shizu_Type* x
   )
 {
-  return x->parentType;
+  if (0 == (Shizu_TypeFlags_ObjectType & x->flags)) {
+    return NULL;
+  } else {
+    return x->objectType.parentType;
+  }
 }
 
 void
 Shizu_Types_getTypeName
-  (  
+  (
     Shizu_State1* state1,
     Shizu_Types* self,
     Shizu_Type* x,
@@ -95,5 +136,9 @@ Shizu_Types_getDispatch
     Shizu_Type* x
   )
 {
-  return x->dispatch;
+  if (0 == (Shizu_TypeFlags_ObjectType & x->flags)) {
+    return NULL;
+  } else {
+    return x->objectType.dispatch;
+  }
 }

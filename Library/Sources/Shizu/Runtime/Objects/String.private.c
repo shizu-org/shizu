@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-// malloc, free
-#include <malloc.h>
-
 // memcmp, memcpy
 #include <string.h>
 
@@ -69,7 +66,7 @@ Shizu_String_initializeDispatch
     Shizu_String_Dispatch* self
   );
 
-static Shizu_TypeDescriptor const Shizu_String_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_String_Type = {
   .postCreateType = NULL,
   .preDestroyType = NULL,
   .visitType = NULL,
@@ -81,7 +78,7 @@ static Shizu_TypeDescriptor const Shizu_String_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_String, Shizu_Object);
+Shizu_defineObjectType(Shizu_String, Shizu_Object);
 
 static void
 Shizu_String_finalize

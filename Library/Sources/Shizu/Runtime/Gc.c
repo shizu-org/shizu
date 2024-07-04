@@ -47,5 +47,5 @@ Shizu_State_getObjectDispatch
   )
 {
   Shizu_Type* type = Shizu_State_getObjectType(state, object);
-  return type->dispatch;
+  return type->objectType.dispatch;
 }

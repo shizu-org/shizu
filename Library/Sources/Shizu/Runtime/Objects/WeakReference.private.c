@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-// malloc, free
-#include <malloc.h>
-
 // memcmp, memcpy
 #include <string.h>
 
@@ -85,7 +82,7 @@ struct Shizu_WeakReference {
   Shizu_Object* reference;
 };
 
-static Shizu_TypeDescriptor const Shizu_WeakReference_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_WeakReference_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_WeakReference_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_WeakReference_preDestroyType,
   .visitType = NULL,
@@ -97,7 +94,7 @@ static Shizu_TypeDescriptor const Shizu_WeakReference_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_WeakReference, Shizu_Object);
+Shizu_defineObjectType(Shizu_WeakReference, Shizu_Object);
 
 typedef struct WeakReferenceNode WeakReferenceNode;
 

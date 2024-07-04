@@ -25,9 +25,6 @@
 #include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Objects/String.h"
 
-// malloc, free
-#include <malloc.h>
-
 // strlen
 #include <string.h>
 
@@ -48,7 +45,7 @@ Shizu_Module_visit
     Shizu_Module* rendition
   );
 
-static Shizu_TypeDescriptor const Shizu_Module_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_Module_Type = {
   .postCreateType = NULL,
   .preDestroyType = NULL,
   .visitType = NULL,
@@ -60,7 +57,7 @@ static Shizu_TypeDescriptor const Shizu_Module_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_Module, Shizu_Object);
+Shizu_defineObjectType(Shizu_Module, Shizu_Object);
 
 static void
 Shizu_Module_finalize
@@ -68,7 +65,7 @@ Shizu_Module_finalize
     Shizu_State2* state,
     Shizu_Module* self
   )
-{ 
+{
   if (self->dl) {
     Shizu_State1_unrefDl(Shizu_State2_getState1(state),self->dl);
     self->dl = NULL;

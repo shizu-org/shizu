@@ -36,7 +36,8 @@ typedef struct Shizu_Dl Shizu_Dl;
 typedef struct Shizu_Object Shizu_Object;
 typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
 typedef struct Shizu_Type Shizu_Type;
-typedef struct Shizu_TypeDescriptor Shizu_TypeDescriptor;
+typedef struct Shizu_ObjectTypeDescriptor Shizu_ObjectTypeDescriptor;
+typedef struct Shizu_PrimitiveTypeDescriptor Shizu_PrimitiveTypeDescriptor;
 typedef struct Shizu_Types Shizu_Types;
 
 #if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
@@ -89,12 +90,12 @@ typedef void (Shizu_OnDispatchInitializeCallback)(Shizu_State1* state1, void*);
 /// The type of a "onStaticUninitialize" callback function.
 typedef void (Shizu_OnDispatchUninitializeCallback)(Shizu_State1* state1, void*);
 
-struct Shizu_TypeDescriptor {
+struct Shizu_ObjectTypeDescriptor {
   Shizu_PostCreateTypeCallback* postCreateType;
   Shizu_PreDestroyTypeCallback* preDestroyType;
   Shizu_VisitTypeCallback* visitType;
-
   size_t size;
+
   Shizu_OnVisitCallback* visit;
   Shizu_OnFinalizeCallback* finalize;
   size_t dispatchSize;
@@ -102,10 +103,48 @@ struct Shizu_TypeDescriptor {
   Shizu_OnDispatchUninitializeCallback* dispatchUninitialize;
 };
 
+struct Shizu_PrimitiveTypeDescriptor {
+  Shizu_PostCreateTypeCallback* postCreateType;
+  Shizu_PreDestroyTypeCallback* preDestroyType;
+  Shizu_VisitTypeCallback* visitType;
+  size_t size;
+};
+
 /**
  * @since 1.0
- * @brief Get if a type is a sub-type of another type.
- * The type-algebraic expression is 
+ * @brief
+ * Get if a type is an object type.
+ * @param x The type.
+ * @return @a true if @a x is an object type. @a false otherwise.
+ */
+bool
+Shizu_Type_isObjectType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  );
+
+/**
+ * @since 1.0
+ * @brief
+ * Get if a type is a primitive type.
+ * @param x The type.
+ * @return @a true if @a x is a primitive type. @a false otherwise.
+ */
+bool
+Shizu_Type_isPrimitiveType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  );
+
+/**
+ * @since 1.0
+ * @brief
+ * Get if a type is a sub-type of another type.
+ * The type-algebraic expression is
  * @code
  * x <= y
  * @endcode
@@ -124,8 +163,9 @@ Shizu_Types_isSubTypeOf
 
 /**
  * @since 1.0
- * @brief Get if a type is a true sub-type of another type.
- * The type-algebraic expression is 
+ * @brief
+ * Get if a type is a true sub-type of another type.
+ * The type-algebraic expression is
  * @code
  * x <= y
  * @endcode
@@ -146,7 +186,7 @@ Shizu_Types_isTrueSubTypeOf
  * @since 1.0
  * @brief Get the parent type of a type.
  * @param x The type.
- * @return The parent type if any, null otherwise. 
+ * @return The parent type if any, null otherwise.
  */
 Shizu_Type*
 Shizu_Types_getParentType
@@ -187,9 +227,9 @@ Shizu_Types_getDispatch
 
 /// @brief Macro the define an enumeration type.
 #define Shizu_defineEnumerationType(Name) \
-  /* Intentionally empty. */ 
+  /* Intentionally empty. */
 
-#define Shizu_declareType(Name) \
+#define Shizu_declareObjectType(Name) \
   typedef struct Name Name; \
 \
   typedef struct Name##_Dispatch Name##_Dispatch; \
@@ -203,17 +243,11 @@ Shizu_Types_getDispatch
 // The DL a type is created by must not be unloaded as long as the type exists.
 // For a type T defined in a DL we store in T.dl a reference to the DL in the type object.
 // If T is defined in the executable we store in T.dl the null reference.
-#define Shizu_defineType(Name, ParentName) \
+#define Shizu_defineObjectType(Name, ParentName) \
   static void \
   Name##_typeDestroyed \
     ( \
       Shizu_State1* state1 \
-    ); \
-  \
-  Shizu_Type* \
-  Name##_getType \
-    ( \
-      Shizu_State2* state \
     ); \
   \
   static void \
@@ -232,7 +266,7 @@ Shizu_Types_getDispatch
     Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1); \
     if (!type) { \
       Shizu_Dl* dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &Name##_getType); \
-      type = Shizu_Types_createType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1, ParentName##_getType(state), dl, &Name##_typeDestroyed, &Name##_Type); \
+      type = Shizu_Types_createObjectType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1, ParentName##_getType(state), dl, &Name##_typeDestroyed, &Name##_Type); \
       if (dl) { \
         Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl); \
       } \
@@ -259,21 +293,20 @@ Shizu_Types_getTypeByName
     size_t numberOfBytes
   );
 
-/**
- * @since 1.0
- * @brief Create a type.
- * @details
- * Create a type of the name @code{(bytes, numberOfBytes)}.
- * Raise an error if a type of that name already exists.
- * @param bytes A pointer to an array of @a numberOfBytes Bytes.
- * @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
- * @param parentType A pointer to the parent type or the null pointer.
- * @param dl A pointer to the dynamic library the type descriptor is defined in. 
- * @param typeDestroyed A pointer to the Shizu_OnTypeDestroyedCallback callback function.
- * @param descriptor A pointer to the type descriptor.
- */
+/// @since 1.0
+/// @brief Create an object type.
+/// @details
+/// Create a type of the name @code{(bytes, numberOfBytes)}.
+/// Raise an error if a type of that name already exists.
+/// @param bytes A pointer to an array of @a numberOfBytes Bytes.
+/// @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
+/// @param parentType A pointer to the parent type or the null pointer.
+/// A pointer to the dynamic library the type descriptor is defined in.
+/// The null pointer if the type descriptor is defined in the main program.
+/// @param typeDestroyed A pointer to the Shizu_OnTypeDestroyedCallback callback function.
+/// @param descriptor A pointer to the type descriptor.
 Shizu_Type*
-Shizu_Types_createType
+Shizu_Types_createObjectType
   (
     Shizu_State1* state1,
     Shizu_Types* self,
@@ -282,7 +315,31 @@ Shizu_Types_createType
     Shizu_Type* parentType,
     Shizu_Dl* dl,
     Shizu_OnTypeDestroyedCallback* typeDestroyed,
-    Shizu_TypeDescriptor const* typeDescriptor
+    Shizu_ObjectTypeDescriptor const* typeDescriptor
+  );
+
+/// @since .0
+/// @brief Create a scalar type.
+/// @details
+/// Create a type of the name @code{(bytes, numberOfBytes)}.
+/// Raise an error if a type of that name already exists.
+/// @param bytes A pointer to an array of @a numberOfBytes Bytes.
+/// @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
+/// @param dl
+/// A pointer to the dynamic library the type descriptor is defined in.
+/// The null pointer if the type descriptor is defined in the main program.
+/// @param typeDestroyed A pointer to the Shizu_OnTypeDestroyedCallback callback function.
+/// @param descriptor A pointer to the type descriptor.
+Shizu_Type*
+Shizu_Types_createPrimitiveType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    char const* bytes,
+    size_t numberOfBytes,
+    Shizu_Dl* dl,
+    Shizu_OnTypeDestroyedCallback* typeDestroyed,
+    Shizu_PrimitiveTypeDescriptor const* typeDescriptor
   );
 
 #endif // SHIZU_RUNTIME_TYPE_H_INCLUDED

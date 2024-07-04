@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/Status.h"
 #include "Shizu/Runtime/State1.h"
 
-// malloc, free
-#include <malloc.h>
-
 /// @unmanaged
 typedef struct LockNode LockNode;
 
@@ -70,7 +67,7 @@ Shizu_Object_lock
   }
   if (!current) {
     // Create the lock node if it does not exist.
-    current = malloc(sizeof(LockNode));
+    current = Shizu_State1_allocate(state1, sizeof(LockNode));
     if (!current) {
       Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
       Shizu_State1_jump(state1);
@@ -123,18 +120,18 @@ Shizu_Locks_create
 {
   Shizu_Locks* self = Shizu_State1_allocate(state1, sizeof(Shizu_Locks));
   if (!self) {
-    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
   }
-  
+
   // (2)
   self->minimalCapacity = 8;
   self->maximalCapacity = SIZE_MAX / sizeof(LockNode*);
-	if (self->maximalCapacity > Shizu_Integer32_Maximum) {
+  if (self->maximalCapacity > Shizu_Integer32_Maximum) {
     self->maximalCapacity = Shizu_Integer32_Maximum;
-	}
+  }
   if (self->maximalCapacity < self->minimalCapacity) {
-    free(self);
+    Shizu_State1_deallocate(state1, self);
     self = NULL;
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
@@ -143,15 +140,15 @@ Shizu_Locks_create
   // (3)
   self->capacity = self->minimalCapacity;
   self->buckets = Shizu_State1_allocate(state1, sizeof(LockNode*) * self->capacity);
-	if (!self->buckets) {
-		free(self);
+  if (!self->buckets) {
+    Shizu_State1_deallocate(state1, self);
     self = NULL;
-		Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
-	}
-	for (size_t i = 0, n = self->capacity; i < n; ++i) {
+  }
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
     self->buckets[i] = NULL;
-	}
+  }
 
   // (4)
   self->size = 0;
@@ -169,14 +166,14 @@ Shizu_Locks_destroy
   // TODO: In debug mode, assert the table must be empty.
   // (4), (3)
   self->size = 0;
-	for (size_t i = 0, n = self->capacity; i < n; ++i) {
-		LockNode** bucket = &(self->buckets[i]);
-		while (*bucket) {
-			LockNode* node = *bucket;
-			*bucket = (*bucket)->next;
-			free(node);
-		}
-	}
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    LockNode** bucket = &(self->buckets[i]);
+    while (*bucket) {
+      LockNode* node = *bucket;
+      *bucket = (*bucket)->next;
+      Shizu_State1_deallocate(state1, node);
+    }
+  }
   self->capacity = 0;
   Shizu_State1_deallocate(state1, self->buckets);
   self->buckets = NULL;
@@ -235,6 +232,6 @@ Shizu_Locks_notifyObjectFinalize
   }
   if (current) {
     *previous = current->next;
-    free(current);
+    Shizu_State1_deallocate(state1, current);
   }
 }

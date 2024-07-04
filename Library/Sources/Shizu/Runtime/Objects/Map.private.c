@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-// malloc, free
-#include <malloc.h>
-
 // memcmp, memcpy
 #include <string.h>
 
@@ -51,10 +48,10 @@ Shizu_Map_postCreateType
 
 static void
 Shizu_Map_preDestroyType
-  ( 
+  (
     Shizu_State1* state1
   );
-  
+
 static void
 Shizu_Map_visit
   (
@@ -78,7 +75,7 @@ Shizu_Map_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_TypeDescriptor const Shizu_Map_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_Map_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_Map_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_Map_preDestroyType,
   .visitType = NULL,
@@ -142,32 +139,32 @@ Shizu_Map_visit
     Shizu_Map* self
   )
 {
-	for (size_t i = 0, n = self->capacity; i < n; ++i) {
-		Shizu_Map_Node* node = self->buckets[i];
-		while (node) {
-			Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), &node->key);
-			Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), &node->value);
-			node = node->next;
-		}
-	}
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    Shizu_Map_Node* node = self->buckets[i];
+    while (node) {
+      Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), &node->key);
+      Shizu_Gc_visitValue(Shizu_State2_getState1(state), Shizu_State2_getGc(state), &node->value);
+      node = node->next;
+    }
+  }
 }
 
 void
 Shizu_Map_finalize
   (
-		Shizu_State2* state,
-		Shizu_Map* self
-	)
+    Shizu_State2* state,
+    Shizu_Map* self
+  )
 {
-	for (size_t i = 0, n = self->capacity; i < n; ++i) {
-		Shizu_Map_Node** bucket = &(self->buckets[i]);
-		while (*bucket) {
-			Shizu_Map_Node* node = *bucket;
-			*bucket = node->next;
-			free(node);
-		}
-	}
-	free(self->buckets);
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    Shizu_Map_Node** bucket = &(self->buckets[i]);
+    while (*bucket) {
+      Shizu_Map_Node* node = *bucket;
+      *bucket = node->next;
+      free(node);
+    }
+  }
+  free(self->buckets);
   self->buckets = NULL;
 }
 
@@ -204,7 +201,7 @@ Shizu_Map_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineType(Shizu_Map, Shizu_Object);
+Shizu_defineObjectType(Shizu_Map, Shizu_Object);
 
 void
 Shizu_Map_construct

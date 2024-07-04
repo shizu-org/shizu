@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-// malloc, free
-#include <malloc.h>
-
 // memcmp, memcpy
 #include <string.h>
 
@@ -47,7 +44,7 @@ Shizu_CxxProcedure_finalize
     Shizu_CxxProcedure* self
   );
 
-static Shizu_TypeDescriptor const Shizu_CxxProcedure_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_CxxProcedure_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) NULL,
   .visitType = NULL,
@@ -59,7 +56,7 @@ static Shizu_TypeDescriptor const Shizu_CxxProcedure_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Shizu_CxxProcedure, Shizu_Object);
+Shizu_defineObjectType(Shizu_CxxProcedure, Shizu_Object);
 
 static void
 Shizu_CxxProcedure_finalize
@@ -67,7 +64,7 @@ Shizu_CxxProcedure_finalize
     Shizu_State2* state,
     Shizu_CxxProcedure* self
   )
-{ 
+{
   if (self->dl) {
     Shizu_State1_unrefDl(Shizu_State2_getState1(state), self->dl);
     self->dl = NULL;
@@ -109,5 +106,5 @@ Shizu_CxxProcedure_create
     Shizu_State1_refDl(Shizu_State2_getState1(state), self->dl);
   }
   ((Shizu_Object*)self)->type = TYPE;
-  return self; 
+  return self;
 }

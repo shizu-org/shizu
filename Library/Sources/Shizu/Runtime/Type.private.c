@@ -22,11 +22,6 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Type.private.h"
 
-
-
-// malloc, free
-#include <malloc.h>
-
 // strlen, strcmp
 #include <string.h>
 
@@ -41,9 +36,9 @@ Shizu_Types_startup
     Shizu_State1* state1
   )
 {
-  Shizu_Types* self = malloc(sizeof(Shizu_Types));
+  Shizu_Types* self = Shizu_State1_allocate(state1, sizeof(Shizu_Types));
   if (!self) {
-    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
   }
   Shizu_JumpTarget jumpTarget;
@@ -53,7 +48,7 @@ Shizu_Types_startup
     Shizu_State1_popJumpTarget(state1);
   } else {
     Shizu_State1_popJumpTarget(state1);
-    free(self);
+    Shizu_State1_deallocate(state1, self);
     Shizu_State1_jump(state1);
   }
   return self;
@@ -67,17 +62,17 @@ Shizu_Types_shutdown
   )
 {
   Shizu_Types_uninitialize(state1, self);
-  free(self);
+  Shizu_State1_deallocate(state1, self);
 }
 
 void
 Shizu_Types_initialize
-  ( 
+  (
     Shizu_State1* state1,
     Shizu_Types* self
   )
 {
-  self->elements = malloc(sizeof(Shizu_Type) * 8);
+  self->elements = Shizu_State1_allocate(state1, sizeof(Shizu_Type) * 8);
   if (!self->elements) {
     Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
@@ -144,8 +139,14 @@ Shizu_Types_onPostCreateType
   Shizu_JumpTarget jumpTarget;
   Shizu_State1_pushJumpTarget(state1, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    if (type->descriptor->postCreateType) {
-      type->descriptor->postCreateType(state1);
+    if (Shizu_TypeFlags_ObjectType == (Shizu_TypeFlags_ObjectType & type->flags)) {
+      if (type->objectType.descriptor->postCreateType) {
+        type->objectType.descriptor->postCreateType(state1);
+      }
+    } else {
+      if (type->primitiveType.descriptor->postCreateType) {
+        type->primitiveType.descriptor->postCreateType(state1);
+      }
     }
     type->flags |= Shizu_TypeFlags_PostTypeCreationInvoked;
     Shizu_Types_ensureDispatchInitialized(state1, self, type);
@@ -161,10 +162,15 @@ Shizu_Types_onPreDestroyType
     Shizu_Type* type
   )
 {
-  // Invoke the finalizer.
   if (Shizu_TypeFlags_PostTypeCreationInvoked == (Shizu_TypeFlags_PostTypeCreationInvoked & type->flags)) {
-    if (type->descriptor->preDestroyType) {
-      type->descriptor->preDestroyType(state1);
+    if (Shizu_TypeFlags_ObjectType == (Shizu_TypeFlags_ObjectType & type->flags)) {
+      if (type->objectType.descriptor->preDestroyType) {
+        type->objectType.descriptor->preDestroyType(state1);
+      }
+    } else {
+      if (type->primitiveType.descriptor->preDestroyType) {
+        type->primitiveType.descriptor->preDestroyType(state1);
+      }
     }
     type->flags = type->flags & ~Shizu_TypeFlags_PostTypeCreationInvoked;
   }
@@ -178,17 +184,20 @@ Shizu_Types_ensureDispatchUninitialized
     Shizu_Type* type
   )
 {
+  if (0 == (Shizu_TypeFlags_ObjectType & type->flags)) {
+    return;
+  }
   if (0 == (Shizu_TypeFlags_DispatchInitialized & type->flags)) {
     return;
   }
-  for (uint8_t i = 0, n = SmallTypeArray_getSize(&type->children); i < n; ++i) {
-    Shizu_Types_ensureDispatchUninitialized(state1, self, type->children.elements[i]);
+  for (uint8_t i = 0, n = SmallTypeArray_getSize(&type->objectType.children); i < n; ++i) {
+    Shizu_Types_ensureDispatchUninitialized(state1, self, type->objectType.children.elements[i]);
   }
-  if (type->descriptor->dispatchUninitialize) {
-    type->descriptor->dispatchUninitialize(state1, type->dispatch);
+  if (type->objectType.descriptor->dispatchUninitialize) {
+    type->objectType.descriptor->dispatchUninitialize(state1, type->objectType.dispatch);
   }
-  free(type->dispatch);
-  type->dispatch = NULL;
+  Shizu_State1_deallocate(state1, type->objectType.dispatch);
+  type->objectType.dispatch = NULL;
   type->flags = ~Shizu_TypeFlags_DispatchInitialized & type->flags;
 }
 
@@ -200,39 +209,42 @@ Shizu_Types_ensureDispatchInitialized
     Shizu_Type* type
   )
 {
+  if (0 == (Shizu_TypeFlags_ObjectType & type->flags)) {
+    return;
+  }
   if (Shizu_TypeFlags_DispatchInitialized == (Shizu_TypeFlags_DispatchInitialized & type->flags)) {
     return;
   }
-  if (type->parentType) {
-    if (type->descriptor->dispatchSize < type->parentType->descriptor->dispatchSize) {
+  if (type->objectType.parentType) {
+    if (type->objectType.descriptor->dispatchSize < type->objectType.parentType->objectType.descriptor->dispatchSize) {
       Shizu_State1_setStatus(state1, 1);
       Shizu_State1_jump(state1);
     }
-    Shizu_Types_ensureDispatchInitialized(state1, self, type->parentType);
+    Shizu_Types_ensureDispatchInitialized(state1, self, type->objectType.parentType);
   }
-  if (type->descriptor->dispatchSize < sizeof(Shizu_Object_Dispatch)) {
+  if (type->objectType.descriptor->dispatchSize < sizeof(Shizu_Object_Dispatch)) {
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
-  type->dispatch = malloc(type->descriptor->dispatchSize);
-  if (!type->dispatch) {
-    Shizu_State1_setStatus(state1, 1);
+  type->objectType.dispatch = Shizu_State1_allocate(state1, type->objectType.descriptor->dispatchSize);
+  if (!type->objectType.dispatch) {
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
   }
-  memset(type->dispatch, 0, type->descriptor->dispatchSize);
-  if (type->parentType) {
-    memcpy(type->dispatch, type->parentType->dispatch, type->parentType->descriptor->dispatchSize);
+  memset(type->objectType.dispatch, 0, type->objectType.descriptor->dispatchSize);
+  if (type->objectType.parentType) {
+    memcpy(type->objectType.dispatch, type->objectType.parentType->objectType.dispatch, type->objectType.parentType->objectType.descriptor->dispatchSize);
   }
-  if (type->descriptor->dispatchInitialize) {
+  if (type->objectType.descriptor->dispatchInitialize) {
     Shizu_JumpTarget jumpTarget;
     Shizu_State1_pushJumpTarget(state1, &jumpTarget);
     if (!setjmp(jumpTarget.environment)) {
-      type->descriptor->dispatchInitialize(state1, type->dispatch);
+      type->objectType.descriptor->dispatchInitialize(state1, type->objectType.dispatch);
       Shizu_State1_popJumpTarget(state1);
     } else {
       Shizu_State1_popJumpTarget(state1);
-      free(type->dispatch);
-      type->dispatch = NULL;
+      Shizu_State1_deallocate(state1, type->objectType.dispatch);
+      type->objectType.dispatch = NULL;
       Shizu_State1_jump(state1);
     }
   }
@@ -248,14 +260,16 @@ Shizu_Type_destroy
   )
 {
   Shizu_Types_onPreDestroyType(state1, self, type);
-  // Remove this type from the array of references to child types of its parent type.
-  if (type->parentType) {
-    SmallTypeArray_ensureRemoved(&type->parentType->children, type);
+  if (Shizu_TypeFlags_ObjectType == (Shizu_TypeFlags_ObjectType & type->flags)) {
+    // Remove this type from the array of references to child types of its parent type.
+    if (type->objectType.parentType) {
+      SmallTypeArray_ensureRemoved(&type->objectType.parentType->objectType.children, type);
+    }
+    // Deallocate array of references to children.
+    SmallTypeArray_uninitialize(&type->objectType.children);
   }
-  // Deallocate array of references to children.
-  SmallTypeArray_uninitialize(&type->children);
   // Deallocate the name.
-  free(type->name.bytes);
+  Shizu_State1_deallocate(state1, type->name.bytes);
   type->name.bytes = NULL;
   //
   if (type->dl) {
@@ -263,7 +277,7 @@ Shizu_Type_destroy
     type->dl = NULL;
   }
   // Deallocate the value.
-  free(type);
+  Shizu_State1_deallocate(state1, type);
 }
 
 size_t
@@ -274,7 +288,10 @@ Shizu_Types_getTypeChildCount
     Shizu_Type* type
   )
 {
-  return SmallTypeArray_getSize(&type->children);
+  if (0 == (Shizu_TypeFlags_ObjectType & type->flags)) {
+    return 0;
+  }
+  return SmallTypeArray_getSize(&type->objectType.children);
 }
 
 Shizu_Type*
@@ -302,7 +319,7 @@ Shizu_Types_getTypeByName
 }
 
 Shizu_Type*
-Shizu_Types_createType
+Shizu_Types_createObjectType
   (
     Shizu_State1* state1,
     Shizu_Types* self,
@@ -311,7 +328,7 @@ Shizu_Types_createType
     Shizu_Type* parentType,
     Shizu_Dl* dl,
     Shizu_OnTypeDestroyedCallback* typeDestroyed,
-    Shizu_TypeDescriptor const* typeDescriptor
+    Shizu_ObjectTypeDescriptor const* typeDescriptor
   )
 {
   size_t hashValue = numberOfBytes;
@@ -323,56 +340,120 @@ Shizu_Types_createType
     if (type->name.hashValue == hashValue && type->name.numberOfBytes == numberOfBytes) {
       if (!memcmp(type->name.bytes, bytes, numberOfBytes)) {
         fprintf(stderr, "%s:%d: a type of name `%.*s` was already registered\n", __FILE__, __LINE__, (int)numberOfBytes, bytes);
-        Shizu_State1_setStatus(state1, 1);
+        /// @todo Add and use Shizu_Status_TypeExists.
+        Shizu_State1_setStatus(state1, 1/*Shizu_Status_TypeExists*/);
         Shizu_State1_jump(state1);
       }
     }
   }
-  Shizu_Type* type = malloc(sizeof(Shizu_Type));
+  Shizu_Type* type = Shizu_State1_allocate(state1, sizeof(Shizu_Type));
   if (!type) {
     fprintf(stderr, "%s:%d: allocation of `%zu` Bytes failed\n", __FILE__, __LINE__, sizeof(Shizu_Type));
-    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
   }
-  type->name.bytes = malloc(numberOfBytes);
+  type->name.bytes = Shizu_State1_allocate(state1, numberOfBytes);
   if (!type->name.bytes) {
-    free(type);
+    Shizu_State1_deallocate(state1, type);
     type = NULL;
-    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
   }
   memcpy(type->name.bytes, bytes, numberOfBytes);
-  type->flags = 0;
-  type->dispatch = NULL;
-  type->parentType = parentType;
-  type->descriptor = typeDescriptor;
   type->name.hashValue = hashValue;
   type->name.numberOfBytes = numberOfBytes;
   type->next = NULL;
+  type->flags = Shizu_TypeFlags_ObjectType;
   type->typeDestroyed = typeDestroyed;
   type->dl = dl;
   if (type->dl) {
     Shizu_State1_refDl(state1, type->dl);
   }
+
+  type->objectType.dispatch = NULL;
+  type->objectType.parentType = parentType;
+  type->objectType.descriptor = typeDescriptor;
   // Allocate array for references to children.
-  if (SmallTypeArray_initialize(&type->children)) {
-    free(type->name.bytes);
+  if (SmallTypeArray_initialize(&type->objectType.children)) {
+    Shizu_State1_deallocate(state1, type->name.bytes);
     type->name.bytes = NULL;
-    free(type);
-    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_deallocate(state1, type);
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state1);
   }
   // Add this type to the array of references to children of its parent type.
   if (parentType) {
-    if (SmallTypeArray_append(&parentType->children, type)) {
-      SmallTypeArray_uninitialize(&parentType->children);
-      free(type->name.bytes);
+    if (SmallTypeArray_append(&parentType->objectType.children, type)) {
+      SmallTypeArray_uninitialize(&parentType->objectType.children);
+      Shizu_State1_deallocate(state1, type->name.bytes);
       type->name.bytes = NULL;
-      free(type);
-      Shizu_State1_setStatus(state1, 1);
+      Shizu_State1_deallocate(state1, type);
+      Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
       Shizu_State1_jump(state1);
     }
   }
+  type->next = self->elements[hashIndex];
+  self->elements[hashIndex] = type;
+  self->size++;
+
+  Shizu_Types_onPostCreateType(state1, self, type);
+
+  return type;
+}
+
+Shizu_Type*
+Shizu_Types_createPrimitiveType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    char const* bytes,
+    size_t numberOfBytes,
+    Shizu_Dl* dl,
+    Shizu_OnTypeDestroyedCallback* typeDestroyed,
+    Shizu_PrimitiveTypeDescriptor const* typeDescriptor
+  )
+{
+  size_t hashValue = numberOfBytes;
+  for (size_t i = 0, n = numberOfBytes; i < n; ++i) {
+    hashValue = hashValue * 37 + (size_t)bytes[i];
+  }
+  size_t hashIndex = hashValue % self->capacity;
+  for (Shizu_Type* type = self->elements[hashIndex]; NULL != type; type = type->next) {
+    if (type->name.hashValue == hashValue && type->name.numberOfBytes == numberOfBytes) {
+      if (!memcmp(type->name.bytes, bytes, numberOfBytes)) {
+        fprintf(stderr, "%s:%d: a type of name `%.*s` was already registered\n", __FILE__, __LINE__, (int)numberOfBytes, bytes);
+        /// @todo Add and use Shizu_Status_TypeExists.
+        Shizu_State1_setStatus(state1, 1/*Shizu_Status_TypeExists*/);
+        Shizu_State1_jump(state1);
+      }
+    }
+  }
+  Shizu_Type* type = Shizu_State1_allocate(state1, sizeof(Shizu_Type));
+  if (!type) {
+    fprintf(stderr, "%s:%d: allocation of `%zu` Bytes failed\n", __FILE__, __LINE__, sizeof(Shizu_Type));
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state1);
+  }
+  type->name.bytes = Shizu_State1_allocate(state1, numberOfBytes);
+  if (!type->name.bytes) {
+    Shizu_State1_deallocate(state1, type);
+    type = NULL;
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state1);
+  }
+  memcpy(type->name.bytes, bytes, numberOfBytes);
+  type->name.hashValue = hashValue;
+  type->name.numberOfBytes = numberOfBytes;
+  type->next = NULL;
+  type->flags = Shizu_TypeFlags_PrimitiveType;
+  type->typeDestroyed = typeDestroyed;
+  type->dl = dl;
+  if (type->dl) {
+    Shizu_State1_refDl(state1, type->dl);
+  }
+
+  type->objectType.descriptor = typeDescriptor;
+
   type->next = self->elements[hashIndex];
   self->elements[hashIndex] = type;
   self->size++;

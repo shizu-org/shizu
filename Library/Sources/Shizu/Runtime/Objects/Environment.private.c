@@ -32,9 +32,6 @@
 #include "Shizu/Runtime/Objects/String.h"
 #include "Shizu/Runtime/Objects/WeakReference.h"
 
-// malloc, free
-#include <malloc.h>
-
 // memcmp, memcpy
 #include <string.h>
 
@@ -54,10 +51,10 @@ Shizu_Environment_postCreateType
 
 static void
 Shizu_Environment_preDestroyType
-  ( 
+  (
     Shizu_State1* state1
   );
-  
+
 static void
 Shizu_Environment_visit
   (
@@ -81,7 +78,7 @@ Shizu_Environment_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_TypeDescriptor const Shizu_Environment_Type = {
+static Shizu_ObjectTypeDescriptor const Shizu_Environment_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_Environment_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_Environment_preDestroyType,
   .visitType = NULL,
@@ -201,7 +198,7 @@ Shizu_Environment_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineType(Shizu_Environment, Shizu_Object);
+Shizu_defineObjectType(Shizu_Environment, Shizu_Object);
 
 void
 Shizu_Environment_construct
@@ -302,7 +299,7 @@ Shizu_Environment_getObject
   Shizu_debugAssert(NULL != type);
   if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), type, Shizu_Object_getType(state))) {
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
-    Shizu_State2_jump(state); 
+    Shizu_State2_jump(state);
   }
   Shizu_Value value = Shizu_Environment_get(state, self, name);
   if (!Shizu_Value_isObject(&value)) {
@@ -427,7 +424,7 @@ Shizu_Environment_isDefined
     Shizu_Environment* self,
     Shizu_String* key
   )
-{ 
+{
   size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)key);
   size_t hashIndex = hashValue % self->capacity;
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
