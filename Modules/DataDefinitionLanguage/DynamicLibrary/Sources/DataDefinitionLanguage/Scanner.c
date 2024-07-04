@@ -49,7 +49,7 @@ Scanner_callImpl
     Shizu_Value* arguments
   );
 
-static Shizu_TypeDescriptor const Scanner_Type = {
+static Shizu_ObjectTypeDescriptor const Scanner_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -61,7 +61,7 @@ static Shizu_TypeDescriptor const Scanner_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Scanner, Shizu_Object);
+Shizu_defineObjectType(Scanner, Shizu_Object);
 
 static void
 Scanner_visit
@@ -99,7 +99,7 @@ Scanner_callImpl
     Shizu_Integer32 numberOfArguments,
     Shizu_Value* arguments
   )
-{ 
+{
   if (numberOfMethodNameBytes == sizeof("step") - 1) {
     int8_t result;
     idlib_byte_sequence_compare(&result, methodNameBytes, "step", sizeof("step") - 1);
@@ -356,7 +356,7 @@ skipWhiteSpacesAndNewLines
         self->current++;
         char old = *self->current;
         if (isNewline(self->end, self->current) && old != *self->current) {
-          self->current++; 
+          self->current++;
         }
         // @todo Increment line counter.
       } while (isNewline(self->end, self->current));
@@ -410,7 +410,7 @@ Scanner_step
       self->current++;
       if (!isDigit(self->end, self->current)) {
         self->tokenType = TokenType_Error;
-        return;   
+        return;
       }
       do {
         self->current++;
@@ -432,7 +432,7 @@ Scanner_step
       self->current++;
       if (self->current == self->end || '/' == *self->current) {
         self->tokenType = TokenType_Error;
-        return;       
+        return;
       }
       self->current++;
       while (self->end != self->current && !isNewline(self->end, self->current)) {

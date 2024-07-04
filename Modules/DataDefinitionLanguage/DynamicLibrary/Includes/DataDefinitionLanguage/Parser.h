@@ -26,7 +26,7 @@
 typedef struct Ast Ast;
 typedef struct Scanner Scanner;
 
-Shizu_declareType(Parser);
+Shizu_declareObjectType(Parser);
 
 struct Parser_Dispatch {
   Shizu_Object_Dispatch _parent;

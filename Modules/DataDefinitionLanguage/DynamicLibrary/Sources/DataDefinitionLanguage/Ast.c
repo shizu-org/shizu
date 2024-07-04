@@ -31,14 +31,14 @@ Ast_visit
   )
 {
   if (self->children) {
-    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->children);    
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->children);
   }
   if (self->text) {
     Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
   }
 }
 
-static Shizu_TypeDescriptor const Ast_Type = {
+static Shizu_ObjectTypeDescriptor const Ast_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -50,7 +50,7 @@ static Shizu_TypeDescriptor const Ast_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Ast, Shizu_Object);
+Shizu_defineObjectType(Ast, Shizu_Object);
 
 void
 Ast_construct

@@ -25,7 +25,7 @@
 #include "Shizu/Runtime/Include.h"
 #include "DataDefinitionLanguage/Token.h"
 
-Shizu_declareType(Scanner);
+Shizu_declareObjectType(Scanner);
 
 struct Scanner_Dispatch {
   Shizu_Object_Dispatch _parent;

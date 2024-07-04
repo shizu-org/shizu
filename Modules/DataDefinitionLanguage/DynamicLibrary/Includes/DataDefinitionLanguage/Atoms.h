@@ -24,7 +24,7 @@
 
 #include "Shizu/Runtime/Include.h"
 
-Shizu_declareType(Atom);
+Shizu_declareObjectType(Atom);
 
 struct Atom_Dispatch {
   Shizu_Object_Dispatch _parent;
@@ -53,7 +53,7 @@ Atom_create
     Shizu_ByteArray* bytes
   );
 
-Shizu_declareType(Atoms);
+Shizu_declareObjectType(Atoms);
 
 struct Atoms_Dispatch {
   Shizu_Object_Dispatch _parent;

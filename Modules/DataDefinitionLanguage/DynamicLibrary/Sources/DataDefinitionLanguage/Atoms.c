@@ -38,7 +38,7 @@ Atom_visit
     Atom* self
   );
 
-static Shizu_TypeDescriptor const Atom_Type = {
+static Shizu_ObjectTypeDescriptor const Atom_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -50,7 +50,7 @@ static Shizu_TypeDescriptor const Atom_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Atom, Shizu_Object);
+Shizu_defineObjectType(Atom, Shizu_Object);
 
 static void
 Atom_finalize
@@ -133,7 +133,7 @@ Atoms_visit
     Atoms* self
   );
 
-static Shizu_TypeDescriptor const Atoms_Type = {
+static Shizu_ObjectTypeDescriptor const Atoms_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -145,7 +145,7 @@ static Shizu_TypeDescriptor const Atoms_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Atoms, Shizu_Object);
+Shizu_defineObjectType(Atoms, Shizu_Object);
 
 static void
 Atoms_finalize
@@ -153,7 +153,7 @@ Atoms_finalize
     Shizu_State2* state,
     Atoms* self
   )
-{ 
+{
   if (self->buckets) {
     Shizu_State1_deallocate(Shizu_State2_getState1(state), self->buckets);
     self->buckets = NULL;

@@ -43,7 +43,7 @@ enum TokenType  {
   TokenType_Colon,
 };
 
-Shizu_declareType(Token);
+Shizu_declareObjectType(Token);
 
 struct Token_Dispatch {
   Shizu_Object_Dispatch _parent;

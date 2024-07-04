@@ -35,7 +35,7 @@ enum AstType {
   AstType_List,
 };
 
-Shizu_declareType(Ast);
+Shizu_declareObjectType(Ast);
 
 struct Ast_Dispatch {
   Shizu_Object_Dispatch _parent;

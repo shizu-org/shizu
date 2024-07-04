@@ -35,7 +35,7 @@ Token_visit
   }
 }
 
-static Shizu_TypeDescriptor const Token_Type = {
+static Shizu_ObjectTypeDescriptor const Token_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
@@ -47,7 +47,7 @@ static Shizu_TypeDescriptor const Token_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineType(Token, Shizu_Object);
+Shizu_defineObjectType(Token, Shizu_Object);
 
 void
 Token_construct
