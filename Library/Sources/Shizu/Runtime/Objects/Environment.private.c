@@ -158,10 +158,10 @@ Shizu_Environment_finalize
     while (*bucket) {
       Shizu_Environment_Node* node = *bucket;
       *bucket = node->next;
-      free(node);
+      Shizu_State1_deallocate(Shizu_State2_getState1(state), node);
     }
   }
-  free(self->buckets);
+  Shizu_State1_deallocate(Shizu_State2_getState1(state), self->buckets);
   self->buckets = NULL;
 }
 
@@ -185,7 +185,7 @@ Shizu_Environment_constructImpl
   Shizu_Environment* SELF = (Shizu_Environment*)Shizu_Value_getObject(&argumentValues[0]);
   Shizu_Type* TYPE = Shizu_Environment_getType(state);
   Shizu_Object_construct(state, (Shizu_Object*)SELF);
-  SELF->buckets = malloc(sizeof(Shizu_Environment_Node*) * 8);
+  SELF->buckets = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Shizu_Environment_Node*) * 8);
   if (!SELF->buckets) {
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);

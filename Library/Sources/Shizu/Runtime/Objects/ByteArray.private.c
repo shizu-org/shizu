@@ -217,7 +217,7 @@ Shizu_ByteArray_constructImpl
   Shizu_ByteArray* SELF = (Shizu_ByteArray*)Shizu_Value_getObject(&argumentValues[0]);
   Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
   Shizu_Object_construct(state, (Shizu_Object*)SELF);
-  SELF->elements = malloc(8);
+  SELF->elements = Shizu_State1_allocate(Shizu_State2_getState1(state), 8);
   if (!SELF->elements) {
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);

@@ -278,7 +278,7 @@ Shizu_Gc_run
     Shizu_debugAssert(NULL == object->gray);
     if (!Shizu_Object_isBlack(object)) {
       Shizu_Object_setBlack(object);
-      Shizu_debugAssert(NULL != object->type->descriptor->visit);
+      Shizu_debugAssert(NULL != object->type->objectType.descriptor->visit);
       object->type->objectType.descriptor->visit(state, object);
     }
   }
@@ -301,7 +301,7 @@ Shizu_Gc_run
         object->type = object->type->objectType.parentType;
       }
       dead++;
-      free(object);
+      Shizu_State1_deallocate(Shizu_State2_getState1(state), object);
     } else {
       Shizu_debugAssert(!Shizu_Object_isWhite(current));
       Shizu_Object_setWhite(current);

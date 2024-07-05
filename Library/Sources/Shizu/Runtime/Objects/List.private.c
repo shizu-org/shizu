@@ -26,9 +26,6 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-// malloc, free
-#include <malloc.h>
-
 // memcmp, memcpy
 #include <string.h>
 
@@ -155,7 +152,7 @@ Shizu_List_finalize
   )
 {
   self->size = 0;
-  free(self->elements);
+  Shizu_State1_deallocate(Shizu_State2_getState1(state), self->elements);
   self->elements = NULL;
   self->capacity = 0;
 }

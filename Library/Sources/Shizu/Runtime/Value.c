@@ -72,7 +72,7 @@ static Shizu_PrimitiveTypeDescriptor const Shizu_CxxFunction_Type = {
   .postCreateType = NULL,
   .preDestroyType = NULL,
   .visitType = NULL,
-  .size = sizeof(Shizu_CxxFunction),
+  .size = sizeof(Shizu_CxxFunction*),
 };
 
 Shizu_definePrimitiveType(Shizu_CxxFunction);

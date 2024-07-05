@@ -452,7 +452,7 @@ Shizu_Types_createPrimitiveType
     Shizu_State1_refDl(state1, type->dl);
   }
 
-  type->objectType.descriptor = typeDescriptor;
+  type->primitiveType.descriptor = typeDescriptor;
 
   type->next = self->elements[hashIndex];
   self->elements[hashIndex] = type;

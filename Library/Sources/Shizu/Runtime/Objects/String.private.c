@@ -146,10 +146,10 @@ Shizu_String_construct
 {
   Shizu_Type* TYPE = Shizu_String_getType(state);
   Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->bytes = malloc(numberOfBytes > 0 ? numberOfBytes : 1);
+  self->bytes = Shizu_State1_allocate(Shizu_State2_getState1(state), numberOfBytes);
   if (!self->bytes) {
-    fprintf(stderr, "%s:%d: unable to allocate `%zu` Bytes\n", __FILE__, __LINE__, numberOfBytes > 0 ? numberOfBytes : 1);
-    Shizu_State2_setStatus(state, 1);
+    fprintf(stderr, "%s:%d: unable to allocate `%zu` Bytes\n", __FILE__, __LINE__, numberOfBytes);
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);
   }
   size_t hashValue = numberOfBytes;
