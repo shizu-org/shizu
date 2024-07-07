@@ -217,3 +217,33 @@ Shizu_Object_construct
   Shizu_Value_setObject(&argumentValue, self);
   Shizu_Object_constructImpl(state, &returnValue, 1, &argumentValue);
 }
+
+void
+Shizu_Object_call
+  (
+    Shizu_State2* state,
+    Shizu_Object* self,
+    uint8_t const* methodNameBytes,
+    size_t numberOfMethodNameBytes,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArguments,
+    Shizu_Value* arguments
+  )
+{ Shizu_VirtualCall(Shizu_Object, call, self, methodNameBytes, numberOfMethodNameBytes, returnValue, numberOfArguments, arguments); }
+
+Shizu_Integer32
+Shizu_Object_getHashValue
+  (
+    Shizu_State2* state,
+    Shizu_Object* self
+  )
+{ Shizu_VirtualCallWithReturn(Shizu_Object, getHashValue, self); }
+
+Shizu_Boolean
+Shizu_Object_isEqualTo
+  (
+    Shizu_State2* state,
+    Shizu_Object* self,
+    Shizu_Object* other
+  )
+{ Shizu_VirtualCallWithReturn(Shizu_Object, isEqualTo, self, other); }

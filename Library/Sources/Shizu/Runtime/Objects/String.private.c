@@ -111,7 +111,7 @@ Shizu_String_isEqualToImpl
     Shizu_Object* other
   )
 {
-  if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_String_getType(state), Shizu_State_getObjectType(state, other))) {
+  if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_String_getType(state), Shizu_State2_getObjectType(state, other))) {
     Shizu_String* x = self;
     Shizu_String* y = (Shizu_String*)other;
     if (x->hashValue == y->hashValue && x->numberOfBytes == y->numberOfBytes) {

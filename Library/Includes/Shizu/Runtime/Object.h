@@ -1,35 +1,33 @@
+/*
+  Shizu Runtime
+  Copyright (C) 2024 Michael Heilmann. All rights reserved.
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
 #if !defined(SHIZU_RUNTIME_OBJECT_H_INCLUDED)
 #define SHIZU_RUNTIME_OBJECT_H_INCLUDED
 
-#include "Shizu/Runtime/CxxUtilities.h"
 #include "Shizu/Runtime/Type.h"
-#include "Shizu/Runtime/Value.h"
+#include "Shizu/Runtime/CxxUtilities.h"
 typedef struct Shizu_Object Shizu_Object;
 typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
 typedef struct Shizu_Type Shizu_Type;
 typedef struct Shizu_State2 Shizu_State2;
-
-/// @brief Get the Shizu_Type value of a Shizu_Object value.
-/// @param self A pointer to the Shizu_State object.
-/// @param object A pointer the Shizu_Object value.
-/// @return A pointer to the Shizu_Type value of the Shizu_Object value.
-Shizu_Type*
-Shizu_State_getObjectType
-  (
-    Shizu_State2* self,
-    Shizu_Object* object
-  );
-
-/// @brief Get the Shizu_Object_Dispatch value of a Shizu_Object value.
-/// @param self A pointer to the Shizu_State object.
-/// @param object A pointer the Shizu_Object value.
-/// @return A pointer to the Shizu_Object_dispatch value of the Shizu_Object value.
-Shizu_Object_Dispatch*
-Shizu_State_getObjectDispatch
-  (
-    Shizu_State2* state,
-    Shizu_Object* object
-  );
 
 Shizu_NoReturn() void
 Shizu_Errors_raiseDispatchNotExists
@@ -63,7 +61,7 @@ Shizu_Errors_raiseMethodNotImplemented
 /// { Shizu_VirtualCall(A, f, self, x); }
 /// @endcode
 #define Shizu_VirtualCall(TYPE, METHOD, ...) \
-  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self); \
+  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State2_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
     Shizu_Errors_raiseDispatchNotExists(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
@@ -84,7 +82,7 @@ Shizu_Errors_raiseMethodNotImplemented
 /// { Shizu_VirtualCallWithReturn(A, f, self, x); }
 /// @endcode
 #define Shizu_VirtualCallWithReturn(TYPE, METHOD, ...) \
-  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State_getObjectDispatch(state, (Shizu_Object*)self); \
+  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State2_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
     Shizu_Errors_raiseDispatchNotExists(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
@@ -144,7 +142,7 @@ Shizu_Object_construct
 /// The number of arguments.
 /// @param arguments
 /// A pointer to an array of @a numberOfArguments Shizu_Value objects denoting the arguments.
-static inline void
+void
 Shizu_Object_call
   (
     Shizu_State2* state,
@@ -154,8 +152,7 @@ Shizu_Object_call
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArguments,
     Shizu_Value* arguments
-  )
-{ Shizu_VirtualCall(Shizu_Object, call, self, methodNameBytes, numberOfMethodNameBytes, returnValue, numberOfArguments, arguments); }
+  );
 
 /// @ingroup Object
 /// @brief
@@ -166,13 +163,12 @@ Shizu_Object_call
 /// A pointer to this Shizu_Object object.
 /// @return
 /// The hash value of this Shizu_Object object.
-static inline Shizu_Integer32
+Shizu_Integer32
 Shizu_Object_getHashValue
   (
     Shizu_State2* state,
     Shizu_Object* self
-  )
-{ Shizu_VirtualCallWithReturn(Shizu_Object, getHashValue, self); }
+  );
 
 /// @ingroup Object
 /// @brief
@@ -186,13 +182,12 @@ Shizu_Object_getHashValue
 /// @return
 /// @a true if this Shizu_Object ojbect is equal to the other Shizu_Object object.
 /// @a false otherwise.
-static inline Shizu_Boolean
+Shizu_Boolean
 Shizu_Object_isEqualTo
   (
     Shizu_State2* state,
     Shizu_Object* self,
     Shizu_Object* other
-  )
-{ Shizu_VirtualCallWithReturn(Shizu_Object, isEqualTo, self, other); }
+  );
 
 #endif // SHIZU_RUNTIME_OBJECT_H_INCLUDED

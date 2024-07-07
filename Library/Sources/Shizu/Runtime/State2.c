@@ -242,7 +242,7 @@ static void shutdown8(Shizu_State2* state) {
         Shizu_unreachableCodeReached(__FILE__, __LINE__);
       }
       Shizu_Object* elementObject = Shizu_Value_getObject(&elementValue);
-      if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_State_getObjectType(state, elementObject), Shizu_Module_getType(state))) {
+      if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_State2_getObjectType(state, elementObject), Shizu_Module_getType(state))) {
         // Developer error if this occurs.
         Shizu_unreachableCodeReached(__FILE__, __LINE__);
       }
@@ -684,4 +684,28 @@ Shizu_State2_ensureModulesLoaded
       Shizu_Module_ensureLoaded(state, module);
     }
   }
+}
+
+Shizu_Type*
+Shizu_State2_getObjectType
+  (
+    Shizu_State2* self,
+    Shizu_Object* object
+  )
+{
+  Shizu_debugAssert(NULL != self);
+  Shizu_debugAssert(NULL != object);
+  Shizu_debugAssert(NULL != object->type);
+  return object->type;
+}
+
+Shizu_Object_Dispatch*
+Shizu_State2_getObjectDispatch
+  (
+    Shizu_State2* state,
+    Shizu_Object* object
+  )
+{
+  Shizu_Type* type = Shizu_State2_getObjectType(state, object);
+  return type->objectType.dispatch;
 }

@@ -95,6 +95,15 @@ static Shizu_PrimitiveTypeDescriptor const Shizu_Integer32_Type = {
 
 Shizu_definePrimitiveType(Shizu_Integer32);
 
+static Shizu_PrimitiveTypeDescriptor const Shizu_Type_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Type*),
+};
+
+Shizu_definePrimitiveType(Shizu_Type);
+
 static Shizu_PrimitiveTypeDescriptor const Shizu_Void_Type = {
   .postCreateType = NULL,
   .preDestroyType = NULL,
@@ -103,6 +112,8 @@ static Shizu_PrimitiveTypeDescriptor const Shizu_Void_Type = {
 };
 
 Shizu_definePrimitiveType(Shizu_Void);
+
+
 
 #undef Shizu_definePrimitiveType
 

@@ -38,37 +38,37 @@ function(on_plugin target module)
   message(STATUS "[on_plugin] ${target} depends on ${module}")
   add_dependencies(${target} ${module})
   add_custom_command(
-    TARGET ${target} POST_BUILD   
+    TARGET ${target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${SOURCE_FILE}
             ${TARGET_FILE}
     DEPENDS ${SOURCE_FILE}
-    COMMENT "[on plugin] copying ${SOURCE_FILE} to ${TARGET_FILE}"   )
+    COMMENT "[on plugin] copying ${SOURCE_FILE} to ${TARGET_FILE}"  )
 endfunction()
 
 function(on_plugins target)
   # Get the prerequisite modules of the target.
   get_target_property(prerequisiteModules ${target} prerequisiteModules)
-  
+
   # Expand the prerequisite modules transitively.
   # For each prerequisite module A: Include any direct prerequisite
   set(CONTINUE TRUE)
   WHILE(CONTINUE)
-	set(CONTINUE FALSE)
-	get_target_property(xl ${target} prerequisiteModules)
+  set(CONTINUE FALSE)
+  get_target_property(xl ${target} prerequisiteModules)
     foreach (x ${xl})
-		get_target_property(yl ${x} prerequisiteModules)
-		foreach (y ${yl})
-			if (NOT "${y}" IN_LIST xl)
-			  message(STATUS "adding ${y} to ${xl}")
-			  list(APPEND xl ${y})
-			  set(CONTINUE TRUE)
-			endif()
-		endforeach()
+    get_target_property(yl ${x} prerequisiteModules)
+    foreach (y ${yl})
+      if (NOT "${y}" IN_LIST xl)
+        message(STATUS "adding ${y} to ${xl}")
+        list(APPEND xl ${y})
+        set(CONTINUE TRUE)
+      endif()
+    endforeach()
     endforeach()
     set_target_properties(${target} PROPERTIES prerequisiteModules "${xl}")
   ENDWHILE()
-  
+
   get_target_property(xl ${target} prerequisiteModules)
   foreach (x ${xl})
     on_plugin(${target} ${x})
@@ -120,7 +120,7 @@ FetchContent_Declare(idlib-process
                      GIT_TAG ${idlib-process.tag}
                      SOURCE_DIR ${idlib-process.source-dir}
                      BINARY_DIR ${idlib-process.binary-dir})
-                    
+
 #######################################################################################################################
 
 set(idlib-bit-scan.repository CACHE STRING "IdLib Bit Scan: The Git repository to check out")
@@ -208,7 +208,7 @@ FetchContent_Declare(idlib-byte-sequence
 #######################################################################################################################
 
 FetchContent_MakeAvailable(idlib-bit-scan idlib-byte-sequence idlib-file-system)
-                                                                                                                       
+
 #######################################################################################################################
 
 # Include the cmake library.
@@ -217,6 +217,8 @@ include(CMake/all.cmake)
 
 # Enable testing.
 enable_testing()
+
+add_subdirectory(Specification)
 add_subdirectory(Library)
 add_subdirectory(Modules)
 add_subdirectory(Test)

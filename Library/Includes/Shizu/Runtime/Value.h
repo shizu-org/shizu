@@ -85,6 +85,14 @@ Shizu_Integer32_getType
 
 
 
+Shizu_Type*
+Shizu_Type_getType
+  (
+    Shizu_State2* state
+  );
+
+
+
 typedef uint8_t Shizu_Void;
 
 #define Shizu_Void_Void (0)

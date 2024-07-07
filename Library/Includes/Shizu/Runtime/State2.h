@@ -28,6 +28,8 @@
 // Shizu forward declarations.
 typedef struct Shizu_Environment Shizu_Environment;
 typedef struct Shizu_Object Shizu_Object;
+typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
+typedef struct Shizu_Type Shizu_Type;
 typedef struct Shizu_WeakReference Shizu_WeakReference;
 
 typedef struct Shizu_WeakReferences Shizu_WeakReferences;
@@ -102,7 +104,7 @@ Shizu_State2_popJumpTarget
  * @brief Set the status variable.
  * @param self A pointer to this state.
  * @param status The value to set.
- * @undefined @a self does not point to a state. 
+ * @undefined @a self does not point to a state.
  */
 void
 Shizu_State2_setStatus
@@ -217,6 +219,28 @@ void
 Shizu_State2_ensureModulesLoaded
   (
     Shizu_State2* state
+  );
+
+/// @brief Get the Shizu_Type value of a Shizu_Object value.
+/// @param self A pointer to the Shizu_State object.
+/// @param object A pointer the Shizu_Object value.
+/// @return A pointer to the Shizu_Type value of the Shizu_Object value.
+Shizu_Type*
+Shizu_State2_getObjectType
+  (
+    Shizu_State2* self,
+    Shizu_Object* object
+  );
+
+/// @brief Get the Shizu_Object_Dispatch value of a Shizu_Object value.
+/// @param self A pointer to the Shizu_State object.
+/// @param object A pointer the Shizu_Object value.
+/// @return A pointer to the Shizu_Object_dispatch value of the Shizu_Object value.
+Shizu_Object_Dispatch*
+Shizu_State2_getObjectDispatch
+  (
+    Shizu_State2* state,
+    Shizu_Object* object
   );
 
 #endif // SHIZU_RUNTIME_STATE2_H_INCLUDED

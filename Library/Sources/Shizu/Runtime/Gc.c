@@ -25,27 +25,3 @@
 #include "Shizu/Runtime/Object.h"
 #include "Shizu/Runtime/CxxUtilities.h"
 #include "Shizu/Runtime/Type.private.h"
-
-Shizu_Type*
-Shizu_State_getObjectType
-  (
-    Shizu_State2* self,
-    Shizu_Object* object
-  )
-{
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != object);
-  Shizu_debugAssert(NULL != object->type);
-  return object->type;
-}
-
-Shizu_Object_Dispatch*
-Shizu_State_getObjectDispatch
-  (
-    Shizu_State2* state,
-    Shizu_Object* object
-  )
-{
-  Shizu_Type* type = Shizu_State_getObjectType(state, object);
-  return type->objectType.dispatch;
-}
