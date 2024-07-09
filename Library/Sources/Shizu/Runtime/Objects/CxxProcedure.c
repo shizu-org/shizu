@@ -49,6 +49,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_CxxProcedure_Type = {
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) NULL,
   .visitType = NULL,
   .size = sizeof(Shizu_CxxProcedure),
+  .construct = NULL,
   .visit = (Shizu_OnVisitCallback*) NULL,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_CxxProcedure_finalize,
   .dispatchSize = sizeof(Shizu_CxxProcedure_Dispatch),
@@ -99,12 +100,8 @@ Shizu_CxxProcedure_create
   )
 {
   Shizu_Type* TYPE = Shizu_CxxProcedure_getType(state);
-  Shizu_CxxProcedure* self = (Shizu_CxxProcedure*)Shizu_Gc_allocateObject(state, sizeof(Shizu_CxxProcedure));
-  self->f = f;
-  self->dl = dl;
-  if (self->dl) {
-    Shizu_State1_refDl(Shizu_State2_getState1(state), self->dl);
-  }
-  ((Shizu_Object*)self)->type = TYPE;
-  return self;
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_CxxProcedure* SELF = (Shizu_CxxProcedure*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_CxxProcedure_construct(state, SELF, f, dl);
+  return SELF;
 }

@@ -65,10 +65,16 @@ typedef void (Shizu_PostCreateTypeCallback)(Shizu_State1* state1);
 /// @param state1 A pointer to the Shizu_State1 object.
 typedef void (Shizu_PreDestroyTypeCallback)(Shizu_State1* state1);
 
+
 /// @since 1.0
 /// @brief The type of a "VisitTypeCallback" callback function.
 /// @param state1 A pointer to the Shizu_State1 object.
 typedef void (Shizu_VisitTypeCallback)(Shizu_State1* state1);
+
+/// @since 1.0
+/// @brief The type of a "Construct" callback function.
+/// @param state2 A pointer to the Shizu_State2 object.
+typedef void (Shizu_OnConstructCallback)(Shizu_State2* state2, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues);
 
 /// @since 1.0
 /// The type of a "onVisit" callback function.
@@ -94,10 +100,12 @@ struct Shizu_ObjectTypeDescriptor {
   Shizu_PostCreateTypeCallback* postCreateType;
   Shizu_PreDestroyTypeCallback* preDestroyType;
   Shizu_VisitTypeCallback* visitType;
-  size_t size;
 
+  size_t size;
+  Shizu_OnConstructCallback* construct;
   Shizu_OnVisitCallback* visit;
   Shizu_OnFinalizeCallback* finalize;
+
   size_t dispatchSize;
   Shizu_OnDispatchInitializeCallback *dispatchInitialize;
   Shizu_OnDispatchUninitializeCallback* dispatchUninitialize;
@@ -134,6 +142,34 @@ Shizu_Type_isObjectType
  */
 bool
 Shizu_Type_isPrimitiveType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  );
+
+/// @brief Get the object type descriptor.
+/// @param state1 A pointer to the Shizu_State2 object.
+/// @param type A pointer to an object type.
+/// @return A pointer to the object type descriptor.
+/// @undefined @a state does not point to a Shizu_State2 object.
+/// @undefined @a self does not point to a an object type.
+Shizu_ObjectTypeDescriptor const*
+Shizu_Type_getObjectTypeDescriptor
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  );
+
+/// @brief Get the primitive type descriptor.
+/// @param state1 A pointer to the Shizu_State2 object.
+/// @param type A pointer to a primitive type.
+/// @return A pointer to the primitive type descriptor.
+/// @undefined @a state does not point to a Shizu_State2 object.
+/// @undefined @a self does not point to a a primitive type.
+Shizu_PrimitiveTypeDescriptor const*
+Shizu_Type_getPrimitiveTypeDescriptor
   (
     Shizu_State1* state1,
     Shizu_Types* self,

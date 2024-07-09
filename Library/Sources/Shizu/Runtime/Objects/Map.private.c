@@ -80,6 +80,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_Map_Type = {
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_Map_preDestroyType,
   .visitType = NULL,
   .size = sizeof(Shizu_Map),
+  .construct = &Shizu_Map_constructImpl,
   .visit = (Shizu_OnVisitCallback*) & Shizu_Map_visit,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_Map_finalize,
   .dispatchSize = sizeof(Shizu_Map_Dispatch),
@@ -202,31 +203,6 @@ Shizu_Map_constructImpl
 }
 
 Shizu_defineObjectType(Shizu_Map, Shizu_Object);
-
-void
-Shizu_Map_construct
-  (
-    Shizu_State2* state,
-    Shizu_Map* self
-  )
-{
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
-  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
-  Shizu_Map_constructImpl(state, &returnValue, 1, &argumentValues[0]);
-}
-
-Shizu_Map*
-Shizu_Map_create
-  (
-    Shizu_State2* state
-  )
-{
-  Shizu_Type* TYPE = Shizu_Map_getType(state);
-  Shizu_Map* self = (Shizu_Map*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Map));
-  Shizu_Map_construct(state, self);
-  return self;
-}
 
 size_t
 Shizu_Map_getSize

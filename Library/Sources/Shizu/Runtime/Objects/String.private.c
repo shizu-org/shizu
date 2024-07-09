@@ -71,6 +71,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_String_Type = {
   .preDestroyType = NULL,
   .visitType = NULL,
   .size = sizeof(Shizu_String),
+  .construct = NULL,
   .visit = NULL,
   .finalize = (Shizu_OnFinalizeCallback*)&Shizu_String_finalize,
   .dispatchSize = sizeof(Shizu_String_Dispatch),
@@ -111,7 +112,7 @@ Shizu_String_isEqualToImpl
     Shizu_Object* other
   )
 {
-  if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_String_getType(state), Shizu_State2_getObjectType(state, other))) {
+  if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_String_getType(state), Shizu_Object_getObjectType(state, other))) {
     Shizu_String* x = self;
     Shizu_String* y = (Shizu_String*)other;
     if (x->hashValue == y->hashValue && x->numberOfBytes == y->numberOfBytes) {
@@ -171,9 +172,10 @@ Shizu_String_create
   )
 {
   Shizu_Type* TYPE = Shizu_String_getType(state);
-  Shizu_String* self = (Shizu_String*)Shizu_Gc_allocateObject(state, sizeof(Shizu_String));
-  Shizu_String_construct(state, self, bytes, numberOfBytes);
-  return self;
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_String* SELF = (Shizu_String*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_String_construct(state, SELF, bytes, numberOfBytes);
+  return SELF;
 }
 
 Shizu_String*

@@ -29,10 +29,24 @@
 #include "Shizu/Runtime/Value.h"
 
 /// @code
-/// <target> <~ typeOf(<source>
+/// returnValue <~ typeOf(argumentValue[0])
 /// @endcode
 void
 Shizu_Operations_typeOf
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <~ create(argumentValue[0], argumentValue[1], ..., argumentValue[n-1])
+/// n > 0
+/// TYPEOF(argumentValue[0]) = Type
+/// @endcode
+void
+Shizu_Operations_create
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,

@@ -28,18 +28,23 @@ Compiler_Token_visit
   (
     Shizu_State2* state,
     Compiler_Token* self
-  )
-{
-  if (self->text) {
-    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
-  }
-}
+  );
+
+static void
+Compiler_Token_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
 
 static Shizu_ObjectTypeDescriptor const Compiler_Token_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
   .size = sizeof(Compiler_Token),
+  .construct = &Compiler_Token_constructImpl,
   .visit = (Shizu_OnVisitCallback*)&Compiler_Token_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Compiler_Token_Dispatch),
@@ -48,6 +53,35 @@ static Shizu_ObjectTypeDescriptor const Compiler_Token_Type = {
 };
 
 Shizu_defineObjectType(Compiler_Token, Compiler_Object);
+
+static void
+Compiler_Token_visit
+  (
+    Shizu_State2* state,
+    Compiler_Token* self
+  )
+{
+  if (self->text) {
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
+  }
+}
+
+static void
+Compiler_Token_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_Type* TYPE = Compiler_Token_getType(state);
+  Compiler_Token* self = (Compiler_Token*)Shizu_Value_getObject(&argumentValues[0]);
+  Compiler_Object_construct(state, (Compiler_Object*)self);
+  self->type = Shizu_Value_getInteger32(&argumentValues[1]);
+  self->text = (Shizu_String*)Shizu_Value_getObject(&argumentValues[2]);
+  ((Shizu_Object*)self)->type = TYPE;
+}
 
 void
 Compiler_Token_construct
@@ -74,7 +108,8 @@ Compiler_Token_create
   )
 {
   Shizu_Type* TYPE = Compiler_Token_getType(state);
-  Compiler_Token* self = (Compiler_Token*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Token));
-  Compiler_Token_construct(state, self, type, text);
-  return self;
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Compiler_Token* SELF = (Compiler_Token*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Token));
+  Compiler_Token_construct(state, SELF, type, text);
+  return SELF;
 }

@@ -23,12 +23,15 @@
 #define SHIZU_RUNTIME_INCLUDE_H_INCLUDED
 
 #define SHIZU_RUNTIME_PRIVATE (1)
+#include "Shizu/Runtime/Extensions.h"
 #include "Shizu/Runtime/Gc.h"
 #include "Shizu/Runtime/Locks.h"
 #include "Shizu/Runtime/Stack.h"
 #include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Status.h"
 #include "Shizu/Runtime/Value.h"
+
+#include "Shizu/Runtime/Operations/Include.h"
 
 #include "Shizu/Runtime/Objects/ByteArray.h"
 #include "Shizu/Runtime/Objects/CxxProcedure.h"

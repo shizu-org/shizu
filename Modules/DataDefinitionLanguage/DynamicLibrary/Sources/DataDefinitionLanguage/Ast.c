@@ -21,7 +21,65 @@
 
 #include "DataDefinitionLanguage/Ast.h"
 
+// Utility function to create a "Shizu.List".
+static Shizu_List* createList(Shizu_State2* state) {
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
+  Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  return (Shizu_List*)Shizu_Value_getObject(&returnValue);
+}
+
 Shizu_defineEnumerationType(AstType);
+
+static void
+Ast_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+static void
+Ast_visit
+  (
+    Shizu_State2* state,
+    Ast* self
+  );
+
+static Shizu_ObjectTypeDescriptor const Ast_Type = {
+  .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
+  .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
+  .visitType = NULL,
+  .size = sizeof(Ast),
+  .construct = &Ast_constructImpl,
+  .visit = (Shizu_OnVisitCallback*)&Ast_visit,
+  .finalize = (Shizu_OnFinalizeCallback*)NULL,
+  .dispatchSize = sizeof(Ast_Dispatch),
+  .dispatchInitialize = NULL,
+  .dispatchUninitialize = NULL,
+};
+
+Shizu_defineObjectType(Ast, Shizu_Object);
+
+static void
+Ast_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_Type* TYPE = Ast_getType(state);
+  Ast* self = (Ast*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  self->type = Shizu_Value_getInteger32(&argumentValues[1]);
+  self->text = (Shizu_String*)Shizu_Value_getObject(&argumentValues[2]);
+  self->children = createList(state);
+  ((Shizu_Object*)self)->type = TYPE;
+}
 
 static void
 Ast_visit
@@ -38,20 +96,6 @@ Ast_visit
   }
 }
 
-static Shizu_ObjectTypeDescriptor const Ast_Type = {
-  .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
-  .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
-  .visitType = NULL,
-  .size = sizeof(Ast),
-  .visit = (Shizu_OnVisitCallback*)&Ast_visit,
-  .finalize = (Shizu_OnFinalizeCallback*)NULL,
-  .dispatchSize = sizeof(Ast_Dispatch),
-  .dispatchInitialize = NULL,
-  .dispatchUninitialize = NULL,
-};
-
-Shizu_defineObjectType(Ast, Shizu_Object);
-
 void
 Ast_construct
   (
@@ -65,7 +109,7 @@ Ast_construct
   Shizu_Object_construct(state, (Shizu_Object*)self);
   self->type = type;
   self->text = text;
-  self->children = Shizu_List_create(state);
+  self->children = createList(state);
   ((Shizu_Object*)self)->type = TYPE;
 }
 

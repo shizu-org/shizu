@@ -49,6 +49,10 @@
 #include "Shizu/Runtime/Objects/WeakReference.private.h"
 #include "Shizu/Runtime/Objects/String.h"
 
+#include "Shizu/Runtime/Operations/Include.h"
+
+#include "Shizu/Runtime/Extensions.h"
+
 struct Shizu_State2 {
   int referenceCount;
   /// The number of components that are already initialized.
@@ -209,7 +213,7 @@ static void shutdown6(Shizu_State2* state) {
 }
 
 static void startup7(Shizu_State2* state) {
-  Shizu_Environment* globalEnvironment = Shizu_Environment_create(state);
+  Shizu_Environment* globalEnvironment = Shizu_Runtime_Extensions_createEnvironment(state);
   Shizu_Object_lock(Shizu_State2_getState1(state), Shizu_State2_getLocks(state), (Shizu_Object*)globalEnvironment);
   state->globalEnvironment = globalEnvironment;
 }
@@ -226,7 +230,7 @@ static void shutdown7(Shizu_State2* state) {
 }
 
 static void startup8(Shizu_State2* state) {
-  Shizu_List* modules = Shizu_List_create(state);
+  Shizu_List* modules = Shizu_Runtime_Extensions_createList(state);
   Shizu_Object_lock(Shizu_State2_getState1(state), Shizu_State2_getLocks(state), (Shizu_Object*)modules);
   state->modules = modules;
 }
@@ -242,7 +246,7 @@ static void shutdown8(Shizu_State2* state) {
         Shizu_unreachableCodeReached(__FILE__, __LINE__);
       }
       Shizu_Object* elementObject = Shizu_Value_getObject(&elementValue);
-      if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_State2_getObjectType(state, elementObject), Shizu_Module_getType(state))) {
+      if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Object_getObjectType(state, elementObject), Shizu_Module_getType(state))) {
         // Developer error if this occurs.
         Shizu_unreachableCodeReached(__FILE__, __LINE__);
       }
@@ -624,30 +628,30 @@ isModule
     f = (char const* (*)(Shizu_State1*))Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), dl, "Shizu_ModuleLibrary_getName");
     if (!f) {
       fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_getName",
-        (int)Shizu_String_getNumberOfBytes(state, path),
-        Shizu_String_getBytes(state, path));
+                      (int)Shizu_String_getNumberOfBytes(state, path),
+                      Shizu_String_getBytes(state, path));
       Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
       dl = NULL;
       Shizu_State2_jump(state);
     }
   }
   {
-    void (*f)(Shizu_State2*) = (void (*)(Shizu_State2*))Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), dl, "Shizu_ModuleLibrary_load");
+    Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), dl, "Shizu_ModuleLibrary_load");
     if (!f) {
       fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_load",
-        (int)Shizu_String_getNumberOfBytes(state, path),
-        Shizu_String_getBytes(state, path));
+                      (int)Shizu_String_getNumberOfBytes(state, path),
+                      Shizu_String_getBytes(state, path));
       Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
       dl = NULL;
       Shizu_State2_jump(state);
     }
   }
   {
-    void (*f)(Shizu_State2*) = (void (*)(Shizu_State2*))Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), dl, "Shizu_ModuleLibrary_unload");
+    Shizu_CxxFunction* f = (Shizu_CxxFunction*)Shizu_State1_getDlSymbol(Shizu_State2_getState1(state), dl, "Shizu_ModuleLibrary_unload");
     if (!f) {
       fprintf(stderr, "unable to link `%s` of `%.*s`\n", "Shizu_ModuleLibrary_unload",
-        (int)Shizu_String_getNumberOfBytes(state, path),
-        Shizu_String_getBytes(state, path));
+                      (int)Shizu_String_getNumberOfBytes(state, path),
+                      Shizu_String_getBytes(state, path));
       Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl);
       dl = NULL;
       Shizu_State2_jump(state);
@@ -665,7 +669,7 @@ Shizu_State2_ensureModulesLoaded
   )
 {
   Shizu_String* workingDirectory = Shizu_getWorkingDirectory(state);
-  Shizu_List* modules = Shizu_List_create(state);
+  Shizu_List* modules = Shizu_Runtime_Extensions_createList(state);
   LoadModulesContext context;
   context.state = state;
   context.list = modules;
@@ -684,28 +688,4 @@ Shizu_State2_ensureModulesLoaded
       Shizu_Module_ensureLoaded(state, module);
     }
   }
-}
-
-Shizu_Type*
-Shizu_State2_getObjectType
-  (
-    Shizu_State2* self,
-    Shizu_Object* object
-  )
-{
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != object);
-  Shizu_debugAssert(NULL != object->type);
-  return object->type;
-}
-
-Shizu_Object_Dispatch*
-Shizu_State2_getObjectDispatch
-  (
-    Shizu_State2* state,
-    Shizu_Object* object
-  )
-{
-  Shizu_Type* type = Shizu_State2_getObjectType(state, object);
-  return type->objectType.dispatch;
 }

@@ -45,11 +45,36 @@ Shizu_Module_visit
     Shizu_Module* rendition
   );
 
+static void
+Shizu_Module_construct
+  (
+    Shizu_State2* state,
+    Shizu_Module* self,
+    Shizu_String* path
+  );
+
+static void
+Shizu_Module_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+static void
+Shizu_Module_ensureLibraryLoaded
+  (
+    Shizu_State2* state,
+    Shizu_Module* self
+  );
+
 static Shizu_ObjectTypeDescriptor const Shizu_Module_Type = {
   .postCreateType = NULL,
   .preDestroyType = NULL,
   .visitType = NULL,
   .size = sizeof(Shizu_Module),
+  .construct = &Shizu_Module_constructImpl,
   .finalize = (Shizu_OnFinalizeCallback*)&Shizu_Module_finalize,
   .visit = (Shizu_OnVisitCallback*)&Shizu_Module_visit,
   .dispatchSize = sizeof(Shizu_Module_Dispatch),
@@ -82,6 +107,38 @@ Shizu_Module_visit
   if (self->path) {
     Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->path);
   }
+}
+
+static void
+Shizu_Module_construct
+  (
+    Shizu_State2* state,
+    Shizu_Module* self,
+    Shizu_String* path
+  )
+{
+  Shizu_Type* TYPE = Shizu_Module_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  self->path = path;
+  self->dl = NULL;
+  ((Shizu_Object*)self)->type = TYPE;
+}
+
+static void
+Shizu_Module_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_Type* TYPE = Shizu_Module_getType(state);
+  Shizu_Module* self = (Shizu_Module*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  self->path = (Shizu_String*)Shizu_Value_getObject(&argumentValues[1]);
+  self->dl = NULL;
+  ((Shizu_Object*)self)->type = TYPE;
 }
 
 static void
@@ -128,11 +185,11 @@ Shizu_Module_create
     Shizu_String* path
   )
 {
-  Shizu_Module* self = (Shizu_Module*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Module));
-  self->path = path;
-  self->dl = NULL;
-  ((Shizu_Object*)self)->type = Shizu_Module_getType(state);
-  return self;
+  Shizu_Type* TYPE = Shizu_Module_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_Module* SELF = (Shizu_Module*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Module_construct(state, SELF, path);
+  return SELF;
 }
 
 Shizu_String*

@@ -80,6 +80,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_List_Type = {
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_List_preDestroyType,
   .visitType = NULL,
   .size = sizeof(Shizu_List),
+  .construct = &Shizu_List_constructImpl,
   .visit = (Shizu_OnVisitCallback*) & Shizu_List_visit,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_List_finalize,
   .dispatchSize = sizeof(Shizu_List_Dispatch),
@@ -188,31 +189,6 @@ Shizu_List_constructImpl
 }
 
 Shizu_defineObjectType(Shizu_List, Shizu_Object);
-
-void
-Shizu_List_construct
-  (
-    Shizu_State2* state,
-    Shizu_List* self
-  )
-{
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
-  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
-  Shizu_List_constructImpl(state, &returnValue, 1, &argumentValues[0]);
-}
-
-Shizu_List*
-Shizu_List_create
-  (
-    Shizu_State2* state
-  )
-{
-  Shizu_Type* TYPE = Shizu_List_getType(state);
-  Shizu_List* self = (Shizu_List*)Shizu_Gc_allocateObject(state, sizeof(Shizu_List));
-  Shizu_List_construct(state, self);
-  return self;
-}
 
 static Shizu_Value const IndexOutOfBounds = { .tag = Shizu_Value_Tag_Void, .voidValue = Shizu_Void_Void };
 

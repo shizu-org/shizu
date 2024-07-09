@@ -21,7 +21,3 @@
 
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Gc.h"
-
-#include "Shizu/Runtime/Object.h"
-#include "Shizu/Runtime/CxxUtilities.h"
-#include "Shizu/Runtime/Type.private.h"

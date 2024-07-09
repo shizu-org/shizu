@@ -85,6 +85,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_ByteArray_Type = {
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_ByteArray_preDestroyType,
   .visitType = NULL,
   .size = sizeof(Shizu_ByteArray),
+  .construct = &Shizu_ByteArray_constructImpl,
   .visit = (Shizu_OnVisitCallback*) & Shizu_ByteArray_visit,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_ByteArray_finalize,
   .dispatchSize = sizeof(Shizu_ByteArray_Dispatch),
@@ -229,19 +230,6 @@ Shizu_ByteArray_constructImpl
 
 Shizu_defineObjectType(Shizu_ByteArray, Shizu_Object);
 
-void
-Shizu_ByteArray_construct
-  (
-    Shizu_State2* state,
-    Shizu_ByteArray* self
-  )
-{
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
-  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
-  Shizu_ByteArray_constructImpl(state, &returnValue, 1, &argumentValues[0]);
-}
-
 Shizu_ByteArray*
 Shizu_ByteArray_create
   (
@@ -249,9 +237,13 @@ Shizu_ByteArray_create
   )
 {
   Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
-  Shizu_ByteArray* self = (Shizu_ByteArray*)Shizu_Gc_allocateObject(state, sizeof(Shizu_ByteArray));
-  Shizu_ByteArray_construct(state, self);
-  return self;
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_ByteArray* SELF = (Shizu_ByteArray*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)SELF);
+  DESCRIPTOR->construct(state, &returnValue, 1, &(argumentValues[0]));
+  return SELF;
 }
 
 static Shizu_Value const IndexOutOfBounds = { .tag = Shizu_Value_Tag_Void, .voidValue = Shizu_Void_Void };

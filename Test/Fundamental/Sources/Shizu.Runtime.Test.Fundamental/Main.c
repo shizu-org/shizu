@@ -143,7 +143,7 @@ test2
   (
     Shizu_State2* state
   )
-{ 
+{
   Shizu_ByteArray_getType(state);
   Shizu_List_getType(state);
   Shizu_Map_getType(state);
@@ -159,10 +159,32 @@ test3
   )
 {
   Shizu_ByteArray_create(state);
-  Shizu_List_create(state);
-  Shizu_Map_create(state);
+  {
+    Shizu_Value returnValue = Shizu_Value_Initializer();
+    Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+    Shizu_Value_setType(&argumentValues[0], Shizu_Environment_getType(state));
+    Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  }
+  {
+    Shizu_Value returnValue = Shizu_Value_Initializer();
+    Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+    Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
+    Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  }
+  {
+    Shizu_Value returnValue = Shizu_Value_Initializer();
+    Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+    Shizu_Value_setType(&argumentValues[0], Shizu_Map_getType(state));
+    Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  }
+  {
+    Shizu_Value returnValue = Shizu_Value_Initializer();
+    Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() };
+    Shizu_Value_setType(&argumentValues[0], Shizu_WeakReference_getType(state));
+    Shizu_Value_setVoid(&argumentValues[1], Shizu_Void_Void);
+    Shizu_Operations_create(state, &returnValue, 2, &argumentValues[0]);
+  }
   Shizu_String_create(state, "Hello, World!", sizeof("Hello, World!") - 1);
-  Shizu_WeakReference_create(state, (Shizu_Object*)NULL);
 }
 
 static int

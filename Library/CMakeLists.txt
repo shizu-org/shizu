@@ -28,6 +28,9 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Configure.h.in)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Include.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Include.h)
 
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Extensions.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Extensions.h)
+
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Gc.private.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Gc.private.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Gc.c)

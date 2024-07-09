@@ -23,6 +23,7 @@
 #define SHIZU_RUNTIME_OBJECT_H_INCLUDED
 
 #include "Shizu/Runtime/Type.h"
+#include "Shizu/Runtime/Value.h"
 #include "Shizu/Runtime/CxxUtilities.h"
 typedef struct Shizu_Object Shizu_Object;
 typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
@@ -61,7 +62,7 @@ Shizu_Errors_raiseMethodNotImplemented
 /// { Shizu_VirtualCall(A, f, self, x); }
 /// @endcode
 #define Shizu_VirtualCall(TYPE, METHOD, ...) \
-  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State2_getObjectDispatch(state, (Shizu_Object*)self); \
+  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_Object_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
     Shizu_Errors_raiseDispatchNotExists(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
@@ -82,7 +83,7 @@ Shizu_Errors_raiseMethodNotImplemented
 /// { Shizu_VirtualCallWithReturn(A, f, self, x); }
 /// @endcode
 #define Shizu_VirtualCallWithReturn(TYPE, METHOD, ...) \
-  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_State2_getObjectDispatch(state, (Shizu_Object*)self); \
+  TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_Object_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
     Shizu_Errors_raiseDispatchNotExists(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
@@ -188,6 +189,30 @@ Shizu_Object_isEqualTo
     Shizu_State2* state,
     Shizu_Object* self,
     Shizu_Object* other
+  );
+
+/// @brief Get the Shizu_Type value of a Shizu_Object object.
+/// @param state A pointer to the Shizu_State2 object.
+/// @param self A pointer the Shizu_Object object.
+/// @return A pointer to the Shizu_Type object of the Shizu_Object object.
+/// @undefined @a state does not point to a Shizu_State2 object.
+/// @undefined @a self does not point to a shizu_Object object.
+Shizu_Type*
+Shizu_Object_getObjectType
+  (
+    Shizu_State2* state,
+    Shizu_Object* self
+  );
+
+/// @brief Get the Shizu_Object_Dispatch value of a Shizu_Object value.
+/// @param state A pointer to the Shizu_State object.
+/// @param self A pointer the Shizu_Object value.
+/// @return A pointer to the Shizu_Object_dispatch value of the Shizu_Object value.
+Shizu_Object_Dispatch*
+Shizu_Object_getObjectDispatch
+  (
+    Shizu_State2* state,
+    Shizu_Object* self
   );
 
 #endif // SHIZU_RUNTIME_OBJECT_H_INCLUDED

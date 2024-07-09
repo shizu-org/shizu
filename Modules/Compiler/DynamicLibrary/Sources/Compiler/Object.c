@@ -21,11 +21,21 @@
 
 #include "Compiler/Object.h"
 
+static void
+Compiler_Object_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 static Shizu_ObjectTypeDescriptor const Compiler_Object_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
   .size = sizeof(Compiler_Object),
+  .construct = &Compiler_Object_constructImpl,
   .visit = (Shizu_OnVisitCallback*)NULL,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Compiler_Object_Dispatch),
@@ -34,6 +44,21 @@ static Shizu_ObjectTypeDescriptor const Compiler_Object_Type = {
 };
 
 Shizu_defineObjectType(Compiler_Object, Shizu_Object);
+
+static void
+Compiler_Object_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_Type* TYPE = Compiler_Object_getType(state);
+  Compiler_Object* self = (Compiler_Object*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  ((Shizu_Object*)self)->type = TYPE;
+}
 
 void
 Compiler_Object_construct

@@ -37,6 +37,8 @@ Shizu_declareObjectType(Shizu_String);
 /// @return A pointer to the Shizu_String value.
 /// @undefined state does not point to a Shizu_State value.
 /// @undefined bytes does not point to an array of @a numberOfBytes Bytes.
+/// @remarks
+/// Shizu.String has a native "create" function as it is means to transfer data from the C/C++ domain to the X domain.
 Shizu_String*
 Shizu_String_create
   (

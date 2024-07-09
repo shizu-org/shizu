@@ -221,26 +221,5 @@ Shizu_State2_ensureModulesLoaded
     Shizu_State2* state
   );
 
-/// @brief Get the Shizu_Type value of a Shizu_Object value.
-/// @param self A pointer to the Shizu_State object.
-/// @param object A pointer the Shizu_Object value.
-/// @return A pointer to the Shizu_Type value of the Shizu_Object value.
-Shizu_Type*
-Shizu_State2_getObjectType
-  (
-    Shizu_State2* self,
-    Shizu_Object* object
-  );
-
-/// @brief Get the Shizu_Object_Dispatch value of a Shizu_Object value.
-/// @param self A pointer to the Shizu_State object.
-/// @param object A pointer the Shizu_Object value.
-/// @return A pointer to the Shizu_Object_dispatch value of the Shizu_Object value.
-Shizu_Object_Dispatch*
-Shizu_State2_getObjectDispatch
-  (
-    Shizu_State2* state,
-    Shizu_Object* object
-  );
 
 #endif // SHIZU_RUNTIME_STATE2_H_INCLUDED

@@ -31,7 +31,11 @@ Shizu_Type_isObjectType
     Shizu_Types* self,
     Shizu_Type const* x
   )
-{ return (Shizu_TypeFlags_ObjectType == (Shizu_TypeFlags_ObjectType & x->flags)); }
+{
+  Shizu_debugAssert(NULL != state1);
+  Shizu_debugAssert(NULL != x);
+  return (Shizu_TypeFlags_ObjectType == (Shizu_TypeFlags_ObjectType & x->flags));
+}
 
 bool
 Shizu_Type_isPrimitiveType
@@ -40,7 +44,35 @@ Shizu_Type_isPrimitiveType
     Shizu_Types* self,
     Shizu_Type const* x
   )
-{ return (Shizu_TypeFlags_PrimitiveType == (Shizu_TypeFlags_PrimitiveType & x->flags)); }
+{
+  Shizu_debugAssert(NULL != state1);
+  Shizu_debugAssert(NULL != x);
+  return (Shizu_TypeFlags_PrimitiveType == (Shizu_TypeFlags_PrimitiveType & x->flags));
+}
+
+Shizu_ObjectTypeDescriptor const*
+Shizu_Type_getObjectTypeDescriptor
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  )
+{
+  Shizu_debugAssert(!Shizu_Type_isObjectType(state, self, x));
+  return x->objectType.descriptor;
+}
+
+Shizu_PrimitiveTypeDescriptor const*
+Shizu_Type_getPrimitiveTypeDescriptor
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  )
+{
+  Shizu_debugAssert(!Shizu_Type_isPrimitiveType(state, self, x));
+  return x->primitiveType.descriptor;
+}
 
 bool
 Shizu_Types_isSubTypeOf

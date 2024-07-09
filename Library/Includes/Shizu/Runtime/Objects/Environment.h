@@ -32,19 +32,21 @@ typedef struct Shizu_List Shizu_List;
 typedef struct Shizu_String Shizu_String;
 typedef struct Shizu_WeakReference Shizu_WeakReference;
 
-
-Shizu_declareObjectType(Shizu_Environment);
-
 /// @since 1.0
-/// @brief Create a Shizu_Environment value.
-/// @param state A pointer to a Shizu_State2 value.
-/// @return A pointer to the Shizu_Environment value.
-/// @undefined state does not point to a Shizu_State value.
-Shizu_Environment*
-Shizu_Environment_create
-  (
-    Shizu_State2* state
-  );
+/// The CIL type
+/// @code
+/// class Shizu.Environment
+/// @endcode
+/// @details
+/// The CIL type
+/// @code
+/// class Shizu.Environment
+/// @endcode
+/// The signature of the Shizu.Environment constructor is
+/// @code
+/// Shizu.Environment.construct()
+/// @endcode
+Shizu_declareObjectType(Shizu_Environment);
 
 /// @since 1.0
 /// @brief Get the size of this Shizu_Environment value.

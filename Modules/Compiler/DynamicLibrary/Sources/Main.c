@@ -6,14 +6,6 @@
 // strlen
 #include <string.h>
 
-#if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
-  #define Shizu_Module_Export _declspec(dllexport)
-#elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem
-  #define Shizu_Module_Export
-#else
-  #error("operating system not (yet) supported")
-#endif
-
 #include "Compiler/Ast.h"
 #include "Compiler/Parser.h"
 #include "Compiler/Scanner.h"
@@ -50,23 +42,6 @@ createParser
   Shizu_Value_setObject(returnValue, (Shizu_Object*)Compiler_Parser_create(state));
 }
 
-static Shizu_Environment*
-getOrCreateEnvironment
-  (
-    Shizu_State2* state,
-    Shizu_Environment* environment,
-    Shizu_String* name
-  )
-{
-  if (!Shizu_Environment_isDefined(state, environment, name)) {
-    Shizu_Value temporary;
-    Shizu_Value_setObject(&temporary, (Shizu_Object*)Shizu_Environment_create(state));
-    Shizu_Environment_set(state, environment, name, &temporary);
-  }
-  environment = Shizu_Environment_getEnvironment(state, environment, name);
-  return environment;
-}
-
 Shizu_Module_Export void
 Shizu_ModuleLibrary_load
   (
@@ -80,7 +55,7 @@ Shizu_ModuleLibrary_load
   Shizu_JumpTarget jumpTarget;
 
   Shizu_Environment* environment = NULL;
-  environment = getOrCreateEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "Compiler", strlen("Compiler")));
+  environment = Shizu_Runtime_Extensions_getOrCreateEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "Compiler", strlen("Compiler")));
 
   Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
@@ -116,7 +91,7 @@ Shizu_ModuleLibrary_load
 
   Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_Environment* environment1 = getOrCreateEnvironment(state, environment, Shizu_String_create(state, "TokenType", strlen("TokenType")));
+    Shizu_Environment* environment1 = Shizu_Runtime_Extensions_getOrCreateEnvironment(state, environment, Shizu_String_create(state, "TokenType", strlen("TokenType")));
     Shizu_Value value;
 #define Define(Name) \
     Shizu_Value_setInteger32(&value, Compiler_TokenType_##Name); \
@@ -145,7 +120,7 @@ Shizu_ModuleLibrary_load
 
   Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_Environment* environment1 = getOrCreateEnvironment(state, environment, Shizu_String_create(state, "AstType", strlen("AstType")));
+    Shizu_Environment* environment1 = Shizu_Runtime_Extensions_getOrCreateEnvironment(state, environment, Shizu_String_create(state, "AstType", strlen("AstType")));
     Shizu_Value value;
   #define Define(Name) \
     Shizu_Value_setInteger32(&value, Compiler_AstType_##Name); \

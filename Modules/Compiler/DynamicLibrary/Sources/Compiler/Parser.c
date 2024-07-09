@@ -52,11 +52,21 @@ Compiler_Parser_callImpl
     Shizu_Value* arguments
   );
 
+static void
+Compiler_Parser_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 static Shizu_ObjectTypeDescriptor const Compiler_Parser_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
   .size = sizeof(Compiler_Parser),
+  .construct = &Compiler_Parser_constructImpl,
   .visit = (Shizu_OnVisitCallback*)&Compiler_Parser_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Compiler_Parser_Dispatch),
@@ -135,6 +145,22 @@ Compiler_Parser_callImpl
   Shizu_State2_jump(state);
 }
 
+static void
+Compiler_Parser_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_Type* TYPE = Compiler_Parser_getType(state);
+  Compiler_Parser* self = (Compiler_Parser*)Shizu_Value_getObject(&argumentValues[0]);
+  Compiler_Object_construct(state, (Compiler_Object*)self);
+  self->scanner = Compiler_Scanner_create(state);
+  ((Shizu_Object*)self)->type = TYPE;
+}
+
 void
 Compiler_Parser_construct
   (
@@ -155,9 +181,10 @@ Compiler_Parser_create
   )
 {
   Shizu_Type* TYPE = Compiler_Parser_getType(state);
-  Compiler_Parser* self = (Compiler_Parser*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Parser));
-  Compiler_Parser_construct(state, self);
-  return self;
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Compiler_Parser* SELF = (Compiler_Parser*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Parser));
+  Compiler_Parser_construct(state, SELF);
+  return SELF;
 }
 
 static inline void

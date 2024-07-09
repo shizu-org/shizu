@@ -87,6 +87,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_WeakReference_Type = {
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_WeakReference_preDestroyType,
   .visitType = NULL,
   .size = sizeof(Shizu_WeakReference),
+  .construct = &Shizu_WeakReference_constructImpl,
   .visit = NULL,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_WeakReference_finalize,
   .dispatchSize = sizeof(Shizu_WeakReference_Dispatch),
@@ -303,34 +304,4 @@ Shizu_WeakReference_constructImpl
   g->buckets[hashIndex] = SELF;
   g->size++;
   ((Shizu_Object*)SELF)->type = TYPE;
-}
-
-void
-Shizu_WeakReference_construct
-  (
-    Shizu_State2* state,
-    Shizu_WeakReference* self,
-    Shizu_Object* reference
-  )
-{
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() };
-  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
-  if (NULL != reference) {
-    Shizu_Value_setObject(&argumentValues[1], reference);
-  }
-  Shizu_WeakReference_constructImpl(state, &returnValue, 2, &argumentValues[0]);
-}
-
-Shizu_WeakReference*
-Shizu_WeakReference_create
-  (
-    Shizu_State2* state,
-    Shizu_Object* reference
-  )
-{
-  Shizu_Type* TYPE = Shizu_WeakReference_getType(state);
-  Shizu_WeakReference* self = (Shizu_WeakReference*)Shizu_Gc_allocateObject(state, sizeof(Shizu_WeakReference));
-  Shizu_WeakReference_construct(state, self, reference);
-  return self;
 }

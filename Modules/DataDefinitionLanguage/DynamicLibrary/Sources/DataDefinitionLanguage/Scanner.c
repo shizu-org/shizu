@@ -49,11 +49,21 @@ Scanner_callImpl
     Shizu_Value* arguments
   );
 
+static void
+Scanner_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 static Shizu_ObjectTypeDescriptor const Scanner_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
   .size = sizeof(Scanner),
+  .construct = &Scanner_constructImpl,
   .visit = (Shizu_OnVisitCallback*)&Scanner_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Scanner_Dispatch),
@@ -144,6 +154,27 @@ Scanner_callImpl
   }
   Shizu_State2_setStatus(state, Shizu_Status_MethodNotFound);
   Shizu_State2_jump(state);
+}
+
+static void
+Scanner_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_Type* TYPE = Scanner_getType(state);
+  Scanner* self = (Scanner*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  self->buffer = Shizu_ByteArray_create(state);
+  self->input = Shizu_String_create(state, "", sizeof("") - 1);
+  self->start = Shizu_String_getBytes(state, self->input);
+  self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
+  self->current = self->start;
+  self->tokenType = TokenType_StartOfInput;
+  ((Shizu_Object*)self)->type = TYPE;
 }
 
 void

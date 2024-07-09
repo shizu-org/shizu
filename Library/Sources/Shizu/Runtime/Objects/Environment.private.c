@@ -83,6 +83,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_Environment_Type = {
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_Environment_preDestroyType,
   .visitType = NULL,
   .size = sizeof(Shizu_Environment),
+  .construct = &Shizu_Environment_constructImpl,
   .visit = (Shizu_OnVisitCallback*) & Shizu_Environment_visit,
   .finalize = (Shizu_OnFinalizeCallback*) & Shizu_Environment_finalize,
   .dispatchSize = sizeof(Shizu_Environment_Dispatch),
@@ -199,31 +200,6 @@ Shizu_Environment_constructImpl
 }
 
 Shizu_defineObjectType(Shizu_Environment, Shizu_Object);
-
-void
-Shizu_Environment_construct
-  (
-    Shizu_State2* state,
-    Shizu_Environment* self
-  )
-{
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
-  Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)self);
-  Shizu_Environment_constructImpl(state, &returnValue, 1, &argumentValues[0]);
-}
-
-Shizu_Environment*
-Shizu_Environment_create
-  (
-    Shizu_State2* state
-  )
-{
-  Shizu_Type* TYPE = Shizu_Environment_getType(state);
-  Shizu_Environment* self = (Shizu_Environment*)Shizu_Gc_allocateObject(state, sizeof(Shizu_Environment));
-  Shizu_Environment_construct(state, self);
-  return self;
-}
 
 Shizu_Integer32
 Shizu_Environment_getSize

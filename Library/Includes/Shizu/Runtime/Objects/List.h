@@ -27,18 +27,21 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 
-Shizu_declareObjectType(Shizu_List);
-
 /// @since 1.0
-/// @brief Create a Shizu_List value.
-/// @param state A pointer to a Shizu_State2 value.
-/// @return A pointer to the Shizu_List value.
-/// @undefined state does not point to a Shizu_State value.
-Shizu_List*
-Shizu_List_create
-  (
-    Shizu_State2* state
-  );
+/// The CIL type
+/// @code
+/// class Shizu.List
+/// @endcode
+/// @details
+/// The CIL type
+/// @code
+/// class Shizu.List
+/// @endcode
+/// The signature of the Shizu.List constructor is
+/// @code
+/// Shizu.List.construct()
+/// @endcode
+Shizu_declareObjectType(Shizu_List);
 
 Shizu_Value
 Shizu_List_getValue

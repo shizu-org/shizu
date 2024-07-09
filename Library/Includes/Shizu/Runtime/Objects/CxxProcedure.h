@@ -55,10 +55,11 @@ struct Shizu_CxxProcedure {
 /// @param dl
 /// The null pointer if the Shizu_CxxFunction value is defined in the main module.
 /// A pointer to the Shizu_Dl object in which the Cxx function is defined.
-/// @undefined
-/// - @a f is not a null pointer and does not point to Shizu_CxxFunction value.
-/// - the Shizu_CxxFunction valuen is not defined in the main module and @a dl does not point to the DL object in which the Shizu_CxxFunction value is defined.
-/// - @a state does not point to a Shizu_State value.
+/// @remarks
+/// The behavior of this constructor is undefined if any of the following conditions is true:
+/// - @a f does not point to Shizu_CxxFunction value.
+/// - @a dl is not a null value and does not point to the DL object in which the Shhizu_CxxFunction object pointed to by @a f is defined.
+/// - @a state does not point to a Shizu_State object.
 void
 Shizu_CxxProcedure_construct
   (
@@ -80,10 +81,13 @@ Shizu_CxxProcedure_construct
 /// A pointer to the Shizu_Dl object in which the Cxx function is defined.
 /// @return
 /// A pointer to the Shizu_CxxProcedure value.
-/// @undefined
-/// - @a f is not a null pointer and does not point to Shizu_CxxFunction value.
-/// - the Shizu_CxxFunction value is not defined in the main module and @a dl does not point to the DL object in which the Shizu_CxxFunction value is defined.
-/// - @a state does not point to a Shizu_State value.
+/// @remarks
+/// The behavior of this constructor is undefined if any of the following conditions is true:
+/// - @a f does not point to Shizu_CxxFunction value.
+/// - @a dl is not a null value and does not point to the DL object in which the Shhizu_CxxFunction object pointed to by @a f is defined.
+/// - @a state does not point to a Shizu_State object.
+/// @remarks
+/// Shizu.CxxProcedure has a native "create" function as it is means to transfer data from the C/C++ domain to the X domain.
 Shizu_CxxProcedure*
 Shizu_CxxProcedure_create
   (

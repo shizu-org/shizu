@@ -31,18 +31,21 @@
 /// @todo Rename to "Shizu_WeakReferencesState".
 typedef struct Shizu_WeakReferences Shizu_WeakReferences;
 
-Shizu_declareObjectType(Shizu_WeakReference);
-
 /// @since 1.0
-/// @brief Create a Shizu_WeakReference value.
-/// @param state A pointer to a Shizu_State2 object.
-/// @param reference A pointer to a Shizu_Object value or a null pointer.
-/// @return A pointer to the Shizu_WeakReference value.
-Shizu_WeakReference*
-Shizu_WeakReference_create
-  (
-    Shizu_State2* state,
-    Shizu_Object* reference
-  );
+/// @since 1.0
+/// The CIL type
+/// @code
+/// class Shizu.WeakReference
+/// @endcode
+/// @details
+/// The CIL type
+/// @code
+/// class Shizu.WeakReference
+/// @endcode
+/// The signature of the Shizu.WeakReference constructor is
+/// @code
+/// Shizu.Map.construct(reference:Shizu.Object|Shizu.Void)
+/// @endcode
+Shizu_declareObjectType(Shizu_WeakReference);
 
 #endif // SHIZU_RUNTIME_WEAKREFERENCE_H_INCLUDED

@@ -1,18 +1,10 @@
-#include "Shizu/Runtime/Configure.h"
+#include "Shizu/Runtime/Include.h"
 
 // fprintf, stdio
 #include <stdio.h>
 
 // strlen
 #include <string.h>
-
-#if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
-  #define Shizu_Module_Export _declspec(dllexport)
-#elif Shizu_Configuration_OperatingSystem_Linux == Shizu_Configuration_OperatingSystem
-  #define Shizu_Module_Export
-#else
-  #error("operating system not (yet) supported")
-#endif
 
 #include "FileSystem/deleteFile.h"
 #include "FileSystem/getFileContents.h"
@@ -32,19 +24,13 @@ Shizu_ModuleLibrary_load
 {
   Shizu_Dl* dl = NULL;
   Shizu_JumpTarget jumpTarget;
-  
+
   Shizu_Environment* environment = NULL;
-  environment = Shizu_State2_getGlobalEnvironment(state);
-  if (!Shizu_Environment_isDefined(state, environment, Shizu_String_create(state, "FileSystem", strlen("FileSystem")))) {
-    Shizu_Value temporary;
-    Shizu_Value_setObject(&temporary, (Shizu_Object*)Shizu_Environment_create(state));
-    Shizu_Environment_set(state, environment, Shizu_String_create(state, "FileSystem", strlen("FileSystem")), &temporary);
-  }
-  environment = Shizu_Environment_getEnvironment(state, environment, Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
+  environment = Shizu_Runtime_Extensions_getOrCreateEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "FileSystem", strlen("FileSystem")));
 
   typedef struct FunctionInfo {
     char const* name;
-    Shizu_CxxFunction* function; 
+    Shizu_CxxFunction* function;
   } FunctionInfo;
 
   static const FunctionInfo g_functions[] = {

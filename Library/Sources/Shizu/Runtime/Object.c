@@ -1,3 +1,4 @@
+#define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Object.h"
 
 // fprintf, stderr
@@ -5,6 +6,7 @@
 // exit, EXIT_FAILURE
 #include <stdlib.h>
 #include "Shizu/Runtime/State2.h"
+#include "Shizu/Runtime/Type.private.h"
 
 static void
 Shizu_Error_emitMethodCallContext
@@ -116,6 +118,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_Object_Type = {
   .preDestroyType = NULL,
   .visitType = NULL,
   .size = sizeof(Shizu_Object),
+  .construct = NULL,
   .visit = NULL,
   .finalize = NULL,
   .dispatchSize = sizeof(Shizu_Object_Dispatch),
@@ -247,3 +250,27 @@ Shizu_Object_isEqualTo
     Shizu_Object* other
   )
 { Shizu_VirtualCallWithReturn(Shizu_Object, isEqualTo, self, other); }
+
+Shizu_Type*
+Shizu_Object_getObjectType
+  (
+    Shizu_State2* state,
+    Shizu_Object* self
+  )
+{
+  Shizu_debugAssert(NULL != state);
+  Shizu_debugAssert(NULL != self);
+  Shizu_debugAssert(NULL != self->type);
+  return self->type;
+}
+
+Shizu_Object_Dispatch*
+Shizu_Object_getObjectDispatch
+  (
+    Shizu_State2* state,
+    Shizu_Object* self
+  )
+{
+  Shizu_Type* type = Shizu_Object_getObjectType(state, self);
+  return type->objectType.dispatch;
+}

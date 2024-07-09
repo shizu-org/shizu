@@ -49,11 +49,21 @@ Compiler_Scanner_callImpl
     Shizu_Value* arguments
   );
 
+static void
+Compiler_Scanner_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 static Shizu_ObjectTypeDescriptor const Compiler_Scanner_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
   .size = sizeof(Compiler_Scanner),
+  .construct = &Compiler_Scanner_constructImpl,
   .visit = (Shizu_OnVisitCallback*)&Compiler_Scanner_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Compiler_Scanner_Dispatch),
@@ -146,6 +156,27 @@ Compiler_Scanner_callImpl
   Shizu_State2_jump(state);
 }
 
+static void
+Compiler_Scanner_constructImpl
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_Type* TYPE = Compiler_Scanner_getType(state);
+  Compiler_Scanner* self = (Compiler_Scanner*)Shizu_Value_getObject(&argumentValues[0]);
+  Compiler_Object_construct(state, (Compiler_Object*)self);
+  self->buffer = Shizu_ByteArray_create(state);
+  self->input = Shizu_String_create(state, "", sizeof("") - 1);
+  self->start = Shizu_String_getBytes(state, self->input);
+  self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
+  self->current = self->start;
+  self->tokenType = Compiler_TokenType_StartOfInput;
+  ((Shizu_Object*)self)->type = TYPE;
+}
+
 void
 Compiler_Scanner_construct
   (
@@ -171,9 +202,10 @@ Compiler_Scanner_create
   )
 {
   Shizu_Type* TYPE = Compiler_Scanner_getType(state);
-  Compiler_Scanner* self = (Compiler_Scanner*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Scanner));
-  Compiler_Scanner_construct(state, self);
-  return self;
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Compiler_Scanner* SELF = (Compiler_Scanner*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Scanner));
+  Compiler_Scanner_construct(state, SELF);
+  return SELF;
 }
 
 void

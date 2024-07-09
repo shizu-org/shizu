@@ -27,18 +27,21 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 
-Shizu_declareObjectType(Shizu_Map);
-
 /// @since 1.0
-/// @brief Create a Shizu_Map value.
-/// @param state A pointer to a Shizu_State2 value.
-/// @return A pointer to the Shizu_Map value.
-/// @undefined state does not point to a Shizu_State value.
-Shizu_Map*
-Shizu_Map_create
-  (
-    Shizu_State2* state
-  );
+/// The CIL type
+/// @code
+/// class Shizu.Map
+/// @endcode
+/// @details
+/// The CIL type
+/// @code
+/// class Shizu.Map
+/// @endcode
+/// The signature of the Shizu.Map constructor is
+/// @code
+/// Shizu.Map.construct()
+/// @endcode
+Shizu_declareObjectType(Shizu_Map);
 
 size_t
 Shizu_Map_getSize
