@@ -50,9 +50,9 @@ enum Shizu_Status {
   Shizu_Status_SyntacticalError,
   /// @brief A semantical error occurred.
   Shizu_Status_SemanticalError,
-  
+
   Shizu_Status_OperationInvalid,
-  
+
   Shizu_Status_UnreachabelCodeReached,
 
   Shizu_Status_StackOverflow,
@@ -61,13 +61,14 @@ enum Shizu_Status {
 
   Shizu_Status_StackIndexOutOfBounds,
 
-
+  /// Status value indicating a division by zero occurred.
+  Shizu_Status_DivisionByZero,
 
   /// Status value indicating an encoding is invalid.
   Shizu_Status_InvalidEncoding,
-  
+
   Shizu_Status_StackCorruption,
-    
+
 
 
   Shizu_Status_EnvironmentFailed,

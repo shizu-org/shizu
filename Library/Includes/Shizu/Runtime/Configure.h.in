@@ -41,6 +41,7 @@
 
 #define Shizu_Configuration_CompilerC_Msvc (1)
 #define Shizu_Configuration_CompilerC_Gcc (2)
+#define Shizu_Configuration_CompilerC_Clang (3)
 
 #define Shizu_Configuration_CompilerC @Shizu_Configuration_CompilerC@
 

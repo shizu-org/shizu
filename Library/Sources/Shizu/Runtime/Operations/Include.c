@@ -122,3 +122,312 @@ Shizu_Operations_create
   }
   Shizu_Value_setObject(returnValue, self);
 }
+
+void
+Shizu_Operations_not
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (numberOfArgumentValues != 1) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isBoolean(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Value_setBoolean(returnValue, Shizu_Value_getBoolean(argumentValues + 0));
+}
+
+void
+Shizu_Operations_and
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (numberOfArgumentValues != 2) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isBoolean(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isBoolean(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Value_setBoolean(returnValue, Shizu_Value_getBoolean(argumentValues + 0) &&
+                                      Shizu_Value_getBoolean(argumentValues + 1));
+}
+
+void
+Shizu_Operations_or
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isBoolean(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isBoolean(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Value_setBoolean(returnValue, Shizu_Value_getBoolean(argumentValues + 0) ||
+                                      Shizu_Value_getBoolean(argumentValues + 1));
+}
+
+// MSVC does not offer proper compiler intrinsics AND its inline assembler only supports x86.
+// Hence we use MASM to support the implementation of Shizu_Operations_(add|subtract|multiply|divide)_i32.
+// In general, we will make use of a few assembler instructions:
+// "ADD" (https://www.felixcloutier.com/x86/add), "SUB" (https://www.felixcloutier.com/x86/sub),
+// "IMUL" (https://www.felixcloutier.com/x86/imul), "IDIV" (https://www.felixcloutier.com/x86/idiv)
+void
+Shizu_Operations_add_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isInteger32(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isInteger32(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Integer32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Integer32 z;
+#if Shizu_Configuration_CompilerC_Gcc == Shizu_Configuration_CompilerC || \
+    Shizu_Configuration_CompilerC_Clang == Shizu_Configuration_CompilerC
+  __builtin_add_overflow(x, y, &z);
+#elif Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
+  int64_t w = ((int64_t)x) + ((int64_t)y);
+  z = (int32_t)(w & 0xffffffff);
+#else
+  #error("compiler not yet supported")
+#endif
+  Shizu_Value_setInteger32(returnValue, z);
+}
+
+void
+Shizu_Operations_add_f32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Value_setFloat32(returnValue, x + y);
+}
+
+void
+Shizu_Operations_subtract_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Integer32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Integer32 z;
+#if Shizu_Configuration_CompilerC_Gcc == Shizu_Configuration_CompilerC || \
+    Shizu_Configuration_CompilerC_Clang == Shizu_Configuration_CompilerC
+  __builtin_sub_overflow(x, y, &z);
+#elif Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
+  int64_t w = ((int64_t)x) - ((int64_t)y);
+  z = (int32_t)(w & 0xffffffff);
+#else
+  #error("compiler not yet supported")
+#endif
+  Shizu_Value_setInteger32(returnValue, z);
+}
+
+void
+Shizu_Operations_subtract_f32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Value_setFloat32(returnValue, x - y);
+}
+
+void
+Shizu_Operations_multiply_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isInteger32(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isInteger32(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Integer32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Integer32 z;
+#if Shizu_Configuration_CompilerC_Gcc == Shizu_Configuration_CompilerC || \
+    Shizu_Configuration_CompilerC_Clang == Shizu_Configuration_CompilerC
+  __builtin_mul_overflow(x, y, &z);
+#elif Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
+  __int64_t w = ((int64_t)x) * ((int64_t)y);
+  z = (int32_t)(w & 0xffffffff);
+#else
+  #error("compiler not yet supported")
+#endif
+  Shizu_Value_setInteger32(returnValue, z);
+}
+
+void
+Shizu_Operations_multiply_f32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Value_setFloat32(returnValue, x * y);
+}
+
+void
+Shizu_Operations_divide_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isInteger32(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isInteger32(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Integer32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  if (!y) {
+    Shizu_State2_setStatus(state, Shizu_Status_DivisionByZero);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Value_setInteger32(returnValue, x / y);
+}
+
+void
+Shizu_Operations_divide_f32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat32(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Value_setFloat32(returnValue, x / y);
+}

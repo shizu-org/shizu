@@ -29,7 +29,7 @@
 #include "Shizu/Runtime/Value.h"
 
 /// @code
-/// returnValue <~ typeOf(argumentValue[0])
+/// returnValue <~ _typeOf(argumentValue[0])
 /// @endcode
 void
 Shizu_Operations_typeOf
@@ -41,12 +41,191 @@ Shizu_Operations_typeOf
   );
 
 /// @code
-/// returnValue <~ create(argumentValue[0], argumentValue[1], ..., argumentValue[n-1])
-/// n > 0
-/// TYPEOF(argumentValue[0]) = Type
+/// returnValue <~ _create(argumentValue[0], argumentValue[1], ..., argumentValue[n-1])
+/// n > 0, _typeOf(argumentValue[0]) = Type
 /// @endcode
 void
 Shizu_Operations_create
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <- _not(argumentValue[0])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 1, typeOf(argumentValue[0]) = Boolean
+/// @endcode
+void
+Shizu_Operations_not
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+
+/// @code
+/// returnValue <- _and(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Boolean, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_and
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <- _or(argumentValue[0], argumentValue[1])
+/// n = 2, _typeOf(argumentValue[0]) = Boolean
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Boolean, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_or
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <- _add_i32(argumentValue[0], argumentValue[1])
+/// n = 2, _typeOf(argumentValue[i]) = Integer32, i in {0,1}
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Integer32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_add_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <~ _add_f32(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_add_f32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <~ _subtract_i32(argumentValue[0], argumentValue[1])
+/// n = 2, TYPEOF(argumentValue[0]) = Integer32
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Integer32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_subtract_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <~ _subtract_f32(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_subtract_f32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <- _multiply_i32(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Integer32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_multiply_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <~ _multiply_f32(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_multiply_f32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <~ _divide_i32(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Integer32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_divide_i32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+/// @code
+/// returnValue <~ _divide_f32(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float32, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_divide_f32
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
