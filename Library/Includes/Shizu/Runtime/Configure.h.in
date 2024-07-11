@@ -47,4 +47,10 @@
 
 
 
+#define Shizu_Configuration_WithInteger64 @Shizu_Configuration_WithInteger64@
+
+#define Shizu_Configuration_WithFloat64 @Shizu_Configuration_WithFloat64@
+
+
+
 #endif // SHIZU_RUNTIME_CONFIGURE_H_INCLUDED

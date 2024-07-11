@@ -136,6 +136,26 @@ Shizu_Operations_add_f32
     Shizu_Value* argumentValues
   );
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+/// @code
+/// returnValue <~ _add_f64(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float64, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_add_f64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+#endif
+
 /// @code
 /// returnValue <~ _subtract_i32(argumentValue[0], argumentValue[1])
 /// n = 2, TYPEOF(argumentValue[0]) = Integer32
@@ -169,6 +189,26 @@ Shizu_Operations_subtract_f32
     Shizu_Value* argumentValues
   );
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+/// @code
+/// returnValue <~ _subtract_f64(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float64, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_subtract_f64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+#endif
+
 /// @code
 /// returnValue <- _multiply_i32(argumentValue[0], argumentValue[1])
 /// @endcode
@@ -201,6 +241,26 @@ Shizu_Operations_multiply_f32
     Shizu_Value* argumentValues
   );
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+/// @code
+/// returnValue <~ _multiply_f64(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float64, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_multiply_f64
+  (
+    Shizu_State2 * state,
+    Shizu_Value * returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value * argumentValues
+  );
+
+#endif
+
 /// @code
 /// returnValue <~ _divide_i32(argumentValue[0], argumentValue[1])
 /// @endcode
@@ -232,5 +292,25 @@ Shizu_Operations_divide_f32
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
   );
+
+#if 1 == Shizu_Configuration_WithFloat64
+
+/// @code
+/// returnValue <~ _divide_f64(argumentValue[0], argumentValue[1])
+/// @endcode
+/// with preconditions
+/// @code
+/// numberOfArgumentValues = 2, _typeOf(argumentValue[i]) = Float64, i in {0,1}
+/// @endcode
+void
+Shizu_Operations_divide_f64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+#endif
 
 #endif // SHIZU_RUNTIME_OPERATIONS_INCLUDE_H_INCLUDED

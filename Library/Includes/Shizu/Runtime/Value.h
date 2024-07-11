@@ -71,6 +71,24 @@ Shizu_Float32_getType
 
 
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+typedef double Shizu_Float64;
+
+#define Shizu_Float64_Minimum (-DBL_MAX)
+
+#define Shizu_Float64_Maximum (+DBL_MAX)
+
+Shizu_Type*
+Shizu_Float64_getType
+  (
+    Shizu_State2* state
+  );
+
+#endif
+
+
+
 typedef int32_t Shizu_Integer32;
 
 #define Shizu_Integer32_Minimum (INT32_MIN)
@@ -82,6 +100,24 @@ Shizu_Integer32_getType
   (
     Shizu_State2* state
   );
+
+
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+typedef int64_t Shizu_Integer64;
+
+#define Shizu_Integer64_Minimum (INT64_MIN)
+
+#define Shizu_Integer64_Maximum (INT64_MAX)
+
+Shizu_Type*
+Shizu_Integer64_getType
+  (
+    Shizu_State2* state
+  );
+
+#endif
 
 
 
@@ -119,17 +155,39 @@ typedef struct Shizu_Value Shizu_Value;
 
 #define Shizu_Value_Tag_Boolean (0)
 
-#define Shizu_Value_Tag_CxxFunction (1)
+#define Shizu_Value_Tag_CxxFunction (Shizu_Value_Tag_Boolean + 1)
 
-#define Shizu_Value_Tag_Float32 (2)
+#define Shizu_Value_Tag_Float32 (Shizu_Value_Tag_CxxFunction + 1)
 
-#define Shizu_Value_Tag_Integer32 (3)
+#if 1 == Shizu_Configuration_WithFloat64
 
-#define Shizu_Value_Tag_Object (6)
+#define Shizu_Value_Tag_Float64 (Shizu_Value_Tag_Float32 + 1)
 
-#define Shizu_Value_Tag_Type (7)
+#define Shizu_Value_Tag_Integer32 (Shizu_Value_Tag_Float64 + 1)
 
-#define Shizu_Value_Tag_Void (8)
+#else
+
+#define Shizu_Value_Tag_Integer32 (Shizu_Value_Tag_Float32 + 1)
+
+#endif
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+#define Shizu_Value_Tag_Integer64 (Shizu_Value_Tag_Integer32 + 1)
+
+#define Shizu_Value_Tag_Object (Shizu_Value_Tag_Integer64 + 1)
+
+#else
+
+#define Shizu_Value_Tag_Object (Shizu_Value_Tag_Integer32 + 1)
+
+#endif
+
+#define Shizu_Value_Tag_Type (Shizu_Value_Tag_Object + 1)
+
+#define Shizu_Value_Tag_Void (Shizu_Value_Tag_Type + 1)
+
+
 
 struct Shizu_Value {
   uint8_t tag;
@@ -137,7 +195,13 @@ struct Shizu_Value {
     Shizu_Boolean booleanValue;
     Shizu_CxxFunction* cxxFunctionValue;
     Shizu_Float32 float32Value;
+  #if 1 == Shizu_Configuration_WithFloat64
+    Shizu_Float64 float64Value;
+  #endif
     Shizu_Integer32 integer32Value;
+  #if 1 == Shizu_Configuration_WithInteger64
+    Shizu_Integer64 integer64Value;
+  #endif
     Shizu_Object* objectValue;
     Shizu_Type* typeValue;
     Shizu_Void voidValue;
@@ -213,6 +277,31 @@ Shizu_Value_setFloat32
 
 
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+Shizu_Float64
+Shizu_Value_getFloat64
+  (
+    Shizu_Value const* self
+  );
+
+bool
+Shizu_Value_isFloat64
+(
+  Shizu_Value const* self
+);
+
+void
+Shizu_Value_setFloat64
+(
+  Shizu_Value* self,
+  Shizu_Float64 float64Value
+);
+
+#endif
+
+
+
 Shizu_Integer32
 Shizu_Value_getInteger32
   (
@@ -231,6 +320,31 @@ Shizu_Value_setInteger32
     Shizu_Value* self,
     Shizu_Integer32 integer32Value
   );
+
+
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+Shizu_Integer64
+Shizu_Value_getInteger64
+  (
+    Shizu_Value const* self
+  );
+
+bool
+Shizu_Value_isInteger64
+  (
+    Shizu_Value const* self
+  );
+
+void
+Shizu_Value_setInteger64
+  (
+    Shizu_Value* self,
+    Shizu_Integer64 integer64Value
+  );
+
+#endif
 
 
 

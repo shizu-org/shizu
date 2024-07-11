@@ -264,6 +264,36 @@ Shizu_Operations_add_f32
   Shizu_Value_setFloat32(returnValue, x + y);
 }
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+void
+Shizu_Operations_add_f64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float64 x = Shizu_Value_getFloat64(argumentValues + 0);
+  Shizu_Float64 y = Shizu_Value_getFloat64(argumentValues + 1);
+  Shizu_Value_setFloat64(returnValue, x + y);
+}
+
+#endif
+
 void
 Shizu_Operations_subtract_i32
   (
@@ -317,6 +347,36 @@ Shizu_Operations_subtract_f32
   Shizu_Float32 y = Shizu_Value_getFloat32(argumentValues + 1);
   Shizu_Value_setFloat32(returnValue, x - y);
 }
+
+#if 1 == Shizu_Configuration_WithFloat64
+
+void
+Shizu_Operations_subtract_f64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float64 x = Shizu_Value_getFloat64(argumentValues + 0);
+  Shizu_Float64 y = Shizu_Value_getFloat64(argumentValues + 1);
+  Shizu_Value_setFloat32(returnValue, x - y);
+}
+
+#endif
 
 void
 Shizu_Operations_multiply_i32
@@ -380,6 +440,36 @@ Shizu_Operations_multiply_f32
   Shizu_Value_setFloat32(returnValue, x * y);
 }
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+void
+Shizu_Operations_multiply_f64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float64 x = Shizu_Value_getFloat64(argumentValues + 0);
+  Shizu_Float64 y = Shizu_Value_getFloat64(argumentValues + 1);
+  Shizu_Value_setFloat32(returnValue, x * y);
+}
+
+#endif
+
 void
 Shizu_Operations_divide_i32
   (
@@ -436,5 +526,32 @@ Shizu_Operations_divide_f32
   Shizu_Value_setFloat32(returnValue, x / y);
 }
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+void
+Shizu_Operations_divide_f64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  if (2 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 0)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Value_isFloat64(argumentValues + 1)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Float64 x = Shizu_Value_getFloat64(argumentValues + 0);
+  Shizu_Float64 y = Shizu_Value_getFloat64(argumentValues + 1);
   Shizu_Value_setFloat32(returnValue, x / y);
 }
+
+#endif

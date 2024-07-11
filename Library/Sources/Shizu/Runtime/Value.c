@@ -86,6 +86,19 @@ static Shizu_PrimitiveTypeDescriptor const Shizu_Float32_Type = {
 
 Shizu_definePrimitiveType(Shizu_Float32);
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Float64_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Float64),
+};
+
+Shizu_definePrimitiveType(Shizu_Float64);
+
+#endif
+
 static Shizu_PrimitiveTypeDescriptor const Shizu_Integer32_Type = {
   .postCreateType = NULL,
   .preDestroyType = NULL,
@@ -94,6 +107,19 @@ static Shizu_PrimitiveTypeDescriptor const Shizu_Integer32_Type = {
 };
 
 Shizu_definePrimitiveType(Shizu_Integer32);
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Integer64_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Integer64),
+};
+
+Shizu_definePrimitiveType(Shizu_Integer64);
+
+#endif
 
 static Shizu_PrimitiveTypeDescriptor const Shizu_Type_Type = {
   .postCreateType = NULL,
@@ -214,6 +240,42 @@ Shizu_Value_setFloat32
   self->tag = Shizu_Value_Tag_Float32;
 }
 
+#if 1 == Shizu_Configuration_WithFloat64
+
+Shizu_Float64
+Shizu_Value_getFloat64
+  (
+    Shizu_Value const* self
+  )
+{
+  Shizu_debugAssert(Shizu_Value_isFloat64(self));
+  return self->float64Value;
+}
+
+bool
+Shizu_Value_isFloat64
+  (
+    Shizu_Value const* self
+  )
+{
+  Shizu_debugAssert(NULL != self);
+  return Shizu_Value_Tag_Float64 == self->tag;
+}
+
+void
+Shizu_Value_setFloat64
+  (
+    Shizu_Value* self,
+    Shizu_Float64 float64Value
+  )
+{
+  Shizu_debugAssert(NULL != self);
+  self->float64Value = float64Value;
+  self->tag = Shizu_Value_Tag_Float64;
+}
+
+#endif
+
 Shizu_Integer32
 Shizu_Value_getInteger32
   (
@@ -245,6 +307,42 @@ Shizu_Value_setInteger32
   self->integer32Value = integer32Value;
   self->tag = Shizu_Value_Tag_Integer32;
 }
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+Shizu_Integer64
+Shizu_Value_getInteger64
+  (
+    Shizu_Value const* self
+  )
+{
+  Shizu_debugAssert(Shizu_Value_isInteger64(self));
+  return self->integer64Value;
+}
+
+bool
+Shizu_Value_isInteger64
+  (
+    Shizu_Value const* self
+  )
+{
+  Shizu_debugAssert(NULL != self);
+  return Shizu_Value_Tag_Integer64 == self->tag;
+}
+
+void
+Shizu_Value_setInteger64
+  (
+    Shizu_Value* self,
+    Shizu_Integer32 integer64Value
+  )
+{
+  Shizu_debugAssert(NULL != self);
+  self->integer32Value = integer64Value;
+  self->tag = Shizu_Value_Tag_Integer64;
+}
+
+#endif
 
 Shizu_Object*
 Shizu_Value_getObject
