@@ -25,7 +25,7 @@ Shizu_Runtime_Extensions_createMap
   Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
   Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
   Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
-  return (Shizu_List*)Shizu_Value_getObject(&returnValue);
+  return (Shizu_Map*)Shizu_Value_getObject(&returnValue);
 }
 
 Shizu_Environment*

@@ -43,7 +43,8 @@ function(on_plugin target module)
             ${SOURCE_FILE}
             ${TARGET_FILE}
     DEPENDS ${SOURCE_FILE}
-    COMMENT "[on plugin] copying ${SOURCE_FILE} to ${TARGET_FILE}"  )
+    COMMENT "[on plugin] copying ${SOURCE_FILE} to ${TARGET_FILE}"
+  )
 endfunction()
 
 function(on_plugins target)
@@ -77,9 +78,11 @@ endfunction()
 
 function(on_assets name)
   get_target_property(source_dir ${name} SOURCE_DIR)
-  message(STATUS "- [on_assets] ${name} source dir: ${source_dir}")
+  message(STATUS "- [on_assets] ${name} source dir: ${source_dir}")
+
   file(GLOB_RECURSE assets_to_copy RELATIVE ${source_dir}/Assets ${source_dir}/Assets/*.* )
-  message(STATUS "- [on_assets] ${name} assets: ${assets_to_copy}")
+  message(STATUS "- [on_assets] ${name} assets: ${assets_to_copy}")
+
   foreach (asset_to_copy ${assets_to_copy})
     add_custom_command(
       TARGET ${name} POST_BUILD

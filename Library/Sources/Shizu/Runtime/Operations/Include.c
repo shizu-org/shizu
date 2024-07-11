@@ -194,10 +194,14 @@ Shizu_Operations_or
 }
 
 // MSVC does not offer proper compiler intrinsics AND its inline assembler only supports x86.
-// Hence we use MASM to support the implementation of Shizu_Operations_(add|subtract|multiply|divide)_i32.
-// In general, we will make use of a few assembler instructions:
-// "ADD" (https://www.felixcloutier.com/x86/add), "SUB" (https://www.felixcloutier.com/x86/sub),
-// "IMUL" (https://www.felixcloutier.com/x86/imul), "IDIV" (https://www.felixcloutier.com/x86/idiv)
+// There are two choices:
+// a) Use MASM to support the implementation of Shizu_Operations_(add|subtract|multiply|divide)_i32.
+//    This would, in general, make use of a few assembler instructions like
+//    "ADD" (https://www.felixcloutier.com/x86/add), "SUB" (https://www.felixcloutier.com/x86/sub),
+//    "IMUL" (https://www.felixcloutier.com/x86/imul), "IDIV" (https://www.felixcloutier.com/x86/idiv)
+// b) Promote int32_t to int64_t before performing the operation.
+//    Use the lower 32 bits of the int64_t result.
+// We have selected option b).
 void
 Shizu_Operations_add_i32
   (
@@ -255,8 +259,8 @@ Shizu_Operations_add_f32
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
-  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
-  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Float32 x = Shizu_Value_getFloat32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getFloat32(argumentValues + 1);
   Shizu_Value_setFloat32(returnValue, x + y);
 }
 
@@ -309,8 +313,8 @@ Shizu_Operations_subtract_f32
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
-  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
-  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Float32 x = Shizu_Value_getFloat32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getFloat32(argumentValues + 1);
   Shizu_Value_setFloat32(returnValue, x - y);
 }
 
@@ -342,7 +346,7 @@ Shizu_Operations_multiply_i32
     Shizu_Configuration_CompilerC_Clang == Shizu_Configuration_CompilerC
   __builtin_mul_overflow(x, y, &z);
 #elif Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
-  __int64_t w = ((int64_t)x) * ((int64_t)y);
+  int64_t w = ((int64_t)x) * ((int64_t)y);
   z = (int32_t)(w & 0xffffffff);
 #else
   #error("compiler not yet supported")
@@ -371,8 +375,8 @@ Shizu_Operations_multiply_f32
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
-  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
-  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Float32 x = Shizu_Value_getFloat32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getFloat32(argumentValues + 1);
   Shizu_Value_setFloat32(returnValue, x * y);
 }
 
@@ -427,7 +431,10 @@ Shizu_Operations_divide_f32
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
-  Shizu_Float32 x = Shizu_Value_getInteger32(argumentValues + 0);
-  Shizu_Float32 y = Shizu_Value_getInteger32(argumentValues + 1);
+  Shizu_Float32 x = Shizu_Value_getFloat32(argumentValues + 0);
+  Shizu_Float32 y = Shizu_Value_getFloat32(argumentValues + 1);
+  Shizu_Value_setFloat32(returnValue, x / y);
+}
+
   Shizu_Value_setFloat32(returnValue, x / y);
 }

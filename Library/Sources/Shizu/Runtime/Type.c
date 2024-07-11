@@ -53,31 +53,31 @@ Shizu_Type_isPrimitiveType
 Shizu_ObjectTypeDescriptor const*
 Shizu_Type_getObjectTypeDescriptor
   (
-    Shizu_State1* state1,
+    Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(!Shizu_Type_isObjectType(state, self, x));
+  Shizu_debugAssert(Shizu_Type_isObjectType(state, self, x));
   return x->objectType.descriptor;
 }
 
 Shizu_PrimitiveTypeDescriptor const*
 Shizu_Type_getPrimitiveTypeDescriptor
   (
-    Shizu_State1* state1,
+    Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(!Shizu_Type_isPrimitiveType(state, self, x));
+  Shizu_debugAssert(Shizu_Type_isPrimitiveType(state, self, x));
   return x->primitiveType.descriptor;
 }
 
 bool
 Shizu_Types_isSubTypeOf
   (
-    Shizu_State1* state1,
+    Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type const* x,
     Shizu_Type const* y
@@ -104,7 +104,7 @@ Shizu_Types_isSubTypeOf
 bool
 Shizu_Types_isTrueSubTypeOf
   (
-    Shizu_State1* state1,
+    Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type const* x,
     Shizu_Type const* y
@@ -134,7 +134,7 @@ Shizu_Types_isTrueSubTypeOf
 Shizu_Type*
 Shizu_Types_getParentType
   (
-    Shizu_State1* state1,
+    Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type* x
   )
@@ -149,7 +149,7 @@ Shizu_Types_getParentType
 void
 Shizu_Types_getTypeName
   (
-    Shizu_State1* state1,
+    Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type* x,
     char const** bytes,
@@ -163,7 +163,7 @@ Shizu_Types_getTypeName
 Shizu_Object_Dispatch*
 Shizu_Types_getDispatch
   (
-    Shizu_State1* state1,
+    Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type* x
   )
