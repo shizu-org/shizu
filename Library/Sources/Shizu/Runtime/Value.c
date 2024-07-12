@@ -334,11 +334,11 @@ void
 Shizu_Value_setInteger64
   (
     Shizu_Value* self,
-    Shizu_Integer32 integer64Value
+    Shizu_Integer64 integer64Value
   )
 {
   Shizu_debugAssert(NULL != self);
-  self->integer32Value = integer64Value;
+  self->integer64Value = integer64Value;
   self->tag = Shizu_Value_Tag_Integer64;
 }
 
