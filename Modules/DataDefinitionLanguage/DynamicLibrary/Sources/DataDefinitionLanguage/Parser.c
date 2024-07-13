@@ -59,6 +59,13 @@ Parser_constructImpl
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
   );
+  
+static Ast*
+Parser_parseValueImpl
+  (
+    Shizu_State2* state,
+    Parser* self
+  );
 
 static Shizu_ObjectTypeDescriptor const Parser_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
@@ -160,29 +167,17 @@ Parser_constructImpl
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-void
-Parser_construct
-  (
-    Shizu_State2* state,
-    Parser* self
-  )
-{
-  Shizu_Type* TYPE = Parser_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->scanner = Scanner_create(state);
-  ((Shizu_Object*)self)->type = TYPE;
-}
-
 Parser*
 Parser_create
   (
     Shizu_State2* state
   )
 {
-  Shizu_Type* TYPE = Parser_getType(state);
-  Parser* self = (Parser*)Shizu_Gc_allocateObject(state, sizeof(Parser));
-  Parser_construct(state, self);
-  return self;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Parser_getType(state));
+  Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  return (Parser*)Shizu_Value_getObject(&returnValue);
 }
 
 static inline void
@@ -201,6 +196,98 @@ getTokenType
   )
 { return Scanner_getTokenType(state, self->scanner); }
 
+static inline Shizu_String*
+getTokenText
+  (
+    Shizu_State2* state,
+    Parser* self
+  )
+{ return Scanner_getTokenText(state, self->scanner); }
+
+static Ast*
+Parser_parseValueImpl
+  (
+    Shizu_State2* state,
+    Parser* self
+  )
+{
+  switch (getTokenType(state, self)) {
+    case TokenType_LeftCurlyBracket: {
+      Ast* mapAst = Ast_create(state, AstType_Map, NULL);
+      step(state, self);
+      while (TokenType_RightCurlyBracket != getTokenType(state, self)) {
+        if (TokenType_Name != getTokenType(state, self)) {
+          Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
+          Shizu_State2_jump(state);
+        }
+        Ast* keyAst = Ast_create(state, AstType_Name, NULL);
+        step(state, self);
+        if (TokenType_Colon != getTokenType(state, self))  {
+          Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
+          Shizu_State2_jump(state);
+        } 
+        step(state, self);
+        Ast* valueAst = Parser_parseValueImpl(state, self);
+        Ast* mapElementAst = Ast_create(state, AstType_MapElement, NULL);
+        Ast_append(state, mapElementAst, keyAst);
+        Ast_append(state, mapElementAst, valueAst);
+        Ast_append(state, mapAst, mapElementAst);
+        // If there is no comma, then no more elements can follow.
+        if (TokenType_Comma != getTokenType(state, self)) {
+          break;
+        }
+        step(state, self);
+      }
+      if (TokenType_RightCurlyBracket != getTokenType(state, self)) {
+        /* Unclosed map. */
+        Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
+        Shizu_State2_jump(state);
+      }
+      step(state, self);
+      return mapAst;
+    } break;
+    case TokenType_LeftSquareBracket: {
+      Ast* listAst = Ast_create(state, AstType_List, NULL);
+      step(state, self);
+      while (TokenType_RightSquareBracket != getTokenType(state, self)) {
+        Ast* valueAst = Parser_parseValueImpl(state, self);
+        Ast_append(state, listAst, valueAst);
+        // If there is no comma, then no more elements can follow.
+        if (TokenType_Comma != getTokenType(state, self)) {
+          break;
+        }
+        step(state, self);
+      }
+      if (TokenType_RightSquareBracket != getTokenType(state, self)) {
+        /* Unclosed list. */
+        Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
+        Shizu_State2_jump(state);
+      }
+      step(state, self);
+      return listAst;
+    } break;
+    case TokenType_String: {
+      Ast* stringAst = Ast_create(state, AstType_String, getTokenText(state, self));
+      step(state, self);
+      return stringAst;
+    } break;
+    case TokenType_Real: {
+      Ast* realAst = Ast_create(state, AstType_Real, getTokenText(state, self));
+      step(state, self);
+      return realAst;
+    } break;
+    case TokenType_Integer: {
+      Ast* integerAst = Ast_create(state, AstType_Integer, getTokenText(state, self));
+      step(state, self);
+      return integerAst;
+    } break;
+    default: {
+      Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
+      Shizu_State2_jump(state);
+    } break;
+  };
+}
+
 Ast*
 Parser_run
   (
@@ -214,25 +301,8 @@ Parser_run
   }
   step(state, self);
   Ast* fileAst = Ast_create(state, AstType_File, Shizu_String_create(state, "", sizeof("") - 1));
-  switch (getTokenType(state, self)) {
-    case TokenType_LeftCurlyBracket: {
-      Ast* mapAst = Ast_create(state, AstType_Map, NULL);
-      Ast_append(state, fileAst, mapAst);
-    } break;
-    case TokenType_LeftSquareBracket: {
-      Ast* listAst = Ast_create(state, AstType_List, NULL);
-    } break;
-    case TokenType_String: {
-      Ast* stringAst = Ast_create(state, AstType_String, NULL);
-    } break;
-    case TokenType_Real: {
-      Ast* realAst = Ast_create(state, AstType_Real, NULL);
-    } break;
-    case TokenType_Integer: {
-      Ast* integerAst = Ast_create(state, AstType_Integer, NULL);
-    } break;
-
-  };
+  Ast* valueAst = Parser_parseValueImpl(state, self);
+  Ast_append(state, fileAst, valueAst);
   while (TokenType_Error != getTokenType(state, self) && TokenType_EndOfInput != getTokenType(state, self)) {
     step(state, self);
   }

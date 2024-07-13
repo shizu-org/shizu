@@ -26,6 +26,15 @@
 typedef struct Ast Ast;
 typedef struct Scanner Scanner;
 
+/// The
+/// @code
+/// module class Parser
+/// @endcode
+/// type.
+/// It constructor is
+/// @code
+/// Parser.construct()
+/// @endcode
 Shizu_declareObjectType(Parser);
 
 struct Parser_Dispatch {
@@ -36,13 +45,6 @@ struct Parser {
   Shizu_Object _parent;
   Scanner* scanner;
 };
-
-void
-Parser_construct
-  (
-    Shizu_State2* state,
-    Parser* self
-  );
 
 Parser*
 Parser_create

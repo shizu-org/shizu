@@ -33,8 +33,19 @@ enum AstType {
   AstType_File,
   AstType_Map,
   AstType_List,
+  AstType_Name,
+  AstType_MapElement,
 };
 
+/// The
+/// @code
+/// module class Ast
+/// @endcode
+/// type.
+/// It constructor is
+/// @code
+/// Scanner.construct(type : Integer32, text : String | Void)
+/// @endcode
 Shizu_declareObjectType(Ast);
 
 struct Ast_Dispatch {
@@ -47,15 +58,6 @@ struct Ast {
   Shizu_String* text;
   Shizu_List* children;
 };
-
-void
-Ast_construct
-  (
-    Shizu_State2* state,
-    Ast* self,
-    AstType type,
-    Shizu_String* text
-  );
 
 Ast*
 Ast_create

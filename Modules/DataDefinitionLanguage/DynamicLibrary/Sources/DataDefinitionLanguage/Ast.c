@@ -76,7 +76,14 @@ Ast_constructImpl
   Ast* self = (Ast*)Shizu_Value_getObject(&argumentValues[0]);
   Shizu_Object_construct(state, (Shizu_Object*)self);
   self->type = Shizu_Value_getInteger32(&argumentValues[1]);
-  self->text = (Shizu_String*)Shizu_Value_getObject(&argumentValues[2]);
+  if (Shizu_Value_isObject(&argumentValues[2])) {
+    self->text = Shizu_Runtime_Extensions_getStringValue(state, &argumentValues[2]);
+  } else if (Shizu_Value_isVoid(&argumentValues[2])) {
+    self->text = NULL;
+  } else {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
   self->children = createList(state);
   ((Shizu_Object*)self)->type = TYPE;
 }
@@ -96,23 +103,6 @@ Ast_visit
   }
 }
 
-void
-Ast_construct
-  (
-    Shizu_State2* state,
-    Ast* self,
-    AstType type,
-    Shizu_String* text
-  )
-{
-  Shizu_Type* TYPE = Ast_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->type = type;
-  self->text = text;
-  self->children = createList(state);
-  ((Shizu_Object*)self)->type = TYPE;
-}
-
 Ast*
 Ast_create
   (
@@ -121,10 +111,17 @@ Ast_create
     Shizu_String* text
   )
 {
-  Shizu_Type* TYPE = Ast_getType(state);
-  Ast* self = (Ast*)Shizu_Gc_allocateObject(state, sizeof(Ast));
-  Ast_construct(state, self, type, text);
-  return self;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer(), Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Ast_getType(state));
+  Shizu_Value_setInteger32(&argumentValues[1], type);
+  if (text) {
+    Shizu_Value_setObject(&argumentValues[2], (Shizu_Object*)text);
+  } else {
+    Shizu_Value_setVoid(&argumentValues[2], Shizu_Void_Void);
+  }
+  Shizu_Operations_create(state, &returnValue, 3, &argumentValues[0]);
+  return (Ast*)Shizu_Value_getObject(&returnValue);
 }
 
 void

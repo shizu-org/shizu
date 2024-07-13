@@ -170,27 +170,10 @@ Scanner_constructImpl
   Shizu_Object_construct(state, (Shizu_Object*)self);
   self->buffer = Shizu_ByteArray_create(state);
   self->input = Shizu_String_create(state, "", sizeof("") - 1);
-  self->start = Shizu_String_getBytes(state, self->input);
-  self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
-  self->current = self->start;
-  self->tokenType = TokenType_StartOfInput;
-  ((Shizu_Object*)self)->type = TYPE;
-}
-
-void
-Scanner_construct
-  (
-    Shizu_State2* state,
-    Scanner* self
-  )
-{
-  Shizu_Type* TYPE = Scanner_getType(state);
-  Shizu_Object_construct(state, (Shizu_Object*)self);
-  self->buffer = Shizu_ByteArray_create(state);
-  self->input = Shizu_String_create(state, "", sizeof("") - 1);
-  self->start = Shizu_String_getBytes(state, self->input);
-  self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
-  self->current = self->start;
+  self->reader.start = Shizu_String_getBytes(state, self->input);
+  self->reader.end = self->reader.start + Shizu_String_getNumberOfBytes(state, self->input);
+  self->reader.current = self->reader.start;
+  self->reader.symbol = Symbol_StartOfInput;
   self->tokenType = TokenType_StartOfInput;
   ((Shizu_Object*)self)->type = TYPE;
 }
@@ -201,10 +184,11 @@ Scanner_create
     Shizu_State2* state
   )
 {
-  Shizu_Type* TYPE = Scanner_getType(state);
-  Scanner* self = (Scanner*)Shizu_Gc_allocateObject(state, sizeof(Scanner));
-  Scanner_construct(state, self);
-  return self;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Scanner_getType(state));
+  Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  return (Scanner*)Shizu_Value_getObject(&returnValue);
 }
 
 void
@@ -216,9 +200,10 @@ Scanner_setInput
   )
 {
   self->input = input;
-  self->start = Shizu_String_getBytes(state, self->input);
-  self->end = self->start + Shizu_String_getNumberOfBytes(state, self->input);
-  self->current = self->start;
+  self->reader.start = Shizu_String_getBytes(state, self->input);
+  self->reader.end = self->reader.start + Shizu_String_getNumberOfBytes(state, self->input);
+  self->reader.current = self->reader.start;
+  self->reader.symbol = Symbol_StartOfInput;
   self->tokenType = TokenType_StartOfInput;
 }
 
@@ -232,72 +217,123 @@ Scanner_getInput
   return self->input;
 }
 
+static inline void
+next
+  (
+    Shizu_State2* state,
+    Scanner* self
+  )
+{
+  if (self->reader.end == self->reader.current) {
+    self->reader.symbol = Symbol_EndOfInput;
+  } else {
+    self->reader.symbol = *self->reader.current;
+    self->reader.current++;
+  }
+}
+
+static inline void
+write
+  (
+    Shizu_State2* state,
+    Scanner* self,
+    int symbol
+  )
+{
+  if (self->reader.symbol == Symbol_StartOfInput ||
+      self->reader.symbol == Symbol_EndOfInput ||
+      self->reader.symbol == Symbol_Error) {
+    Shizu_State2_setStatus(state, Shizu_Status_LexicalError);
+    Shizu_State2_jump(state);
+  }
+  uint8_t x = (uint8_t)symbol;
+  Shizu_ByteArray_appendRawBytes(state, self->buffer, &x, 1);
+}
+
+static inline void
+save
+  (
+    Shizu_State2* state,
+    Scanner* self
+  )
+{
+  write(state, self, self->reader.symbol);
+}
+
+static inline void
+writeAndNext
+  (
+    Shizu_State2* state,
+    Scanner* self,
+    int symbol
+  )
+{
+  write(state, self, symbol);
+  next(state, self);
+}
+
+static inline void
+saveAndNext
+  (
+    Shizu_State2* state,
+    Scanner* self
+  )
+{
+  save(state, self);
+  next(state, self);
+}
+
 static inline bool
 isUnderscore
   (
-    char const* end,
-    char const* x
+    Shizu_State2* state,
+    Scanner* self
   )
 {
-  if (end == x) {
-    return false;
-  }
-  return ('_' == *x);
+  return ('_' == self->reader.symbol);
 }
 
 static inline bool
 isAlpha
   (
-    char const* end,
-    char const *x
+    Shizu_State2* state,
+    Scanner* self
   )
 {
-  if (end == x) {
-    return false;
-  }
-  return ('a' <= *x && *x <= 'z')
-      || ('A' <= *x && *x <= 'Z');
+  return ('a' <= self->reader.symbol && self->reader.symbol <= 'z')
+      || ('A' <= self->reader.symbol && self->reader.symbol <= 'Z');
 }
 
 static inline bool
 isDigit
   (
-    char const* end,
-    char const* x
+    Shizu_State2* state,
+    Scanner* self
   )
 {
-  if (end == x) {
-    return false;
-  }
-  return ('0' <= *x && *x <= '9');
+  return ('0' <= self->reader.symbol && self->reader.symbol <= '9');
 }
 
 static inline bool
 isWhitespace
   (
-    char const* end,
-    char const* x
+    Shizu_State2* state,
+    Scanner* self
   )
 {
-  if (end == x) {
-    return false;
-  }
-  return ' ' == *x
-      || '\t' == *x;
+  return ' '  == self->reader.symbol
+      || '\t' == self->reader.symbol;
 }
 
 static inline bool
 isNewline
   (
-    char const* end,
-    char const* x
+    Shizu_State2* state,
+    Scanner* self
   )
 {
-  if (end == x) {
-    return false;
-  }
-  return '\n' == *x
-      || '\r' == *x;
+  return '\n' == self->reader.symbol
+      || '\r' == self->reader.symbol;
 }
 
 static inline void
@@ -307,43 +343,44 @@ scanDoubleQuotedString
     Scanner* self
   )
 {
-  self->current++;
+  Shizu_ByteArray_clear(state, self->buffer);
+  next(state, self);
   bool lastWasSlash = false;
   while (true) {
-    if (self->current == self->end) {
+    if (Symbol_EndOfInput == self->reader.symbol) {
       // Unclosed string literal.
       self->tokenType = TokenType_Error;
       return;
     }
-    if ('"' == *self->current) {
-      self->current++;
+    if ('"' == self->reader.symbol) {
+      next(state, self);
       break;
     }
-    if (isNewline(self->end, self->current)) {
+    if (isNewline(state, self)) {
       // Unclosed string literal.
       self->tokenType = TokenType_Error;
       return;
     }
     if (lastWasSlash) {
-      switch (*self->current) {
+      switch (self->reader.symbol) {
         case '\\': {
           lastWasSlash = false;
-          self->current++;
+          writeAndNext(state, self, '\\');
           continue;
         } break;
         case 'n': {
           lastWasSlash = false;
-          self->current++;
+          writeAndNext(state, self, '\n');
           continue;
         } break;
         case 'r':{
           lastWasSlash = false;
-          self->current++;
+          writeAndNext(state, self, '\r');
           continue;
         } break;
         case '"': {
           lastWasSlash = false;
-          self->current++;
+          writeAndNext(state, self, '"');
           continue;
         } break;
         default: {
@@ -352,16 +389,73 @@ scanDoubleQuotedString
           return;
         } break;
       }
-    } else if ('\\' == *self->current) {
+    } else if ('\\' == self->reader.symbol) {
       lastWasSlash = true;
-      self->current++;
+      next(state, self);
       continue;
     } else {
-      self->current++;
+      saveAndNext(state, self);
       continue;
     }
   }
   self->tokenType = TokenType_String;
+}
+
+static void
+scanNumber
+  ( 
+    Shizu_State2* state,
+    Scanner* self
+  )
+{
+  Shizu_ByteArray_clear(state, self->buffer);
+  // ('+'|'-')?
+  if ('+' == self->reader.symbol || '-' == self->reader.symbol) {
+    saveAndNext(state, self);
+  }
+  if (isDigit(state, self)) {
+    // digit+ ('.' digit*)
+    do {
+      saveAndNext(state, self);
+    } while (isDigit(state, self));
+    self->tokenType = TokenType_Integer;
+    if ('.' == self->reader.symbol) {
+      saveAndNext(state, self);
+      while (isDigit(state, self)) {
+        saveAndNext(state, self);
+      }
+      self->tokenType = TokenType_Real;
+    }
+  } else if ('.' == self->reader.symbol) {
+    // '.' digit+
+    saveAndNext(state, self);
+    if (!isDigit(state, self)) {
+      self->tokenType = TokenType_Error;
+      return;
+    }
+    do {
+      saveAndNext(state, self);
+    } while (isDigit(state, self));
+    self->tokenType = TokenType_Real;
+  } else {
+    self->tokenType = TokenType_Error;
+    return;
+  }
+  // exponent : ('e'|'E') ('+'|'-')? digit+
+  if ('e' == self->reader.symbol || 'E' == self->reader.symbol) {
+    saveAndNext(state, self);
+    if ('+' == self->reader.symbol || '-' == self->reader.symbol) {
+      saveAndNext(state, self);
+    }
+    if (!isDigit(state, self)) {
+      self->tokenType = TokenType_Error;
+      return;
+    }
+    do {
+      saveAndNext(state, self);
+    } while (isDigit(state, self));
+    self->tokenType = TokenType_Real;
+  }
 }
 
 static void
@@ -375,22 +469,21 @@ skipWhiteSpacesAndNewLines
   do {
     run = false;
     // Consume whitespaces.
-    if (isWhitespace(self->end, self->current)) {
+    if (isWhitespace(state, self)) {
       do {
-        self->current++;
-      } while (isWhitespace(self->end, self->current));
+        next(state, self);
+      } while (isWhitespace(state, self));
       run = true;
     }
     // Parse newlines.
-    if (isNewline(self->end, self->current)) {
+    if (isNewline(state, self)) {
       do {
-        self->current++;
-        char old = *self->current;
-        if (isNewline(self->end, self->current) && old != *self->current) {
-          self->current++;
+        next(state, self);
+        int old = self->reader.symbol;
+        if (isNewline(state, self) && old != self->reader.symbol) {
+          next(state, self);
         }
-        // @todo Increment line counter.
-      } while (isNewline(self->end, self->current));
+      } while (isNewline(state, self));
       run = true;
     }
   } while (run);
@@ -406,68 +499,72 @@ Scanner_step
   if (self->tokenType == TokenType_EndOfInput) {
     return;
   }
+  if (Symbol_StartOfInput == self->reader.symbol) {
+    next(state, self);
+  }
   // Skip whitespaces and newlines.
   skipWhiteSpacesAndNewLines(state, self);
-  if (self->current == self->end) {
+  if (Symbol_EndOfInput == self->reader.symbol) {
     self->tokenType = TokenType_EndOfInput;
     return;
   }
-  switch (*self->current) {
+  switch (self->reader.symbol) {
     case '"': {
       scanDoubleQuotedString(state, self);
       return;
     } break;
     case '{': {
+      Shizu_ByteArray_clear(state, self->buffer);
+      saveAndNext(state, self);
       self->tokenType = TokenType_LeftCurlyBracket;
-      self->current++;
       return;
     } break;
     case '}': {
+      Shizu_ByteArray_clear(state, self->buffer);
+      saveAndNext(state, self);
       self->tokenType = TokenType_RightCurlyBracket;
-      self->current++;
       return;
     } break;
     case '[': {
+      Shizu_ByteArray_clear(state, self->buffer);
+      saveAndNext(state, self);
       self->tokenType = TokenType_LeftSquareBracket;
-      self->current++;
       return;
    } break;
     case ']': {
+      Shizu_ByteArray_clear(state, self->buffer);
+      saveAndNext(state, self);
       self->tokenType = TokenType_RightSquareBracket;
-      self->current++;
       return;
     } break;
+    case '+':
+    case '-':
     case '.': {
-      self->current++;
-      if (!isDigit(self->end, self->current)) {
-        self->tokenType = TokenType_Error;
-        return;
-      }
-      do {
-        self->current++;
-      } while (isDigit(self->end, self->current));
-      self->tokenType = TokenType_Real;
+      scanNumber(state, self);
       return;
     } break;
     case ',': {
+      Shizu_ByteArray_clear(state, self->buffer);
+      saveAndNext(state, self);
       self->tokenType = TokenType_Comma;
-      self->current++;
       return;
     } break;
     case ':': {
+      Shizu_ByteArray_clear(state, self->buffer);
+      saveAndNext(state, self);
       self->tokenType = TokenType_Colon;
-      self->current++;
       return;
     } break;
     case '/': {
-      self->current++;
-      if (self->current == self->end || '/' == *self->current) {
+      Shizu_ByteArray_clear(state, self->buffer);
+      next(state, self);
+      if ('/' == self->reader.symbol) {
         self->tokenType = TokenType_Error;
         return;
       }
-      self->current++;
-      while (self->end != self->current && !isNewline(self->end, self->current)) {
-        self->current++;
+      next(state, self);
+      while (!isNewline(state, self)) {
+        next(state, self);
       }
       self->tokenType = TokenType_SingleLineComment;
       return;
@@ -476,48 +573,28 @@ Scanner_step
     } break;
   };
   // name
-  if (isUnderscore(self->end, self->current)) {
+  if (isUnderscore(state, self)) {
+    Shizu_ByteArray_clear(state, self->buffer);
     do {
-      self->current++;
-   } while (isUnderscore(self->end, self->current));
-   if (isAlpha(self->end, self->current)) {
-     do {
-      self->current++;
-     } while (isUnderscore(self->end, self->current) || isDigit(self->end, self->current) || isAlpha(self->end, self->current));
-   }
-   self->tokenType = TokenType_Name;
-  } else if (isAlpha(self->end, self->current)) {
-    do {
-      self->current++;
-    } while (isUnderscore(self->end, self->current) || isDigit(self->end, self->current) || isAlpha(self->end, self->current));
-    self->tokenType = TokenType_Name;
-  } else if (isDigit(self->end, self->current)) {
-    do {
-      self->current++;
-    } while (isDigit(self->end, self->current));
-    self->tokenType = TokenType_Integer;
-    if (self->end != self->current && '.' == *self->current) {
-      self->current++;
-      if (isDigit(self->end, self->current)) {
-        do {
-          self->current++;
-        } while (isDigit(self->end, self->current));
-      }
-      if (self->end != self->current && ('e' == *self->current || 'E' == *self->current)) {
-        self->current++;
-        if (self->end != self->current && ('+' == *self->current || '-' == *self->current)) {
-          self->current++;
-        }
-        if (!isDigit(self->end, self->current)) {
-          self->tokenType = TokenType_Error;
-          return;
-        }
-        do {
-          self->current++;
-        } while (isDigit(self->end, self->current));
-      }
-      self->tokenType = TokenType_Real;
+      saveAndNext(state, self);
+    } while (isUnderscore(state, self));
+    if (isAlpha(state, self)) {
+      do {
+        saveAndNext(state, self);
+      } while (isUnderscore(state, self) || isDigit(state, self) || isAlpha(state, self));
     }
+    self->tokenType = TokenType_Name;
+  // name
+  } else if (isAlpha(state, self)) {
+    Shizu_ByteArray_clear(state, self->buffer);
+    do {
+      saveAndNext(state, self);
+    } while (isUnderscore(state, self) || isDigit(state, self) || isAlpha(state, self));
+    self->tokenType = TokenType_Name;
+  // number
+  } else if (isDigit(state, self)) {
+    scanNumber(state, self);
+    return;
   } else {
     Shizu_State2_setStatus(state, Shizu_Status_LexicalError);
     Shizu_State2_jump(state);
@@ -531,3 +608,14 @@ Scanner_getTokenType
     Scanner* self
   )
 { return self->tokenType; }
+
+Shizu_String*
+Scanner_getTokenText
+  (
+    Shizu_State2* state,
+    Scanner* self
+  )
+{
+  return Shizu_String_create(state, Shizu_ByteArray_getRawBytes(state, self->buffer),
+                                    Shizu_ByteArray_getNumberOfRawBytes(state, self->buffer));
+}

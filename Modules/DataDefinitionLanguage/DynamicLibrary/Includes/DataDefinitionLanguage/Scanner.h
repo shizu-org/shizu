@@ -25,28 +25,37 @@
 #include "Shizu/Runtime/Include.h"
 #include "DataDefinitionLanguage/Token.h"
 
+/// The
+/// @code
+/// module class Scanner
+/// @endcode
+/// type.
+/// It constructor is
+/// @code
+/// Scanner.construct()
+/// @endcode
 Shizu_declareObjectType(Scanner);
 
 struct Scanner_Dispatch {
   Shizu_Object_Dispatch _parent;
 };
 
+#define Symbol_StartOfInput (255-2)
+#define Symbol_EndOfInput (255-1)
+#define Symbol_Error (255-2)
+
 struct Scanner {
   Shizu_Object _parent;
   Shizu_String* input;
   TokenType tokenType;
-  char const* start;
-  char const* end;
-  char const* current;
+  struct {
+    int symbol;
+    char const* start;
+    char const* end;
+    char const* current;
+  } reader;
   Shizu_ByteArray* buffer;
 };
-
-void
-Scanner_construct
-  (
-    Shizu_State2* state,
-    Scanner* self
-  );
 
 Scanner*
 Scanner_create
@@ -79,6 +88,13 @@ Scanner_step
 TokenType
 Scanner_getTokenType
   (
+    Shizu_State2* state,
+    Scanner* self
+  );
+
+Shizu_String*
+Scanner_getTokenText
+  ( 
     Shizu_State2* state,
     Scanner* self
   );

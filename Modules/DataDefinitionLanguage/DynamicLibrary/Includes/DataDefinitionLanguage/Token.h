@@ -43,6 +43,15 @@ enum TokenType  {
   TokenType_Colon,
 };
 
+/// The
+/// @code
+/// module class Token
+/// @endcode
+/// type.
+/// It constructor is
+/// @code
+/// Token.construct(type : Integer32, text : String | Void)
+/// @endcode
 Shizu_declareObjectType(Token);
 
 struct Token_Dispatch {
@@ -54,15 +63,6 @@ struct Token {
   TokenType type;
   Shizu_String* text;
 };
-
-void
-Token_construct
-  (
-    Shizu_State2* state,
-    Token* self,
-    TokenType type,
-    Shizu_String* text
-  );
 
 Token*
 Token_create
