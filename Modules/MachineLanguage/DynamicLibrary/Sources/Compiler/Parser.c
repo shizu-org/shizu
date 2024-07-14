@@ -161,30 +161,17 @@ Compiler_Parser_constructImpl
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-void
-Compiler_Parser_construct
-  (
-    Shizu_State2* state,
-    Compiler_Parser* self
-  )
-{
-  Shizu_Type* TYPE = Compiler_Parser_getType(state);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
-  self->scanner = Compiler_Scanner_create(state);
-  ((Shizu_Object*)self)->type = TYPE;
-}
-
 Compiler_Parser*
 Compiler_Parser_create
   (
     Shizu_State2* state
   )
 {
-  Shizu_Type* TYPE = Compiler_Parser_getType(state);
-  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
-  Compiler_Parser* SELF = (Compiler_Parser*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Parser));
-  Compiler_Parser_construct(state, SELF);
-  return SELF;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Compiler_Parser_getType(state));
+  Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  return (Compiler_Parser*)Shizu_Value_getObject(&returnValue);
 }
 
 static inline void

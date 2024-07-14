@@ -7,6 +7,7 @@ typedef struct Shizu_List Shizu_List;
 typedef struct Shizu_Map Shizu_Map;
 typedef struct Shizu_String Shizu_String;
 typedef struct Shizu_State2 Shizu_State2;
+typedef struct Shizu_WeakReference Shizu_WeakReference;
 
 #if Shizu_Configuration_OperatingSystem_Windows == Shizu_Configuration_OperatingSystem
   #define Shizu_Module_Export _declspec(dllexport)
@@ -51,7 +52,17 @@ Shizu_String*
 Shizu_Runtime_Extensions_getStringValue
   (
     Shizu_State2* state,
-    Shizu_Value* value  
+    Shizu_Value* value
+  );
+
+// Utility function to get or create a "Shizu.WeakReference". The constructor "Shizu.WeakReference.construct(reference :
+// Object|Void)" is invoked with the "Object" value to which "reference" points to or "void" if "reference" is a null
+// pointer.
+Shizu_WeakReference*
+Shizu_Runtime_Extensions_createWeakReference
+  (
+    Shizu_State2* state,
+    Shizu_Object* reference
   );
 
 #endif // SHIZU_RUNTIME_EXTENSIONS_H_INCLUDED

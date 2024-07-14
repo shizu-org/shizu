@@ -13,6 +13,15 @@ enum Compiler_AstType {
   Compiler_AstType_Constructor,
 };
 
+/// The
+/// @code
+/// module class Compiler.Ast
+/// @endcode
+/// type.
+/// It constructor is
+/// @code
+/// Compiler.Ast.construct(type : Integer32, text : String | Void)
+/// @endcode
 Shizu_declareObjectType(Compiler_Ast)
 
 struct Compiler_Ast_Dispatch {
@@ -23,16 +32,8 @@ struct Compiler_Ast {
   Compiler_Object _parent;
   Compiler_AstType type;
   Shizu_String* text;
+  Shizu_List* children;
 };
-
-void
-Compiler_Ast_construct
-  (
-    Shizu_State2* state,
-    Compiler_Ast* self,
-    Compiler_AstType type,
-    Shizu_String* text
-  );
 
 Compiler_Ast*
 Compiler_Ast_create

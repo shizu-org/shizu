@@ -33,19 +33,19 @@ static Shizu_List* createList(Shizu_State2* state) {
 Shizu_defineEnumerationType(Compiler_AstType);
 
 static void
-Compiler_Ast_visit
-  (
-    Shizu_State2* state,
-    Compiler_Ast* self
-  );
-
-static void
 Compiler_Ast_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
     Shizu_Integer32 numberOfArgumentValues,
     Shizu_Value* argumentValues
+  );
+
+static void
+Compiler_Ast_visit
+  (
+    Shizu_State2* state,
+    Compiler_Ast* self
   );
 
 static Shizu_ObjectTypeDescriptor const Compiler_Ast_Type = {
@@ -64,18 +64,6 @@ static Shizu_ObjectTypeDescriptor const Compiler_Ast_Type = {
 Shizu_defineObjectType(Compiler_Ast, Compiler_Object);
 
 static void
-Compiler_Ast_visit
-  (
-    Shizu_State2* state,
-    Compiler_Ast* self
-  )
-{
-  if (self->text) {
-    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
-  }
-}
-
-static void
 Compiler_Ast_constructImpl
   (
     Shizu_State2* state,
@@ -88,24 +76,31 @@ Compiler_Ast_constructImpl
   Compiler_Ast* self = (Compiler_Ast*)Shizu_Value_getObject(&argumentValues[0]);
   Compiler_Object_construct(state, (Compiler_Object*)self);
   self->type = Shizu_Value_getInteger32(&argumentValues[1]);
-  self->text = (Shizu_String*)Shizu_Value_getObject(&argumentValues[2]);
+  if (Shizu_Value_isObject(&argumentValues[2])) {
+    self->text = Shizu_Runtime_Extensions_getStringValue(state, &argumentValues[2]);
+  } else if (Shizu_Value_isVoid(&argumentValues[2])) {
+    self->text = NULL;
+  } else {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  self->children = createList(state);
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-void
-Compiler_Ast_construct
+static void
+Compiler_Ast_visit
   (
     Shizu_State2* state,
-    Compiler_Ast* self,
-    Compiler_AstType type,
-    Shizu_String* text
+    Compiler_Ast* self
   )
 {
-  Shizu_Type* TYPE = Compiler_Ast_getType(state);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
-  self->type = type;
-  self->text = text;
-  ((Shizu_Object*)self)->type = TYPE;
+  if (self->children) {
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->children);
+  }
+  if (self->text) {
+    Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
+  }
 }
 
 Compiler_Ast*
@@ -116,9 +111,15 @@ Compiler_Ast_create
     Shizu_String* text
   )
 {
-  Shizu_Type* TYPE = Compiler_Ast_getType(state);
-  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
-  Compiler_Ast* SELF = (Compiler_Ast*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Ast));
-  Compiler_Ast_construct(state, SELF, type, text);
-  return SELF;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer(), Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Compiler_Ast_getType(state));
+  Shizu_Value_setInteger32(&argumentValues[1], type);
+  if (text) {
+    Shizu_Value_setObject(&argumentValues[2], (Shizu_Object*)text);
+  } else {
+    Shizu_Value_setVoid(&argumentValues[2], Shizu_Void_Void);
+  }
+  Shizu_Operations_create(state, &returnValue, 3, &argumentValues[0]);
+  return (Compiler_Ast*)Shizu_Value_getObject(&returnValue);
 }

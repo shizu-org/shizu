@@ -78,3 +78,21 @@ Shizu_Runtime_Extensions_getStringValue
   return (Shizu_String*)objectValue ;
 }
 
+Shizu_WeakReference*
+Shizu_Runtime_Extensions_createWeakReference
+  (
+    Shizu_State2* state,
+    Shizu_Object* reference
+  )
+{
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Shizu_WeakReference_getType(state));
+  if (reference) {
+    Shizu_Value_setObject(&argumentValues[1], reference);
+  } else {
+    Shizu_Value_setVoid(&argumentValues[1], Shizu_Void_Void);
+  }
+  Shizu_Operations_create(state, &returnValue, 2, &argumentValues[0]);
+  return (Shizu_WeakReference*)Shizu_Value_getObject(&returnValue);
+}

@@ -44,7 +44,7 @@ enum AstType {
 /// type.
 /// It constructor is
 /// @code
-/// Scanner.construct(type : Integer32, text : String | Void)
+/// Ast.construct(type : Integer32, text : String | Void)
 /// @endcode
 Shizu_declareObjectType(Ast);
 

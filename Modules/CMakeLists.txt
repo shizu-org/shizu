@@ -20,5 +20,5 @@
 #
 
 add_subdirectory(FileSystem)
-add_subdirectory(Compiler)
+add_subdirectory(MachineLanguage)
 add_subdirectory(DataDefinitionLanguage)

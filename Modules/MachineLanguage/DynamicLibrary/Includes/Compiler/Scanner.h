@@ -4,6 +4,15 @@
 #include "Compiler/Object.h"
 #include "Compiler/Token.h"
 
+/// The
+/// @code
+/// module class Compiler.Scanner
+/// @endcode
+/// type.
+/// It constructor is
+/// @code
+/// Compiler.Scanner.construct()
+/// @endcode
 Shizu_declareObjectType(Compiler_Scanner);
 
 struct Compiler_Scanner_Dispatch {
@@ -19,13 +28,6 @@ struct Compiler_Scanner {
   char const* current;
   Shizu_ByteArray* buffer;
 };
-
-void
-Compiler_Scanner_construct
-  (
-    Shizu_State2* state,
-    Compiler_Scanner* self
-  );
 
 Compiler_Scanner*
 Compiler_Scanner_create
