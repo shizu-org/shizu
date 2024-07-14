@@ -20,7 +20,7 @@ static void testSetFileContentsEmpty(Shizu_State2* state) {
 
 static void testSetFileContentsNonEmpty(Shizu_State2* state) {
   Shizu_ByteArray* contents = Shizu_ByteArray_create(state);
-  Shizu_ByteArray_apppendRawBytes(state, contents, "Hello, World!", strlen("Hello, World!"));
+  Shizu_ByteArray_appendRawBytes(state, contents, "Hello, World!", strlen("Hello, World!"));
   FileSystem_Tests_testSetFileContents(state, Shizu_String_create(state, "output-non-empty.txt", strlen("output-non-empty.txt")), contents);
 }
 
@@ -41,7 +41,7 @@ static void testGetFileContentsNonEmpty(Shizu_State2* state) {
   relativePath = Shizu_String_concatenate(state, relativePath, directorySeparator);
   relativePath = Shizu_String_concatenate(state, relativePath, Shizu_String_create(state, "non-empty-file.txt", strlen("non-empty-file.txt")));
   Shizu_ByteArray* expected = Shizu_ByteArray_create(state);
-  Shizu_ByteArray_apppendRawBytes(state, expected, "Hello, World!", strlen("Hello, World!"));
+  Shizu_ByteArray_appendRawBytes(state, expected, "Hello, World!", strlen("Hello, World!"));
   FileSystem_Tests_testGetFileContents(state, relativePath, expected);
 }
 

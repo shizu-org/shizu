@@ -42,7 +42,7 @@ callback
   Shizu_JumpTarget jumpTarget;
   Shizu_State2_pushJumpTarget(context->state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_ByteArray_apppendRawBytes(context->state, context->byteArray, bytes, numberOfBytes);
+    Shizu_ByteArray_appendRawBytes(context->state, context->byteArray, bytes, numberOfBytes);
     Shizu_State2_popJumpTarget(context->state);
     return true;
   } else {
