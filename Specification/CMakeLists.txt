@@ -6,3 +6,4 @@
 # - ...
 
 add_subdirectory(ml-spec)
+add_subdirectory(ddl-spec)
