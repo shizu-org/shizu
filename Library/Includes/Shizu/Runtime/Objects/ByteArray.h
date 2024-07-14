@@ -101,7 +101,7 @@ Shizu_ByteArray_prependRawBytes
   );
 
 void
-Shizu_ByteArray_apppendRawBytes
+Shizu_ByteArray_appendRawBytes
   (
     Shizu_State2* state,
     Shizu_ByteArray* self,
@@ -129,6 +129,14 @@ Shizu_ByteArray_compareRawBytes
     Shizu_State2* state,
     Shizu_ByteArray const* self,
     Shizu_ByteArray const* other
+  );
+
+
+void
+Shizu_ByteArray_clear
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* self    
   );
 
 #endif // SHIZU_RUNTIME_OBJECTS_BYTEARRAY_H_INCLUDED

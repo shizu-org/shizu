@@ -43,6 +43,13 @@
 /// @endcode
 Shizu_declareObjectType(Shizu_List);
 
+void
+Shizu_List_clear
+  (
+    Shizu_State2* state,
+    Shizu_List* self
+  );
+
 Shizu_Value
 Shizu_List_getValue
   (

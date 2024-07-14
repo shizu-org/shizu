@@ -75,6 +75,14 @@ Shizu_List_constructImpl
     Shizu_Value* argumentValues
   );
 
+static void
+Shizu_List_ensureFreeCapacity
+  (
+    Shizu_State2* state,
+    Shizu_List* self,
+    size_t required
+  );
+
 static Shizu_ObjectTypeDescriptor const Shizu_List_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_List_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_List_preDestroyType,
@@ -87,6 +95,8 @@ static Shizu_ObjectTypeDescriptor const Shizu_List_Type = {
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
+
+Shizu_defineObjectType(Shizu_List, Shizu_Object);
 
 static const char* namedMemoryName = "Shizu.Lists.NamedMemory";
 
@@ -188,9 +198,62 @@ Shizu_List_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineObjectType(Shizu_List, Shizu_Object);
+/** @todo Do not alloc*/
+static void
+Shizu_List_ensureFreeCapacity
+  (
+    Shizu_State2* state,
+    Shizu_List* self,
+    size_t requiredFreeCapacity
+  ) 
+{
+  Lists* g = NULL;
+  if (Shizu_State1_getNamedStorage(Shizu_State2_getState1(state), namedMemoryName, (void**)&g)) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  size_t oldCapacity = self->capacity;
+  size_t newCapacity = self->capacity;
+  size_t availableFreeCapacity = self->capacity - self->size;
+  while (requiredFreeCapacity > availableFreeCapacity) {
+    {
+      oldCapacity = self->capacity;
+      newCapacity = oldCapacity;
+      if (oldCapacity > g->maximumCapacity / 2) {
+        // If oldCapacity > maximumCapacity / 2 holds then oldCapacity * 2 > maximumCapacity holds.
+        // Consequently, we cannot double the capacity. Try to saturate the capacity.
+        if (oldCapacity == g->maximumCapacity) {
+          Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+          Shizu_State2_jump(state);
+        } else {
+          newCapacity = g->maximumCapacity;
+        }
+      } else {
+        newCapacity = oldCapacity * 2;
+      }
+    }
+    availableFreeCapacity = newCapacity - self->size;
+  }
+  Shizu_Value* newElements = realloc(self->elements, newCapacity * sizeof(Shizu_Value));
+  if (!newElements) {
+    Shizu_State2_setStatus(state, 1);
+    Shizu_State2_jump(state);
+  }
+  self->elements = newElements;
+  self->capacity = newCapacity;
+}
 
 static Shizu_Value const IndexOutOfBounds = { .tag = Shizu_Value_Tag_Void, .voidValue = Shizu_Void_Void };
+
+void
+Shizu_List_clear
+  (
+    Shizu_State2* state,
+    Shizu_List* self
+  )
+{
+  self->size = 0;
+}
 
 Shizu_Value
 Shizu_List_getValue
@@ -229,35 +292,7 @@ Shizu_List_insertValue
     return;
   }
   if (self->capacity == self->size) {
-    size_t oldCapacity = self->capacity;
-    size_t newCapacity;
-    Lists* g = NULL;
-    if (Shizu_State1_getNamedStorage(Shizu_State2_getState1(state), namedMemoryName, (void**)&g)) {
-      Shizu_State1_deallocateNamedStorage(Shizu_State2_getState1(state), namedMemoryName);
-      Shizu_State2_setStatus(state, 1);
-      Shizu_State2_jump(state);
-    }
-    if (oldCapacity > g->maximumCapacity / 2) {
-      // as the following fact holds
-      // oldCapacity * 2 > maximumCapacity if and only if oldCapacity > maximumCapacity / 2
-      // we cannot double the capacity.
-      // try to saturate the capacity.
-      if (oldCapacity == g->maximumCapacity) {
-        Shizu_State2_setStatus(state, 1);
-        Shizu_State2_jump(state);
-      } else {
-        newCapacity = g->maximumCapacity;
-      }
-    } else {
-      newCapacity = oldCapacity * 2;
-    }
-    Shizu_Value* newElements = realloc(self->elements, newCapacity * sizeof(Shizu_Value));
-    if (!newElements) {
-      Shizu_State2_setStatus(state, 1);
-      Shizu_State2_jump(state);
-    }
-    self->elements = newElements;
-    self->capacity = newCapacity;
+    Shizu_List_ensureFreeCapacity(state, self, 1);
   }
   if (index < self->size) {
     memmove(self->elements + index,

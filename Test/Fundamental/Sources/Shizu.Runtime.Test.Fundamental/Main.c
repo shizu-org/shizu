@@ -194,6 +194,38 @@ test3
   Shizu_String_create(state, "Hello, World!", sizeof("Hello, World!") - 1);
 }
 
+static void ensureEven(Shizu_State2* state, Shizu_Value* v) {
+  if (!Shizu_Value_isInteger32(v)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer32 x = Shizu_Value_getInteger32(v);
+  if (x % 2 != 0) {
+    if (x == Shizu_Integer32_Maximum)
+      x -= 1;
+    else
+      x += 1;
+  }
+  Shizu_Value_setInteger32(v, x);
+}
+
+static void ensureOdd(Shizu_State2* state, Shizu_Value* v) {
+  if (!Shizu_Value_isInteger32(v)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer32 x = Shizu_Value_getInteger32(v);
+  if (x % 2 == 0) {
+    if (x == Shizu_Integer32_Maximum)
+      x -= 1;
+    else
+      x += 1;
+  }
+  Shizu_Value_setInteger32(v, x);
+}
+
+#include <assert.h>
+
 static void
 test4
   (
@@ -299,30 +331,109 @@ test4
   MULTIPLY(Shizu_Integer32_Maximum, 1, Shizu_Integer32_Maximum);
   MULTIPLY(1, Shizu_Integer32_Maximum, Shizu_Integer32_Maximum);
 
-  Shizu_Integer32 x = Shizu_Integer32_Minimum + 1;
-  do {
-    if (x % 2 == 0) {
-      MULTIPLY(Shizu_Integer32_Maximum, x, -x); // -x = -MAX cannot overflow as |MIN|=|MAX|+1
-                                                // -x = -MIN can overflow. However, x is never MIN.
-      MULTIPLY(x, Shizu_Integer32_Maximum, -x);
-      // Basically if you add the minimum to the minimum you end up
-      // at 0. If you a
-      MULTIPLY(Shizu_Integer32_Minimum, x, 0);
-      MULTIPLY(x, Shizu_Integer32_Minimum, 0);
-    } else {
-      MULTIPLY(Shizu_Integer32_Maximum, x, Shizu_Integer32_Maximum - (x - 1));
-      MULTIPLY(x, Shizu_Integer32_Maximum, Shizu_Integer32_Maximum - (x - 1));
-      MULTIPLY(Shizu_Integer32_Minimum, x, Shizu_Integer32_Minimum);
-      MULTIPLY(x, Shizu_Integer32_Minimum, Shizu_Integer32_Minimum);
-    }
-    if (x == Shizu_Integer32_Maximum) {
-      break;
-    } else {
-      x++;
-    }
-  } while (true);
+  // Method to generate non-negative even numbers:
+  // a) generate number X := [MAX, MAX * 0.25, MAX * 0.5, MAX * 0.75]
+  // b) if x in X is odd, then replace x by x - 1 if x is MAX and by x + 1 if it is not MAX.
+  // c) if x in X then add -x. Note that -x cannot overflow as |MIN|=|MAX|+1.
+  Shizu_List* even = Shizu_Runtime_Extensions_createList(state);
+  {
+    Shizu_Value v = Shizu_Value_Initializer();
+    
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 1.00f);
+    ensureEven(state, &v);
+    Shizu_List_appendValue(state, even, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, even, &v);
 
-  DIVIDE(x,1,x);
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.75f);
+    ensureEven(state, &v);
+    Shizu_List_appendValue(state, even, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, even, &v);
+
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.50f);
+    ensureEven(state, &v);
+    Shizu_List_appendValue(state, even, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, even, &v);
+    
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.25f);
+    ensureEven(state, &v);
+    Shizu_List_appendValue(state, even, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, even, &v);
+
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.00f);
+    ensureEven(state, &v);
+    Shizu_List_appendValue(state, even, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, even, &v);
+  }
+  Shizu_List* odd = Shizu_Runtime_Extensions_createList(state);
+  {
+    Shizu_Value v = Shizu_Value_Initializer();
+
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 1.00f);
+    ensureOdd(state, &v);
+    Shizu_List_appendValue(state, odd, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, odd, &v);
+
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.75f);
+    ensureOdd(state, &v);
+    Shizu_List_appendValue(state, odd, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, odd, &v);
+
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.50f);
+    ensureOdd(state, &v);
+    Shizu_List_appendValue(state, odd, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, odd, &v);
+
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.25f);
+    ensureOdd(state, &v);
+    Shizu_List_appendValue(state, odd, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, odd, &v);
+
+    Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 0.00f);
+    ensureOdd(state, &v);
+    Shizu_List_appendValue(state, odd, &v);
+    Shizu_Value_setInteger32(&v, -Shizu_Value_getInteger32(&v));
+    Shizu_List_appendValue(state, odd, &v);
+  }
+
+  for (Shizu_Integer32 i = 0, n = Shizu_List_getSize(state, even); i < n; ++i) {
+    Shizu_Value v = Shizu_List_getValue(state, even, i);
+    if (!Shizu_Value_isInteger32(&v)) {
+      Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+      Shizu_State2_jump(state);
+    }
+    Shizu_Integer32 x = Shizu_Value_getInteger32(&v);
+    assert(x % 2 == 0);
+    MULTIPLY(Shizu_Integer32_Maximum, x, -x); // -x = -MAX cannot overflow as |MIN|=|MAX|+1
+                                              // -x = -MIN can overflow. However, x is never MIN.
+    MULTIPLY(x, Shizu_Integer32_Maximum, -x);
+    // MIN multiplied by (MIN, MAX] yields MIN.
+    MULTIPLY(Shizu_Integer32_Minimum, x, 0);
+    MULTIPLY(x, Shizu_Integer32_Minimum, 0);
+  }
+  for (Shizu_Integer32 i = 0, n = Shizu_List_getSize(state, odd); i < n; ++i) {
+    Shizu_Value v = Shizu_List_getValue(state, odd, i);
+    if (!Shizu_Value_isInteger32(&v)) {
+      Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+      Shizu_State2_jump(state);
+    }
+    Shizu_Integer32 x = Shizu_Value_getInteger32(&v);
+    assert(x % 2 != 0);
+    MULTIPLY(Shizu_Integer32_Maximum, x, Shizu_Integer32_Maximum - (x - 1));
+    MULTIPLY(x, Shizu_Integer32_Maximum, Shizu_Integer32_Maximum - (x - 1));
+    MULTIPLY(Shizu_Integer32_Minimum, x, Shizu_Integer32_Minimum);
+    MULTIPLY(x, Shizu_Integer32_Minimum, Shizu_Integer32_Minimum);
+  }
+
+  //DIVIDE(Shizu_Integer32_Maximum,1,x);
   DIVIDE(1,2,0);
 
 #undef DIVIDE

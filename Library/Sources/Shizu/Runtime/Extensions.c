@@ -57,3 +57,24 @@ Shizu_Runtime_Extensions_getOrCreateEnvironment
   environment = Shizu_Environment_getEnvironment(state, environment, name);
   return environment;
 }
+
+Shizu_String*
+Shizu_Runtime_Extensions_getStringValue
+  (
+    Shizu_State2* state,
+    Shizu_Value* value
+  )
+{
+  if (!Shizu_Value_isObject(value)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Object* objectValue = Shizu_Value_getObject(value);
+  if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state),
+                               Shizu_Object_getObjectType(state, objectValue), Shizu_String_getType(state))) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  return (Shizu_String*)objectValue ;
+}
+

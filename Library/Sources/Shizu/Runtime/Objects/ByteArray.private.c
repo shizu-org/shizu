@@ -380,7 +380,7 @@ Shizu_ByteArray_prependRawBytes
 }
 
 void
-Shizu_ByteArray_apppendRawBytes
+Shizu_ByteArray_appendRawBytes
   (
     Shizu_State2* state,
     Shizu_ByteArray* self,
@@ -422,4 +422,14 @@ Shizu_ByteArray_compareRawBytes
     return false;
   }
   return !memcmp(self->elements, other->elements, self->size);
+}
+
+void
+Shizu_ByteArray_clear
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* self
+  ) 
+{
+  self->size = 0;
 }

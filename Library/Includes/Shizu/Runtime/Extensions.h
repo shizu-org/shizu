@@ -46,4 +46,12 @@ Shizu_Runtime_Extensions_getOrCreateEnvironment
     Shizu_String* name
   );
 
+// Load a "String" value from a value. Raise "InvalidArgumentType" if the value does not hold a "String" value.
+Shizu_String*
+Shizu_Runtime_Extensions_getStringValue
+  (
+    Shizu_State2* state,
+    Shizu_Value* value  
+  );
+
 #endif // SHIZU_RUNTIME_EXTENSIONS_H_INCLUDED
