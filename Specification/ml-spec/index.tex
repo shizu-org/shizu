@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\myproject}{Shizu}
+\newcommand{\myauthor}{Michael Heilmann (michael.heilmann@shizu.org)}
+\newcommand{\mymachine}{\myproject{} Machine}
+\newcommand{\mylanguage}{\myproject{} \mymachine{} Language}
+
+\title{\mylanguage{}}
+\author{\myauthor}
+
+
+\begin{document}
+\maketitle
+\section{Abstract}
+This document describes the \emph{\mylanguage{}}.
+The \emph{\mylanguage{}} is designed as a target language that is executed by a suitable interpreter.
+An interpreter is called a \emph{\mymachine{}} if it fulfils all properties of the \emph{\mylanguage{}} described in this document. 
+
+%\section{\mylanguage}
+
+\section{Introduction}
+The \myproject{} Programming Language is a dynamically typed language. This means that variables do not have types and
+only values do have types. All values carry their own type. All values PL are first-class values. This means that
+all values can be stored in variables, passed as arguments to functions and operators, and can be returned by functions
+and operators.
+
+The \myproject{} Programming Language knows the types $\textit{Boolean}$, $\textit{Integer}$, $\textit{Real}$,
+$\textit{String}$, $\textit{Type}$, and $\textit{Void}$.The type $\textit{Boolean}$ has two values $\textit{true}$
+and $\textit{false}$. The type $\textit{Integer}$ has 64 bit two's complement integer values. Implementations may
+allow for 32 bit two's complement integer values. Values of type $\textit{String}$ are UTF-8 encoded Unicode strings.
+The type $\textit{Type}$ has values uniquely identifiying and describing types.
+
+\noindent\fbox{\parbox{\textwidth}{%
+Future revisions of this document will add support for the types $\textit{List}$ and $\textit{Map}$.
+}}
+
+\section{Lexical Conventions}
+\emph{\mylanguage{}} is a free-form language. It ignores spaces and comments between lexical elements (tokens),
+except as delimiters between two tokens. In source code, \emph{\mylanguage{}} recognizes as spaces the standard
+ASCII whitespace characters space, form feed, newline, carriage return, horizontal tab, and vertical tab. 
+
+The values $\textit{true}$ and $\textit{false}$ are represented in the language by
+the literal $\texttt{true}$ and $\texttt{false}$, respectively. The values of type
+$\textit{String}$ are represented in the language by a double quote followed by zero
+or more string characters or escape sequences followed by a double quote. 
+A string character is any characters within the range $\texttt{0x20}$ (inclusive) to $\texttt{0x7E}$
+(inclusive) excluding the double quote and the backslash. Escape sequences are $\texttt{\textbackslash n}$,
+$\texttt{\textbackslash r}$, $\texttt{\textbackslash t}$, $\texttt{\textbackslash}$, and $\texttt{\textbackslash "}$.
+
+\noindent\fbox{\parbox{\textwidth}{%
+Future revisions of this document will provide improved Unicode support.
+The first measure to improve Unicode support is extending the set of Unicode symbols that are allowed as string characters.
+The second measure to improve Unicode support is the addition of Unicode escape sequences $\texttt{\textbackslash +Uxxxx}$.
+}}
+
+\subsection{Registers}
+Values of these types can be store in and loaded from locations called registers. Each register is assigned an unique
+number from a consecutive sequence of natural numbers starting at $0$ and ending at $n-1$ where $n \geq 32$ is the
+maximum number of registers of an implementation. Registers in the \myproject{} Programming Language have names of the
+form $\textit{\$[0-9]+}$. Note that leading zeroes are ignored, hence $\$0$ and $\$00$ both identify the same register
+with the register number $0$.
+
+\subsection{Types of values}
+You can obtain the type of any value using the $\texttt{typeof}$ operator for example $\texttt{\$1 = typeof(\$0)}$
+determines the type of the value stored in register $\texttt{\$0}$ and stores it in register $\texttt{\$1}$.
+
+\end{document}
