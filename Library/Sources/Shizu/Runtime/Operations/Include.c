@@ -89,7 +89,7 @@ Shizu_Operations_create
     Shizu_State2_jump(state);
   }
   Shizu_Type* type = Shizu_Value_getType(argumentValues + 0);
-  if (!Shizu_Type_isObjectType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), type)) {
+  if (!Shizu_Types_isObjectType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), type)) {
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentValueInvalid);
     Shizu_State2_jump(state);
   }

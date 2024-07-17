@@ -202,7 +202,7 @@ Shizu_Map_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineObjectType(Shizu_Map, Shizu_Object);
+Shizu_defineObjectType("Shizu.Map", Shizu_Map, Shizu_Object);
 
 size_t
 Shizu_Map_getSize

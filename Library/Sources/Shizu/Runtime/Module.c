@@ -82,7 +82,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_Module_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Shizu_Module, Shizu_Object);
+Shizu_defineObjectType("Shizu.Module", Shizu_Module, Shizu_Object);
 
 static void
 Shizu_Module_finalize

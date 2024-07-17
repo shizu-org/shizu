@@ -228,7 +228,7 @@ Shizu_ByteArray_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineObjectType(Shizu_ByteArray, Shizu_Object);
+Shizu_defineObjectType("Shizu.ByteArray", Shizu_ByteArray, Shizu_Object);
 
 Shizu_ByteArray*
 Shizu_ByteArray_create

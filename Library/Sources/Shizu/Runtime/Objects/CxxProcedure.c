@@ -57,7 +57,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_CxxProcedure_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Shizu_CxxProcedure, Shizu_Object);
+Shizu_defineObjectType("Shizu.CxxProcedure", Shizu_CxxProcedure, Shizu_Object);
 
 static void
 Shizu_CxxProcedure_finalize

@@ -31,5 +31,4 @@ target_link_libraries(${name} PRIVATE ${Shizu.Runtime.project-name})
 
 add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
 
-on_plugins(${name})
-on_assets(${name})
+on_executable(${name})

@@ -25,7 +25,7 @@
 #include "Shizu/Runtime/Type.private.h"
 
 bool
-Shizu_Type_isObjectType
+Shizu_Types_isObjectType
   (
     Shizu_State1* state1,
     Shizu_Types* self,
@@ -38,7 +38,7 @@ Shizu_Type_isObjectType
 }
 
 bool
-Shizu_Type_isPrimitiveType
+Shizu_Types_isPrimitiveType
   (
     Shizu_State1* state1,
     Shizu_Types* self,
@@ -50,28 +50,17 @@ Shizu_Type_isPrimitiveType
   return (Shizu_TypeFlags_PrimitiveType == (Shizu_TypeFlags_PrimitiveType & x->flags));
 }
 
-Shizu_ObjectTypeDescriptor const*
-Shizu_Type_getObjectTypeDescriptor
+bool
+Shizu_Types_isEnumerationType
   (
-    Shizu_State1* state,
+    Shizu_State1* state1,
     Shizu_Types* self,
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(Shizu_Type_isObjectType(state, self, x));
-  return x->objectType.descriptor;
-}
-
-Shizu_PrimitiveTypeDescriptor const*
-Shizu_Type_getPrimitiveTypeDescriptor
-  (
-    Shizu_State1* state,
-    Shizu_Types* self,
-    Shizu_Type const* x
-  )
-{
-  Shizu_debugAssert(Shizu_Type_isPrimitiveType(state, self, x));
-  return x->primitiveType.descriptor;
+  Shizu_debugAssert(NULL != state1);
+  Shizu_debugAssert(NULL != x);
+  return (Shizu_TypeFlags_EnumerationType == (Shizu_TypeFlags_EnumerationType & x->flags));
 }
 
 bool
@@ -129,6 +118,30 @@ Shizu_Types_isTrueSubTypeOf
     z = z->objectType.parentType;
   } while (z);
   return NULL != z;
+}
+
+Shizu_ObjectTypeDescriptor const*
+Shizu_Type_getObjectTypeDescriptor
+  (
+    Shizu_State1* state,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  )
+{
+  Shizu_debugAssert(Shizu_Types_isObjectType(state, self, x));
+  return x->objectType.descriptor;
+}
+
+Shizu_PrimitiveTypeDescriptor const*
+Shizu_Type_getPrimitiveTypeDescriptor
+  (
+    Shizu_State1* state,
+    Shizu_Types* self,
+    Shizu_Type const* x
+  )
+{
+  Shizu_debugAssert(Shizu_Types_isPrimitiveType(state, self, x));
+  return x->primitiveType.descriptor;
 }
 
 Shizu_Type*

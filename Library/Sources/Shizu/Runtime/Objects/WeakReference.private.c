@@ -95,7 +95,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_WeakReference_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Shizu_WeakReference, Shizu_Object);
+Shizu_defineObjectType("Shizu.WeakReference", Shizu_WeakReference, Shizu_Object);
 
 typedef struct WeakReferenceNode WeakReferenceNode;
 

@@ -55,12 +55,12 @@ Shizu_List_getValue
   (
     Shizu_State2* state,
     Shizu_List* self,
-    size_t index
+    Shizu_Integer32 index
   );
 
 /// @since 1.0
 /// @brief Get the size of this Shizu_List object.
-size_t
+Shizu_Integer32
 Shizu_List_getSize
   (
     Shizu_State2* state,

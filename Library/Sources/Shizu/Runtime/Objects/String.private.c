@@ -79,7 +79,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_String_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Shizu_String, Shizu_Object);
+Shizu_defineObjectType("Shizu.String", Shizu_String, Shizu_Object);
 
 static void
 Shizu_String_finalize

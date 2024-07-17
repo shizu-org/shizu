@@ -28,25 +28,6 @@ set(Shizu.Runtime.project-name "Shizu.Runtime")
 # To simply things.
 set(name "Shizu.Runtime")
 
-# Copy the files of the rendition to the interpreter binary directory.
-# rendition_name The rendition name.
-function(on_plugin target module)
-  set(SOURCE_FILE $<TARGET_FILE:${module}>)
-  set(TARGET_FILE $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:${module}>)
-  # ${target} now depends on ${module}.
-  #add_dependencies(${target} ${SOURCE_FILE})
-  message(STATUS "[on_plugin] ${target} depends on ${module}")
-  add_dependencies(${target} ${module})
-  add_custom_command(
-    TARGET ${target} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${SOURCE_FILE}
-            ${TARGET_FILE}
-    DEPENDS ${SOURCE_FILE}
-    COMMENT "[on plugin] copying ${SOURCE_FILE} to ${TARGET_FILE}"
-  )
-endfunction()
-
 function(on_plugins target)
   # Get the prerequisite modules of the target.
   get_target_property(prerequisiteModules ${target} prerequisiteModules)
@@ -55,43 +36,78 @@ function(on_plugins target)
   # For each prerequisite module A: Include any direct prerequisite
   set(CONTINUE TRUE)
   WHILE(CONTINUE)
-  set(CONTINUE FALSE)
-  get_target_property(xl ${target} prerequisiteModules)
+    set(CONTINUE FALSE)
+    get_target_property(xl ${target} prerequisiteModules)
     foreach (x ${xl})
-    get_target_property(yl ${x} prerequisiteModules)
-    foreach (y ${yl})
-      if (NOT "${y}" IN_LIST xl)
-        message(STATUS "adding ${y} to ${xl}")
-        list(APPEND xl ${y})
-        set(CONTINUE TRUE)
-      endif()
-    endforeach()
+        get_target_property(yl ${x} prerequisiteModules)
+        foreach (y ${yl})
+          if (NOT "${y}" IN_LIST xl)
+            message(STATUS "adding ${y} to ${xl}")
+            list(APPEND xl ${y})
+            set(CONTINUE TRUE)
+          endif()
+        endforeach()
     endforeach()
     set_target_properties(${target} PROPERTIES prerequisiteModules "${xl}")
   ENDWHILE()
 
+  set(commands "")
+  set(targets "")
+  set(sources "")
+  set(messages "")
   get_target_property(xl ${target} prerequisiteModules)
   foreach (x ${xl})
-    on_plugin(${target} ${x})
+    set(SOURCE_FILE $<TARGET_FILE:${x}>)
+    set(TARGET_FILE $<TARGET_FILE_DIR:${target}>/$<TARGET_FILE_NAME:${x}>)
+    list(APPEND sources ${SOURCE_FILE})
+    list(APPEND targets ${TARGET_FILE})
+    list(APPEND commands COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SOURCE_FILE} ${TARGET_FILE})
+    list(APPEND messages "[copy module ${target}]: copying ${SOURCE_FILE} to ${TARGET_FILE}\n")
   endforeach()
+  # The target is effectively not executed if the dependencies (the module) is not modified.
+  add_custom_target(
+    "${target}.${module}.CopyModules"
+    DEPENDS ${module}
+    COMMAND ${commands}
+    COMMENT ${messages}
+  )
+  add_dependencies(${target} "${target}.${module}.CopyModules")
 endfunction()
 
-function(on_assets name)
-  get_target_property(source_dir ${name} SOURCE_DIR)
-  message(STATUS "- [on_assets] ${name} source dir: ${source_dir}")
+function(on_assets target)
+  get_target_property(source_dir ${target} SOURCE_DIR)
+  message(STATUS "- [on_assets] ${target} source dir: ${source_dir}")
 
   file(GLOB_RECURSE assets_to_copy RELATIVE ${source_dir}/Assets ${source_dir}/Assets/*.* )
-  message(STATUS "- [on_assets] ${name} assets: ${assets_to_copy}")
+  message(STATUS "- [on_assets] ${target} assets: ${assets_to_copy}")
 
+  set(commands "")
+  set(targets "")
+  set(sources "")
+  set(messages "")
   foreach (asset_to_copy ${assets_to_copy})
-    add_custom_command(
-      TARGET ${name} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${name}>/Assets
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different                                 # which executes "cmake - E copy_if_different..."
-              ${source_dir}/Assets/${asset_to_copy}                                 # file to copy
-              $<TARGET_FILE_DIR:${name}>/Assets/${asset_to_copy}
-    )
+    set(SOURCE_FILE ${source_dir}/Assets/${asset_to_copy})
+    set(TARGET_FILE $<TARGET_FILE_DIR:${target}>/Assets/${asset_to_copy})
+    list(APPEND sources ${SOURCE_FILE})
+    list(APPEND targets ${TARGET_FILE})
+    list(APPEND commands COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SOURCE_FILE} ${TARGET_FILE})
+    list(APPEND messages "[copy asset ${target}]: copying ${SOURCE_FILE} to ${TARGET_FILE}\n")
   endforeach()
+
+  # The target is effectively not executed if the dependencies (the module) is not modified.
+  add_custom_target(
+    "${target}.CopyAssets"
+    DEPENDS ${targets} ${sources}
+    COMMAND ${commands}
+    COMMENT ${messages}
+  )
+  add_dependencies(${target} "${target}.CopyAssets")
+endfunction()
+
+# Ensure all transitive dependencies of an interpreter executable copied to the executable directory.
+function(on_executable target)
+  on_plugins(${target})
+  on_assets(${target})
 endfunction()
 
 include(FetchContent)

@@ -96,7 +96,7 @@ static Shizu_ObjectTypeDescriptor const Shizu_List_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Shizu_List, Shizu_Object);
+Shizu_defineObjectType("Shizu.List", Shizu_List, Shizu_Object);
 
 static const char* namedMemoryName = "Shizu.Lists.NamedMemory";
 
@@ -260,23 +260,25 @@ Shizu_List_getValue
   (
     Shizu_State2* state,
     Shizu_List* self,
-    size_t index
+    Shizu_Integer32 index
   )
 {
-  if (index >= self->size) {
+  if (index < 0 || index >= self->size) {
     return IndexOutOfBounds;
   }
   return self->elements[index];
 }
 
-size_t
+Shizu_Integer32
 Shizu_List_getSize
   (
     Shizu_State2* state,
     Shizu_List* self
   )
 {
-  return self->size;
+  Shizu_debugAssert(self->size >= 0);
+  Shizu_debugAssert(self->size <= Shizu_Integer32_Maximum);
+  return (Shizu_Integer32)self->size;
 }
 
 void

@@ -35,18 +35,26 @@
 /// This flag is set for "Boolean", "CxxFunction", "Float32", "Integer32", and "Void" types.
 #define Shizu_TypeFlags_PrimitiveType (2)
 
+/// This flag is set for enumeration types.
+#define Shizu_TypeFlags_EnumerationType (4)
+
 /// This flag is set after a succesfull call to Shizu_OnPostCreateTypeCallback function for a type.
 /// If the call is not successful, this flag is not set in that type.
 /// If this flag is set in a type before that type is destroyed, the Shizu_OnPreDestroyTypeCallback function (if any) is invoked and this flag is cleared for that type.
-#define Shizu_TypeFlags_PostTypeCreationInvoked (4)
+#define Shizu_TypeFlags_PostTypeCreationInvoked (8)
 
 /// This flag is set after a successful call to the Shizu_OnDispatchInitialize function of the type. If the call is not successful, the flag is not set.
 /// A successful call to Shizu_OnDispatchUninitialize clears the flag.
-#define Shizu_TypeFlags_DispatchInitialized (8)
+#define Shizu_TypeFlags_DispatchInitialized (16)
 
 typedef struct Shizu_Type Shizu_Type;
 
 typedef struct Shizu_Types Shizu_Types;
+
+typedef struct Shizu_EnumerationTypeNode {
+   // Pointer to the type descriptor.
+  Shizu_EnumerationTypeDescriptor const* descriptor;
+} Shizu_EnumerationTypeNode;
 
 typedef struct Shizu_PrimitiveTypeNode {
   // Pointer to the type descriptor.
@@ -83,12 +91,13 @@ struct Shizu_Type {
   Shizu_OnTypeDestroyedCallback* typeDestroyed;
 
   union {
+    Shizu_EnumerationTypeNode enumerationType;
     Shizu_ObjectTypeNode objectType;
     Shizu_PrimitiveTypeNode primitiveType;
   };
 };
 
-struct Shizu_Types{
+struct Shizu_Types {
   Shizu_Type** elements;
   size_t size;
   size_t capacity;
@@ -172,13 +181,11 @@ Shizu_Type_destroy
     Shizu_Type* type
   );
 
-/**
- * @brief Get the number of child types of a type.
- * @param state1 A pointer to a Shizu_State1 object.
- * @param self A pointer to the Shizu_Types object.
- * @param type A pointer to the type.
- * @return The number of child types of the type.
- */
+/// @brief Get the number of child types of a type.
+/// @param state1 A pointer to a Shizu_State1 object.
+/// @param self A pointer to the Shizu_Types object.
+/// @param type A pointer to the type.
+/// @return The number of child types of the type.
 size_t
 Shizu_Types_getTypeChildCount
   (

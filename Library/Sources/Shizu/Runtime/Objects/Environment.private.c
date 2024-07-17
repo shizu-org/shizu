@@ -199,7 +199,7 @@ Shizu_Environment_constructImpl
   ((Shizu_Object*)SELF)->type = TYPE;
 }
 
-Shizu_defineObjectType(Shizu_Environment, Shizu_Object);
+Shizu_defineObjectType("Shizu.Environment", Shizu_Environment, Shizu_Object);
 
 Shizu_Integer32
 Shizu_Environment_getSize

@@ -55,6 +55,24 @@ Shizu_Runtime_Extensions_getStringValue
     Shizu_Value* value
   );
 
+// Load a "Float32" value from a value.
+// Raise "InvalidArgumentType" if the value does not hold a "Float32" value.
+Shizu_Float32
+Shizu_Runtime_Extensions_getFloat32Value
+  (
+    Shizu_State2* state,
+    Shizu_Value* value
+  );
+
+// Load an "Integer32" value from a value.
+// Raise "InvalidArgumentType" if the value does not hold a "Integer32" value.
+Shizu_Integer32
+Shizu_Runtime_Extensions_getInteger32Value
+  (
+    Shizu_State2* state,
+    Shizu_Value* value
+  );
+
 // Utility function to get or create a "Shizu.WeakReference". The constructor "Shizu.WeakReference.construct(reference :
 // Object|Void)" is invoked with the "Object" value to which "reference" points to or "void" if "reference" is a null
 // pointer.

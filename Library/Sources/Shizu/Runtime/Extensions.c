@@ -78,6 +78,34 @@ Shizu_Runtime_Extensions_getStringValue
   return (Shizu_String*)objectValue ;
 }
 
+Shizu_Float32
+Shizu_Runtime_Extensions_getFloat32Value
+  (
+    Shizu_State2* state,
+    Shizu_Value* value
+  )
+{
+  if (!Shizu_Value_isFloat32(value)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  return Shizu_Value_getFloat32(value);
+}
+
+Shizu_Integer32
+Shizu_Runtime_Extensions_getInteger32Value
+  (
+    Shizu_State2* state,
+    Shizu_Value* value
+  )
+{
+  if (!Shizu_Value_isInteger32(value)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  return Shizu_Value_getInteger32(value);
+}
+
 Shizu_WeakReference*
 Shizu_Runtime_Extensions_createWeakReference
   (
