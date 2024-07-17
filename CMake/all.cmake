@@ -185,12 +185,12 @@ function(on_plugins target)
   endforeach()
   # The target is effectively not executed if the dependencies (the module) is not modified.
   add_custom_target(
-    "${target}.${module}.CopyModules"
+    "${target}.CopyModules"
     DEPENDS ${module}
     COMMAND ${commands}
     COMMENT ${messages}
   )
-  add_dependencies(${target} "${target}.${module}.CopyModules")
+  add_dependencies(${target} "${target}.CopyModules")
 endfunction()
 
 function(on_assets target)
