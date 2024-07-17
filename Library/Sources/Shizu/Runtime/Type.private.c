@@ -402,6 +402,68 @@ Shizu_Types_createObjectType
 }
 
 Shizu_Type*
+Shizu_Types_createEnumerationType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    char const* bytes,
+    size_t numberOfBytes,
+    Shizu_Dl* dl,
+    Shizu_OnTypeDestroyedCallback* typeDestroyed,
+    Shizu_EnumerationTypeDescriptor const* typeDescriptor
+  )
+{
+  size_t hashValue = numberOfBytes;
+  for (size_t i = 0, n = numberOfBytes; i < n; ++i) {
+    hashValue = hashValue * 37 + (size_t)bytes[i];
+  }
+  size_t hashIndex = hashValue % self->capacity;
+  for (Shizu_Type* type = self->elements[hashIndex]; NULL != type; type = type->next) {
+    if (type->name.hashValue == hashValue && type->name.numberOfBytes == numberOfBytes) {
+      if (!memcmp(type->name.bytes, bytes, numberOfBytes)) {
+        fprintf(stderr, "%s:%d: a type of name `%.*s` was already registered\n", __FILE__, __LINE__, (int)numberOfBytes, bytes);
+        /// @todo Add and use Shizu_Status_TypeExists.
+        Shizu_State1_setStatus(state1, 1/*Shizu_Status_TypeExists*/);
+        Shizu_State1_jump(state1);
+      }
+    }
+  }
+  Shizu_Type* type = Shizu_State1_allocate(state1, sizeof(Shizu_Type));
+  if (!type) {
+    fprintf(stderr, "%s:%d: allocation of `%zu` Bytes failed\n", __FILE__, __LINE__, sizeof(Shizu_Type));
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state1);
+  }
+  type->name.bytes = Shizu_State1_allocate(state1, numberOfBytes);
+  if (!type->name.bytes) {
+    Shizu_State1_deallocate(state1, type);
+    type = NULL;
+    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state1);
+  }
+  memcpy(type->name.bytes, bytes, numberOfBytes);
+  type->name.hashValue = hashValue;
+  type->name.numberOfBytes = numberOfBytes;
+  type->next = NULL;
+  type->flags = Shizu_TypeFlags_EnumerationType;
+  type->typeDestroyed = typeDestroyed;
+  type->dl = dl;
+  if (type->dl) {
+    Shizu_State1_refDl(state1, type->dl);
+  }
+
+  type->enumerationType.descriptor = typeDescriptor;
+
+  type->next = self->elements[hashIndex];
+  self->elements[hashIndex] = type;
+  self->size++;
+
+  Shizu_Types_onPostCreateType(state1, self, type);
+
+  return type;
+}
+
+Shizu_Type*
 Shizu_Types_createPrimitiveType
   (
     Shizu_State1* state1,

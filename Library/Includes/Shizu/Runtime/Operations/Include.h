@@ -28,6 +28,21 @@
 
 #include "Shizu/Runtime/Value.h"
 
+/// Get the type of the specified name.
+/// @code
+/// returnValue <~ _getType(<name>)
+/// _typeOf(returnValue) = Type
+/// returnValue.name = <name>
+/// @endcode
+void
+Shizu_Operations_getType
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 /// @code
 /// returnValue <~ _typeOf(argumentValue[0])
 /// @endcode

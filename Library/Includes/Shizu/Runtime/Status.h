@@ -38,6 +38,8 @@ enum Shizu_Status {
   Shizu_Status_ArgumentOutOfRange,
   /// @brief A non-numeric argument value is invalid.
   Shizu_Status_ArgumentValueInvalid,
+  /// @brief A type was not found.
+  Shizu_Status_TypeNotFound,
   /// @brief A method was not found.
   Shizu_Status_MethodNotFound,
   /// @brief An allocation failed.

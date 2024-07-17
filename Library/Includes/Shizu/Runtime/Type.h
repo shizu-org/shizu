@@ -29,6 +29,8 @@
 #include <stdbool.h>
 // size_t
 #include <stddef.h>
+// strlen
+#include <string.h>
 
 typedef struct Shizu_State1 Shizu_State1;
 typedef struct Shizu_State2 Shizu_State2;
@@ -238,12 +240,10 @@ Shizu_Type_getPrimitiveTypeDescriptor
     Shizu_Type const* x
   );
 
-/**
- * @since 1.0
- * @brief Get the parent type of a type.
- * @param x The type.
- * @return The parent type if any, null otherwise.
- */
+/// @since 1.0
+/// @brief Get the parent type of a type.
+/// @param x The type.
+/// @return The parent type if any, null otherwise.
 Shizu_Type*
 Shizu_Types_getParentType
   (
@@ -260,22 +260,6 @@ Shizu_Types_getTypeName
     Shizu_Type* x,
     char const** bytes,
     size_t* numberOfBytes
-  );
-
-/// @brief Define a method.
-/// @param state A pointer to the Shizu_State2 object.
-/// @param self A pointer to the type.
-/// @param p, n The name of the method.
-/// @param f A pointer to the Shizu.CxxFunction implementing the method.
-/// @error A method of the same name is already defined in this type. 
-void
-Shizu_Type_defineCxxMethod
-  (
-    Shizu_State2* state,
-    Shizu_Type* type,
-    char const* bytes,
-    size_t numberOfBytes,
-    Shizu_CxxFunction* f
   );
 
 /// @since 1.0
@@ -341,10 +325,10 @@ Shizu_Types_getDispatch
       Shizu_State2* state \
     ) \
   { \
-    Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #CxxName, sizeof(#CxxName) - 1); \
+    Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), MlName, strlen(MlName)); \
     if (!type) { \
       Shizu_Dl* dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &CxxName##_getType); \
-      type = Shizu_Types_createObjectType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #CxxName, sizeof(#CxxName) - 1, ParentName##_getType(state), dl, &CxxName##_typeDestroyed, &CxxName##_Type); \
+      type = Shizu_Types_createObjectType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), MlName, strlen(MlName), ParentName##_getType(state), dl, &CxxName##_typeDestroyed, &CxxName##_Type); \
       if (dl) { \
         Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl); \
       } \
@@ -377,7 +361,7 @@ Shizu_Types_getTypeByName
 /// @param bytes A pointer to an array of @a numberOfBytes Bytes.
 /// @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
 /// @param parentType A pointer to the parent type or the null pointer.
-/// A pointer to the dynamic library the type descriptor is defined in.
+/// @param dl A pointer to the dynamic library the type descriptor is defined in.
 /// The null pointer if the type descriptor is defined in the main program.
 /// @param typeDestroyed A pointer to the Shizu_OnTypeDestroyedCallback callback function.
 /// @param descriptor A pointer to the type descriptor.
@@ -392,6 +376,29 @@ Shizu_Types_createObjectType
     Shizu_Dl* dl,
     Shizu_OnTypeDestroyedCallback* typeDestroyed,
     Shizu_ObjectTypeDescriptor const* typeDescriptor
+  );
+
+/// @since 1.0
+/// @brief Create an enumeration type.
+/// @details
+/// Create a type of the name @code{bytes, numberOfBytes)}.
+/// Raise an error if a type of that name already exists.
+/// @param bytes A pointer to an array of @a numberOfBytes Bytes.
+/// @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
+/// @param dl A pointer to the dynamic library the type descriptor is defined in.
+/// The null pointer if the type descriptor is defined in the main program.
+/// @param typeDestroyed A pointer to the Shizu_OnTypeDestroyedCallback callback function.
+/// @param descriptor A pointer to the type descriptor.
+Shizu_Type*
+Shizu_Types_createEnumerationType
+  (
+    Shizu_State1* state1,
+    Shizu_Types* self,
+    char const* bytes,
+    size_t numberOfBytes,
+    Shizu_Dl* dl,
+    Shizu_OnTypeDestroyedCallback* typeDestroyed,
+    Shizu_EnumerationTypeDescriptor const* typeDescriptor
   );
 
 /// @since .0

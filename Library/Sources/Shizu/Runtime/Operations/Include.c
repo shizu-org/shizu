@@ -24,8 +24,34 @@
 
 #include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Object.h"
+#include "Shizu/Runtime/Objects/String.h"
 #include "Shizu/Runtime/Gc.h"
+#include "Shizu/Runtime/Extensions.h"
 #include "Shizu/Runtime/CxxUtilities.h"
+
+void
+Shizu_Operations_getType
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{
+  Shizu_debugAssert(NULL != returnValue);
+  Shizu_debugAssert(NULL != argumentValues);
+  if (1 != numberOfArgumentValues) {
+    Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+    Shizu_State2_jump(state);
+  }
+  Shizu_String* name = Shizu_Runtime_Extensions_getStringValue(state, &argumentValues[0]);
+  Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_String_getBytes(state, name), Shizu_String_getNumberOfBytes(state, name));
+  if (!type) {
+    Shizu_State2_setStatus(state, Shizu_Status_TypeNotFound);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Value_setType(returnValue, type);
+}
 
 void
 Shizu_Operations_typeOf
