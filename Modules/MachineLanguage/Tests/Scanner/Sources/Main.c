@@ -50,7 +50,7 @@ static void scan(Shizu_State2* state, Shizu_String* relativePath) {
   Shizu_String* inputString = NULL;
   inputByteArray = getFileContents(state, relativePath);
   inputString = Shizu_String_create(state, Shizu_ByteArray_getRawBytes(state, inputByteArray), Shizu_ByteArray_getNumberOfRawBytes(state, inputByteArray));
-  Shizu_Environment* compilerEnvironment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "Compiler", strlen("Compiler")));
+  Shizu_Environment* compilerEnvironment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "MachineLanguage", strlen("MachineLanguage")));
   Shizu_CxxProcedure* p = Shizu_Environment_getCxxProcedure(state, compilerEnvironment, Shizu_String_create(state, "createScanner", strlen("createScanner")));
   Shizu_Value returnValue; Shizu_Value arguments[1];
   p->f(state, &returnValue, 0, &arguments[0]);
@@ -65,7 +65,7 @@ static void scan(Shizu_State2* state, Shizu_String* relativePath) {
   }
   // read tokens until the end of the input or an error is encountered
   {
-    Shizu_Environment* tokenTypeEnvironment = Shizu_Environment_getEnvironment(state, Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "Compiler", sizeof("Compiler")-1)), Shizu_String_create(state, "TokenType", sizeof("TokenType") - 1));
+    Shizu_Environment* tokenTypeEnvironment = Shizu_Environment_getEnvironment(state, Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "MachineLanguage", sizeof("MachineLanguage")-1)), Shizu_String_create(state, "TokenType", sizeof("TokenType") - 1));
     Shizu_Value tokenTypeStartOfInput;
     Shizu_Value_setInteger32(&tokenTypeStartOfInput, Shizu_Environment_getInteger32(state, tokenTypeEnvironment, Shizu_String_create(state, "StartOfInput", sizeof("StartOfInput") - 1)));
     Shizu_Value tokenTypeEndOfInput;
@@ -108,9 +108,9 @@ main
     Shizu_ByteArray* inputByteArray = NULL;
     Shizu_String* input = NULL;
     //
-    scan(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld1.cil", strlen("HelloWorld1.cil"))));
+    scan(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld1.ml", strlen("HelloWorld1.ml"))));
     //
-    scan(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld2.cil", strlen("HelloWorld2.cil"))));
+    scan(state, Shizu_String_concatenate(state, path, Shizu_String_create(state, "HelloWorld2.ml", strlen("HelloWorld2.ml"))));
     Shizu_State2_popJumpTarget(state);
   } else {
     Shizu_State2_popJumpTarget(state);

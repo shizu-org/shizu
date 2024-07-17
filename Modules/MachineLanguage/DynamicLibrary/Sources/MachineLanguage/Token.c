@@ -19,19 +19,19 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "Compiler/Token.h"
+#include "MachineLanguage/Token.h"
 
-Shizu_defineEnumerationType(Compiler_TokenType);
+Shizu_defineEnumerationType("MachineLanguage.TokenType", TokenType);
 
 static void
-Compiler_Token_visit
+Token_visit
   (
     Shizu_State2* state,
-    Compiler_Token* self
+    Token* self
   );
 
 static void
-Compiler_Token_constructImpl
+Token_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -39,26 +39,26 @@ Compiler_Token_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_ObjectTypeDescriptor const Compiler_Token_Type = {
+static Shizu_ObjectTypeDescriptor const Token_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Compiler_Token),
-  .construct = &Compiler_Token_constructImpl,
-  .visit = (Shizu_OnVisitCallback*)&Compiler_Token_visit,
+  .size = sizeof(Token),
+  .construct = &Token_constructImpl,
+  .visit = (Shizu_OnVisitCallback*)&Token_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
-  .dispatchSize = sizeof(Compiler_Token_Dispatch),
+  .dispatchSize = sizeof(Token_Dispatch),
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Compiler_Token, Compiler_Object);
+Shizu_defineObjectType("MachineLanguage.Token", Token, Shizu_Object);
 
 static void
-Compiler_Token_visit
+Token_visit
   (
     Shizu_State2* state,
-    Compiler_Token* self
+    Token* self
   )
 {
   if (self->text) {
@@ -67,7 +67,7 @@ Compiler_Token_visit
 }
 
 static void
-Compiler_Token_constructImpl
+Token_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -75,41 +75,33 @@ Compiler_Token_constructImpl
     Shizu_Value* argumentValues
   )
 {
-  Shizu_Type* TYPE = Compiler_Token_getType(state);
-  Compiler_Token* self = (Compiler_Token*)Shizu_Value_getObject(&argumentValues[0]);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
+  Shizu_Type* TYPE = Token_getType(state);
+  Token* self = (Token*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
   self->type = Shizu_Value_getInteger32(&argumentValues[1]);
   self->text = (Shizu_String*)Shizu_Value_getObject(&argumentValues[2]);
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-void
-Compiler_Token_construct
+Token*
+Token_create
   (
     Shizu_State2* state,
-    Compiler_Token* self,
-    Compiler_TokenType type,
+    TokenType type,
     Shizu_String* text
   )
 {
-  Shizu_Type* TYPE = Compiler_Token_getType(state);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
-  self->type = type;
-  self->text = text;
-  ((Shizu_Object*)self)->type = TYPE;
-}
-
-Compiler_Token*
-Compiler_Token_create
-  (
-    Shizu_State2* state,
-    Compiler_TokenType type,
-    Shizu_String* text
-  )
-{
-  Shizu_Type* TYPE = Compiler_Token_getType(state);
-  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
-  Compiler_Token* SELF = (Compiler_Token*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Token));
-  Compiler_Token_construct(state, SELF, type, text);
-  return SELF;
+  Shizu_Value returnValue = Shizu_Value_Initializer();
+  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(),
+                                   Shizu_Value_Initializer(),
+                                   Shizu_Value_Initializer() };
+  Shizu_Value_setType(&argumentValues[0], Token_getType(state));
+  Shizu_Value_setInteger32(&argumentValues[1], type);
+  if (text) {
+    Shizu_Value_setObject(&argumentValues[2], (Shizu_Object*)text);
+  } else {
+    Shizu_Value_setVoid(&argumentValues[2], Shizu_Void_Void);
+  }
+  Shizu_Operations_create(state, &returnValue, 3, &argumentValues[0]);
+  return (Token*)Shizu_Value_getObject(&returnValue);
 }

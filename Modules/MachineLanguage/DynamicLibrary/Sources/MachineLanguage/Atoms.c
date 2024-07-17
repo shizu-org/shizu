@@ -1,24 +1,24 @@
-#include "Compiler/Atoms.h"
+#include "MachineLanguage/Atoms.h"
 
 // memcpy
 #include <string.h>
 
 static void
-Compiler_Atom_finalize
+Atom_finalize
   (
     Shizu_State2* state,
-    Compiler_Atom* self
+    Atom* self
   );
 
 static void
-Compiler_Atom_visit
+Atom_visit
   (
     Shizu_State2* state,
-    Compiler_Atom* self
+    Atom* self
   );
 
 static void
-Compiler_Atom_constructImpl
+Atom_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -26,26 +26,26 @@ Compiler_Atom_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_ObjectTypeDescriptor const Compiler_Atom_Type = {
+static Shizu_ObjectTypeDescriptor const Atom_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Compiler_Atom),
-  .construct = &Compiler_Atom_constructImpl,
-  .visit = (Shizu_OnVisitCallback*)&Compiler_Atom_visit,
-  .finalize = (Shizu_OnFinalizeCallback*)&Compiler_Atom_finalize,
-  .dispatchSize = sizeof(Compiler_Atom_Dispatch),
+  .size = sizeof(Atom),
+  .construct = &Atom_constructImpl,
+  .visit = (Shizu_OnVisitCallback*)&Atom_visit,
+  .finalize = (Shizu_OnFinalizeCallback*)&Atom_finalize,
+  .dispatchSize = sizeof(Atom_Dispatch),
   .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Compiler_Atom, Compiler_Object);
+Shizu_defineObjectType("MachineLanguage.Atom", Atom, Shizu_Object);
 
 static void
-Compiler_Atom_finalize
+Atom_finalize
   (
     Shizu_State2* state,
-    Compiler_Atom* self
+    Atom* self
   )
 {
   if (self->bytes) {
@@ -55,20 +55,19 @@ Compiler_Atom_finalize
 }
 
 static void
-Compiler_Atom_visit
+Atom_visit
   (
     Shizu_State2* state,
-    Compiler_Atom* self
+    Atom* self
   )
 {
   if (self->next) {
     Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->next);
-
   }
 }
 
 static void
-Compiler_Atom_constructImpl
+Atom_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -76,9 +75,9 @@ Compiler_Atom_constructImpl
     Shizu_Value* argumentValues
   )
 {
-  Shizu_Type* TYPE = Compiler_Atom_getType(state);
-  Compiler_Atom* self = (Compiler_Atom*)Shizu_Value_getObject(&argumentValues[0]);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
+  Shizu_Type* TYPE = Atom_getType(state);
+  Atom* self = (Atom*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
   Shizu_ByteArray* bytes = (Shizu_ByteArray*)Shizu_Value_getObject(&argumentValues[1]);
   size_t numberOfRawBytes = Shizu_ByteArray_getNumberOfRawBytes(state, bytes);
   uint8_t const* rawBytes = Shizu_ByteArray_getRawBytes(state, bytes);
@@ -99,15 +98,15 @@ Compiler_Atom_constructImpl
 }
 
 void
-Compiler_Atom_construct
+Atom_construct
   (
     Shizu_State2* state,
-    Compiler_Atom* self,
+    Atom* self,
     Shizu_ByteArray* bytes
   )
 {
-  Shizu_Type* TYPE = Compiler_Atom_getType(state);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
+  Shizu_Type* TYPE = Atom_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
   size_t numberOfRawBytes = Shizu_ByteArray_getNumberOfRawBytes(state, bytes);
   uint8_t const* rawBytes = Shizu_ByteArray_getRawBytes(state, bytes);
   size_t hashValue = numberOfRawBytes;
@@ -126,35 +125,35 @@ Compiler_Atom_construct
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-Compiler_Atom*
-Compiler_Atom_create
+Atom*
+Atom_create
   (
     Shizu_State2* state,
     Shizu_ByteArray* bytes
   )
 {
-  Shizu_Type* TYPE = Compiler_Atom_getType(state);
-  Compiler_Atom* self = (Compiler_Atom*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Atom));
-  Compiler_Atom_construct(state, self, bytes);
+  Shizu_Type* TYPE = Atom_getType(state);
+  Atom* self = (Atom*)Shizu_Gc_allocateObject(state, sizeof(Atom));
+  Atom_construct(state, self, bytes);
   return self;
 }
 
 static void
-Compiler_Atoms_finalize
+Atoms_finalize
   (
     Shizu_State2* state,
-    Compiler_Atoms* self
+    Atoms* self
   );
 
 static void
-Compiler_Atoms_visit
+Atoms_visit
   (
     Shizu_State2* state,
-    Compiler_Atoms* self
+    Atoms* self
   );
 
 static void
-Compiler_Atoms_constructImpl
+Atoms_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -162,26 +161,26 @@ Compiler_Atoms_constructImpl
     Shizu_Value* argumentValues
   );
 
-static Shizu_ObjectTypeDescriptor const Compiler_Atoms_Type = {
+static Shizu_ObjectTypeDescriptor const Atoms_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Compiler_Atoms),
-  .construct = &Compiler_Atoms_constructImpl,
-  .visit = (Shizu_OnVisitCallback*)&Compiler_Atoms_visit,
-  .finalize = (Shizu_OnFinalizeCallback*)&Compiler_Atoms_finalize,
-  .dispatchSize = sizeof(Compiler_Atoms_Dispatch),
+  .size = sizeof(Atoms),
+  .construct = &Atoms_constructImpl,
+  .visit = (Shizu_OnVisitCallback*)&Atoms_visit,
+  .finalize = (Shizu_OnFinalizeCallback*)&Atoms_finalize,
+  .dispatchSize = sizeof(Atoms_Dispatch),
   .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Compiler_Atoms, Compiler_Object);
+Shizu_defineObjectType("MachineLanguage.Atoms", Atoms, Shizu_Object);
 
 static void
-Compiler_Atoms_finalize
+Atoms_finalize
   (
     Shizu_State2* state,
-    Compiler_Atoms* self
+    Atoms* self
   )
 {
   if (self->buckets) {
@@ -191,14 +190,14 @@ Compiler_Atoms_finalize
 }
 
 static void
-Compiler_Atoms_visit
+Atoms_visit
   (
     Shizu_State2* state,
-    Compiler_Atoms* self
+    Atoms* self
   )
 {
   for (size_t i = 0, n = self->capacity; i < n; ++i) {
-    Compiler_Atom* node  = self->buckets[i];
+    Atom* node  = self->buckets[i];
     while (node) {
       Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)node);
       node = node->next;
@@ -207,7 +206,7 @@ Compiler_Atoms_visit
 }
 
 static void
-Compiler_Atoms_constructImpl
+Atoms_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -215,10 +214,10 @@ Compiler_Atoms_constructImpl
     Shizu_Value* argumentValues
   )
 {
-  Shizu_Type* TYPE = Compiler_Atoms_getType(state);
-  Compiler_Atoms* self = (Compiler_Atoms*)Shizu_Value_getObject(&argumentValues[0]);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
-  self->buckets = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Compiler_Atom*) * 8);
+  Shizu_Type* TYPE = Atoms_getType(state);
+  Atoms* self = (Atoms*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  self->buckets = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Atom*) * 8);
   if (!self->buckets) {
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);
@@ -232,15 +231,15 @@ Compiler_Atoms_constructImpl
 }
 
 void
-Compiler_Atoms_construct
+Atoms_construct
   (
     Shizu_State2* state,
-    Compiler_Atoms* self
+    Atoms* self
   )
 {
-  Shizu_Type* TYPE = Compiler_Atoms_getType(state);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
-  self->buckets = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Compiler_Atom*) * 8);
+  Shizu_Type* TYPE = Atoms_getType(state);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
+  self->buckets = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Atom*) * 8);
   if (!self->buckets) {
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);
@@ -253,13 +252,15 @@ Compiler_Atoms_construct
   ((Shizu_Object*)self)->type = TYPE;
 }
 
-Compiler_Atoms*
-Compiler_Atoms_create
+Atoms*
+Atoms_create
   (
     Shizu_State2* state
   )
 {
-  Shizu_Type* TYPE = Compiler_Atoms_getType(state);
+  Shizu_Type* TYPE = Atoms_getType(state);
   Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
-  Compiler_Atoms* SELF = (Compiler_Atoms*)Shizu_Gc_allocateObject(state, sizeof(Compiler_Atoms));  Compiler_Atoms_construct(state, SELF);  return SELF;
+  Atoms* SELF = (Atoms*)Shizu_Gc_allocateObject(state, sizeof(Atoms));
+  Atoms_construct(state, SELF);
+  return SELF;
 }

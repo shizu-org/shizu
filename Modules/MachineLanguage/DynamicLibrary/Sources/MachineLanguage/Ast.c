@@ -19,21 +19,12 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "Compiler/Ast.h"
+#include "MachineLanguage/Ast.h"
 
-// Utility function to create a "Shizu.List".
-static Shizu_List* createList(Shizu_State2* state) {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
-  Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
-  Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
-  return (Shizu_List*)Shizu_Value_getObject(&returnValue);
-}
-
-Shizu_defineEnumerationType(Compiler_AstType);
+Shizu_defineEnumerationType("MachineLanguage.AstType", AstType);
 
 static void
-Compiler_Ast_constructImpl
+Ast_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -42,29 +33,29 @@ Compiler_Ast_constructImpl
   );
 
 static void
-Compiler_Ast_visit
+Ast_visit
   (
     Shizu_State2* state,
-    Compiler_Ast* self
+    Ast* self
   );
 
-static Shizu_ObjectTypeDescriptor const Compiler_Ast_Type = {
+static Shizu_ObjectTypeDescriptor const Ast_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
   .visitType = NULL,
-  .size = sizeof(Compiler_Ast),
-  .construct = &Compiler_Ast_constructImpl,
-  .visit = (Shizu_OnVisitCallback*)&Compiler_Ast_visit,
+  .size = sizeof(Ast),
+  .construct = &Ast_constructImpl,
+  .visit = (Shizu_OnVisitCallback*)&Ast_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
-  .dispatchSize = sizeof(Compiler_Ast_Dispatch),
+  .dispatchSize = sizeof(Ast_Dispatch),
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Compiler_Ast, Compiler_Object);
+Shizu_defineObjectType("MachineLanguage.Ast", Ast, Shizu_Object);
 
 static void
-Compiler_Ast_constructImpl
+Ast_constructImpl
   (
     Shizu_State2* state,
     Shizu_Value* returnValue,
@@ -72,9 +63,9 @@ Compiler_Ast_constructImpl
     Shizu_Value* argumentValues
   )
 {
-  Shizu_Type* TYPE = Compiler_Ast_getType(state);
-  Compiler_Ast* self = (Compiler_Ast*)Shizu_Value_getObject(&argumentValues[0]);
-  Compiler_Object_construct(state, (Compiler_Object*)self);
+  Shizu_Type* TYPE = Ast_getType(state);
+  Ast* self = (Ast*)Shizu_Value_getObject(&argumentValues[0]);
+  Shizu_Object_construct(state, (Shizu_Object*)self);
   self->type = Shizu_Value_getInteger32(&argumentValues[1]);
   if (Shizu_Value_isObject(&argumentValues[2])) {
     self->text = Shizu_Runtime_Extensions_getStringValue(state, &argumentValues[2]);
@@ -84,15 +75,15 @@ Compiler_Ast_constructImpl
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
   }
-  self->children = createList(state);
+  self->children = Shizu_Runtime_Extensions_createList(state);
   ((Shizu_Object*)self)->type = TYPE;
 }
 
 static void
-Compiler_Ast_visit
+Ast_visit
   (
     Shizu_State2* state,
-    Compiler_Ast* self
+    Ast* self
   )
 {
   if (self->children) {
@@ -103,17 +94,17 @@ Compiler_Ast_visit
   }
 }
 
-Compiler_Ast*
-Compiler_Ast_create
+Ast*
+Ast_create
   (
     Shizu_State2* state,
-    Compiler_AstType type,
+    AstType type,
     Shizu_String* text
   )
 {
   Shizu_Value returnValue = Shizu_Value_Initializer();
   Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer(), Shizu_Value_Initializer() };
-  Shizu_Value_setType(&argumentValues[0], Compiler_Ast_getType(state));
+  Shizu_Value_setType(&argumentValues[0], Ast_getType(state));
   Shizu_Value_setInteger32(&argumentValues[1], type);
   if (text) {
     Shizu_Value_setObject(&argumentValues[2], (Shizu_Object*)text);
@@ -121,5 +112,42 @@ Compiler_Ast_create
     Shizu_Value_setVoid(&argumentValues[2], Shizu_Void_Void);
   }
   Shizu_Operations_create(state, &returnValue, 3, &argumentValues[0]);
-  return (Compiler_Ast*)Shizu_Value_getObject(&returnValue);
+  return (Ast*)Shizu_Value_getObject(&returnValue);
+}
+
+void
+Ast_append
+  (
+    Shizu_State2* state,
+    Ast* self,
+    Ast* other
+  )
+{
+  Shizu_List_appendObject(state, self->children, (Shizu_Object*)other);
+}
+
+Shizu_Integer32
+Ast_getNumberOfChildren
+  (
+    Shizu_State2* state,
+    Ast* self
+  )
+{
+  return Shizu_List_getSize(state, self->children);
+}
+
+Ast*
+Ast_getChild
+  (
+    Shizu_State2* state,
+    Ast* self,
+    Shizu_Integer32 index
+  ) 
+{
+  Shizu_Value value = Shizu_List_getValue(state, self->children, index);
+  if (!Shizu_Value_isObject(&value)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  return (Ast*)Shizu_Value_getObject(&value);
 }

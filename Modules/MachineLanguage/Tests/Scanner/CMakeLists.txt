@@ -40,5 +40,4 @@ get_target_property(prerequisiteModules ${name} prerequisiteModules)
 list(APPEND prerequisiteModules "${moduleName}")
 set_target_properties(${name} PROPERTIES prerequisiteModules "${prerequisiteModules}")
 
-on_plugins(${name})
-on_assets(${name})
+on_executable(${name})
