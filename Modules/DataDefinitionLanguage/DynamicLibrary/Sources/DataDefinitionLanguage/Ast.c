@@ -69,7 +69,7 @@ static Shizu_ObjectTypeDescriptor const Ast_Type = {
   .visit = (Shizu_OnVisitCallback*)&Ast_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Ast_Dispatch),
-  .dispatchInitialize = NULL,
+  .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)&Ast_initializeDispatch,
   .dispatchUninitialize = NULL,
 };
 
