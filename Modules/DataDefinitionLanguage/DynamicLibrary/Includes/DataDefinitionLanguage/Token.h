@@ -31,6 +31,7 @@ enum TokenType  {
   TokenType_EndOfInput,
   TokenType_Error,
   TokenType_SingleLineComment,
+  TokenType_MultiLineComment,
   TokenType_Name,
   TokenType_LeftCurlyBracket,
   TokenType_RightCurlyBracket,

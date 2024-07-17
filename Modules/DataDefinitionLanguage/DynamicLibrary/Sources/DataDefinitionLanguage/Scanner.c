@@ -71,7 +71,7 @@ static Shizu_ObjectTypeDescriptor const Scanner_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Scanner, Shizu_Object);
+Shizu_defineObjectType("DataDefinitionLanguage.Scanner", Scanner, Shizu_Object);
 
 static void
 Scanner_visit
@@ -459,6 +459,23 @@ scanNumber
 }
 
 static void
+skipNewLineInComment
+  (
+    Shizu_State2* state,
+    Scanner* self
+  )
+{
+  if (isNewline(state, self)) {
+    next(state, self);
+    int old = self->reader.symbol;
+    if (isNewline(state, self) && old != self->reader.symbol) {
+      next(state, self);
+    }
+  }
+}
+
+
+static void
 skipWhiteSpacesAndNewLines
   (
     Shizu_State2* state,
@@ -559,15 +576,39 @@ Scanner_step
       Shizu_ByteArray_clear(state, self->buffer);
       next(state, self);
       if ('/' == self->reader.symbol) {
+        next(state, self);
+        while (Symbol_EndOfInput != self->reader.symbol && !isNewline(state, self)) {
+          saveAndNext(state, self);
+        }
+        self->tokenType = TokenType_SingleLineComment;
+        return;
+      } else if ('*' == self->reader.symbol) {
+        next(state, self);
+        while (true) {
+          if ('*' == self->reader.symbol) {
+            next(state, self);
+            if ('/' == self->reader.symbol) {
+              next(state, self);
+              break;
+            } else {
+              saveAndNext(state, self);
+            }
+          } else if (isNewline(state, self)) {
+            skipNewLineInComment(state, self);
+          } else if (Symbol_EndOfInput == self->reader.symbol) {
+            /* Unclosed multi-line comment. */
+            self->tokenType = TokenType_Error;
+            return;
+          } else {
+            saveAndNext(state, self);
+          }
+        }
+        self->tokenType = TokenType_MultiLineComment;
+        return;
+      } else {
         self->tokenType = TokenType_Error;
         return;
       }
-      next(state, self);
-      while (!isNewline(state, self)) {
-        next(state, self);
-      }
-      self->tokenType = TokenType_SingleLineComment;
-      return;
     } break;
     default: {
     } break;

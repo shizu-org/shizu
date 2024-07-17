@@ -21,7 +21,7 @@
 
 #include "DataDefinitionLanguage/Token.h"
 
-Shizu_defineEnumerationType(TokenType);
+Shizu_defineEnumerationType("DataDefinitionLanguage.TokenType", TokenType);
 
 static void
 Token_constructImpl
@@ -52,7 +52,7 @@ static Shizu_ObjectTypeDescriptor const Token_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Token, Shizu_Object);
+Shizu_defineObjectType("DataDefinitionLanguage.Token", Token, Shizu_Object);
 
 static void
 Token_constructImpl

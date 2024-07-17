@@ -46,6 +46,13 @@ enum AstType {
 /// @code
 /// Ast.construct(type : Integer32, text : String | Void)
 /// @endcode
+/// The following methods are provided
+/// @code
+/// Ast.getType() : Integer32
+/// Ast.getText() : String | Void
+/// Ast.getNumberOfChildren() : Integer32
+/// Ast.getChildAt(index : Integer32) : Ast
+/// @endcode
 Shizu_declareObjectType(Ast);
 
 struct Ast_Dispatch {
@@ -75,7 +82,7 @@ Ast_append
     Ast* other
   );
 
-size_t
+Shizu_Integer32
 Ast_getNumberOfChildren
   (
     Shizu_State2* state,
@@ -87,7 +94,7 @@ Ast_getChild
   (
     Shizu_State2* state,
     Ast* self,
-    size_t index
+    Shizu_Integer32 index
   );
 
 #endif // DATADEFINITIONLANGUAGE_AST_H_INCLUDED

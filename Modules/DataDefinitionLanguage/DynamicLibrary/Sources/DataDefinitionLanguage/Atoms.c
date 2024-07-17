@@ -60,7 +60,7 @@ static Shizu_ObjectTypeDescriptor const Atom_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Atom, Shizu_Object);
+Shizu_defineObjectType("DataDefinitionLanguage.Atom", Atom, Shizu_Object);
 
 static void
 Atom_constructImpl
@@ -196,7 +196,7 @@ static Shizu_ObjectTypeDescriptor const Atoms_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Atoms, Shizu_Object);
+Shizu_defineObjectType("DataDefinitionLanguage.Atoms", Atoms, Shizu_Object);
 
 static void
 Atoms_finalize

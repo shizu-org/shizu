@@ -80,7 +80,7 @@ static Shizu_ObjectTypeDescriptor const Parser_Type = {
   .dispatchUninitialize = NULL,
 };
 
-Shizu_defineObjectType(Parser, Shizu_Object);
+Shizu_defineObjectType("DataDefinitionLanguage.Parser", Parser, Shizu_Object);
 
 static void
 Parser_visit
