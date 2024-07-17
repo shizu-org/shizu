@@ -21,6 +21,8 @@
 
 #include "MachineLanguage/Ast.h"
 
+#include "idlib/byte_sequence.h"
+
 Shizu_defineEnumerationType("MachineLanguage.AstType", AstType);
 
 static void
@@ -33,10 +35,29 @@ Ast_constructImpl
   );
 
 static void
+Ast_callImpl
+  (
+    Shizu_State2* state,
+    Ast* self,
+    uint8_t const* methodNameBytes,
+    size_t numberOfMethodNameBytes,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArguments,
+    Shizu_Value* arguments
+  );
+
+static void
 Ast_visit
   (
     Shizu_State2* state,
     Ast* self
+  );
+
+static void
+Ast_initializeDispatch
+  (
+    Shizu_State2* state,
+    Ast_Dispatch* self
   );
 
 static Shizu_ObjectTypeDescriptor const Ast_Type = {
@@ -48,7 +69,7 @@ static Shizu_ObjectTypeDescriptor const Ast_Type = {
   .visit = (Shizu_OnVisitCallback*)&Ast_visit,
   .finalize = (Shizu_OnFinalizeCallback*)NULL,
   .dispatchSize = sizeof(Ast_Dispatch),
-  .dispatchInitialize = NULL,
+  .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)&Ast_initializeDispatch,
   .dispatchUninitialize = NULL,
 };
 
@@ -80,6 +101,75 @@ Ast_constructImpl
 }
 
 static void
+Ast_callImpl
+  (
+    Shizu_State2* state,
+    Ast* self,
+    uint8_t const* methodNameBytes,
+    size_t numberOfMethodNameBytes,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArguments,
+    Shizu_Value* arguments
+  )
+{
+  if (numberOfMethodNameBytes == sizeof("getType") - 1) {
+    int8_t result;
+    idlib_byte_sequence_compare(&result, methodNameBytes, "getType", sizeof("getType") - 1);
+    if (!result) {
+      if (0 != numberOfArguments) {
+        Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+        Shizu_State2_jump(state);
+      }
+      Shizu_Value_setInteger32(returnValue, self->type);
+      return;
+    }
+  }
+  if (numberOfMethodNameBytes == sizeof("getText") - 1) {
+    int8_t result;
+    idlib_byte_sequence_compare(&result, methodNameBytes, "getText", sizeof("getText") - 1);
+    if (!result) {
+      if (0 != numberOfArguments) {
+        Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+        Shizu_State2_jump(state);
+      }
+      if (self->text) {
+        Shizu_Value_setObject(returnValue, (Shizu_Object*)self->text);
+      } else {
+        Shizu_Value_setVoid(returnValue, Shizu_Void_Void);
+      }
+      return;
+    }
+  }
+  if (numberOfMethodNameBytes == sizeof("getNumberOfChildren") - 1) {
+    int8_t result;
+    idlib_byte_sequence_compare(&result, methodNameBytes, "getNumberOfChildren", sizeof("getNumberOfChildren") - 1);
+    if (!result) {
+      if (0 != numberOfArguments) {
+        Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+        Shizu_State2_jump(state);
+      }
+      Shizu_Value_setInteger32(returnValue, Shizu_List_getSize(state, self->children));
+      return;
+    }
+  }
+  if (numberOfMethodNameBytes == sizeof("getChildAt") - 1) {
+    int8_t result;
+    idlib_byte_sequence_compare(&result, methodNameBytes, "getChildAt", sizeof("getChildAt") - 1);
+    if (!result) {
+      if (1 != numberOfArguments) {
+        Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
+        Shizu_State2_jump(state);
+      }
+      Shizu_Integer32 index = Shizu_Runtime_Extensions_getInteger32Value(state, &(arguments[0]));
+      *returnValue = Shizu_List_getValue(state, self->children, index);
+      return;
+    }
+  }
+  Shizu_State2_setStatus(state, Shizu_Status_MethodNotFound);
+  Shizu_State2_jump(state);
+}
+
+static void
 Ast_visit
   (
     Shizu_State2* state,
@@ -92,6 +182,16 @@ Ast_visit
   if (self->text) {
     Shizu_Gc_visitObject(Shizu_State2_getState1(state), Shizu_State2_getGc(state), (Shizu_Object*)self->text);
   }
+}
+
+static void
+Ast_initializeDispatch
+  (
+    Shizu_State2* state,
+    Ast_Dispatch* self
+  )
+{
+  ((Shizu_Object_Dispatch*)self)->call = (void (*)(Shizu_State2*, Shizu_Object*, uint8_t const*, size_t, Shizu_Value*, Shizu_Integer32, Shizu_Value*)) & Ast_callImpl;
 }
 
 Ast*
