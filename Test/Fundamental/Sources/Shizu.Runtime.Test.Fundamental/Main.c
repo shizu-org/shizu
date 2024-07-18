@@ -167,26 +167,26 @@ test3
 {
   Shizu_ByteArray_create(state);
   {
-    Shizu_Value returnValue = Shizu_Value_Initializer();
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
     Shizu_Value_setType(&argumentValues[0], Shizu_Environment_getType(state));
     Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   }
   {
-    Shizu_Value returnValue = Shizu_Value_Initializer();
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
     Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
     Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   }
   {
-    Shizu_Value returnValue = Shizu_Value_Initializer();
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
     Shizu_Value_setType(&argumentValues[0], Shizu_Map_getType(state));
     Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   }
   {
-    Shizu_Value returnValue = Shizu_Value_Initializer();
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() };
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), Shizu_Value_InitializerVoid(Shizu_Void_Void), };
     Shizu_Value_setType(&argumentValues[0], Shizu_WeakReference_getType(state));
     Shizu_Value_setVoid(&argumentValues[1], Shizu_Void_Void);
     Shizu_Operations_create(state, &returnValue, 2, &argumentValues[0]);
@@ -234,8 +234,8 @@ test4
 {
 #define ADD(x,y,z) \
   { \
-    Shizu_Value returnValue = Shizu_Value_Initializer(); \
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() }; \
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void); \
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), Shizu_Value_InitializerVoid(Shizu_Void_Void), }; \
     Shizu_Value_setInteger32(&argumentValues[0], (x)); \
     Shizu_Value_setInteger32(&argumentValues[1], (y)); \
     Shizu_Operations_add_i32(state, &returnValue, 2, &argumentValues[0]); \
@@ -251,8 +251,8 @@ test4
 
 #define SUBTRACT(x,y,z) \
   { \
-    Shizu_Value returnValue = Shizu_Value_Initializer(); \
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() }; \
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void); \
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), Shizu_Value_InitializerVoid(Shizu_Void_Void), }; \
     Shizu_Value_setInteger32(&argumentValues[0], (x)); \
     Shizu_Value_setInteger32(&argumentValues[1], (y)); \
     Shizu_Operations_subtract_i32(state, &returnValue, 2, &argumentValues[0]); \
@@ -268,8 +268,8 @@ test4
 
 #define MULTIPLY(x,y,z) \
   { \
-    Shizu_Value returnValue = Shizu_Value_Initializer(); \
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() }; \
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void); \
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), Shizu_Value_InitializerVoid(Shizu_Void_Void), }; \
     Shizu_Value_setInteger32(&argumentValues[0], (x)); \
     Shizu_Value_setInteger32(&argumentValues[1], (y)); \
     Shizu_Operations_multiply_i32(state, &returnValue, 2, &argumentValues[0]); \
@@ -285,8 +285,8 @@ test4
 
 #define DIVIDE(x,y,z) \
   { \
-    Shizu_Value returnValue = Shizu_Value_Initializer(); \
-    Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() }; \
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void); \
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), Shizu_Value_InitializerVoid(Shizu_Void_Void), }; \
     Shizu_Value_setInteger32(&argumentValues[0], (x)); \
     Shizu_Value_setInteger32(&argumentValues[1], (y)); \
     Shizu_Operations_divide_i32(state, &returnValue, 2, &argumentValues[0]); \
@@ -337,7 +337,7 @@ test4
   // c) if x in X then add -x. Note that -x cannot overflow as |MIN|=|MAX|+1.
   Shizu_List* even = Shizu_Runtime_Extensions_createList(state);
   {
-    Shizu_Value v = Shizu_Value_Initializer();
+    Shizu_Value v = Shizu_Value_InitializerVoid(Shizu_Void_Void);
     
     Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 1.00f);
     ensureEven(state, &v);
@@ -371,7 +371,7 @@ test4
   }
   Shizu_List* odd = Shizu_Runtime_Extensions_createList(state);
   {
-    Shizu_Value v = Shizu_Value_Initializer();
+    Shizu_Value v = Shizu_Value_InitializerVoid(Shizu_Void_Void);
 
     Shizu_Value_setInteger32(&v, Shizu_Integer32_Maximum * 1.00f);
     ensureOdd(state, &v);

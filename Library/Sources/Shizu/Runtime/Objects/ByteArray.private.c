@@ -239,14 +239,14 @@ Shizu_ByteArray_create
   Shizu_Type* TYPE = Shizu_ByteArray_getType(state);
   Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
   Shizu_ByteArray* SELF = (Shizu_ByteArray*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
   Shizu_Value_setObject(&argumentValues[0], (Shizu_Object*)SELF);
   DESCRIPTOR->construct(state, &returnValue, 1, &(argumentValues[0]));
   return SELF;
 }
 
-static Shizu_Value const IndexOutOfBounds = { .tag = Shizu_Value_Tag_Void, .voidValue = Shizu_Void_Void };
+static Shizu_Value const IndexOutOfBounds = Shizu_Value_InitializerVoid(Shizu_Void_Void);
 
 Shizu_Value
 Shizu_ByteArray_getValue

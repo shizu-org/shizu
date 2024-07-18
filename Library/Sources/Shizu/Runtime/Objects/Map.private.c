@@ -97,7 +97,7 @@ optimize
       Shizu_Integer32 newCapacity = self->capacity * 2;
       Shizu_Map_Node** oldBuckets = self->buckets;
       Shizu_Map_Node** newBuckets = Shizu_State1_allocate(Shizu_State2_getState1(state), (size_t)newCapacity * sizeof(Shizu_Map_Node*));
-      if (newBuckets) {
+      if (!newBuckets) {
         Shizu_State1_setStatus(Shizu_State2_getState1(state), Shizu_Status_AllocationFailed);
         Shizu_State1_jump(Shizu_State2_getState1(state));
       }
@@ -363,7 +363,7 @@ Shizu_Map_get
     Shizu_Value* key
   )
 {
-  Shizu_Value result = Shizu_Value_Initializer();
+  Shizu_Value result = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   if (Shizu_Value_isVoid(key)) {
     return result;
   }

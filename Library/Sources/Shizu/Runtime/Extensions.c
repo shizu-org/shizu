@@ -8,8 +8,8 @@ Shizu_Runtime_Extensions_createList
     Shizu_State2* state
   )
 {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
   Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
   Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   return (Shizu_List*)Shizu_Value_getObject(&returnValue);
@@ -21,8 +21,8 @@ Shizu_Runtime_Extensions_createMap
     Shizu_State2* state
   )
 {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void),};
   Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
   Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   return (Shizu_Map*)Shizu_Value_getObject(&returnValue);
@@ -34,8 +34,8 @@ Shizu_Runtime_Extensions_createEnvironment
     Shizu_State2* state
   )
 {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
   Shizu_Value_setType(&argumentValues[0], Shizu_Environment_getType(state));
   Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   return (Shizu_Environment*)Shizu_Value_getObject(&returnValue);
@@ -113,8 +113,8 @@ Shizu_Runtime_Extensions_createWeakReference
     Shizu_Object* reference
   )
 {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer() };
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), Shizu_Value_InitializerVoid(Shizu_Void_Void), };
   Shizu_Value_setType(&argumentValues[0], Shizu_WeakReference_getType(state));
   if (reference) {
     Shizu_Value_setObject(&argumentValues[1], reference);

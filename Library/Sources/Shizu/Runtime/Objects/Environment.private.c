@@ -222,7 +222,7 @@ Shizu_Environment_set
 {
   size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)name);
   size_t hashIndex = hashValue % self->capacity;
-  Shizu_Value nameValue = Shizu_Value_Initializer();
+  Shizu_Value nameValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value_setObject(&nameValue, (Shizu_Object*)name);
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
     if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->name, &nameValue)) {
@@ -253,7 +253,7 @@ Shizu_Environment_get
 {
   size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)name);
   size_t hashIndex = hashValue % self->capacity;
-  Shizu_Value nameValue = Shizu_Value_Initializer();
+  Shizu_Value nameValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value_setObject(&nameValue, (Shizu_Object*)name);
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
     if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->name, &nameValue)) {
@@ -407,7 +407,7 @@ Shizu_Environment_isDefined
 {
   size_t hashValue = Shizu_Object_getHashValue(state, (Shizu_Object*)name);
   size_t hashIndex = hashValue % self->capacity;
-  Shizu_Value nameValue = Shizu_Value_Initializer();
+  Shizu_Value nameValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value_setObject(&nameValue, (Shizu_Object*)name);
   for (Shizu_Environment_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
     if (Shizu_Object_isEqualTo(state, (Shizu_Object*)node->name, &nameValue)) {

@@ -125,7 +125,7 @@ Shizu_Operations_create
   Shizu_debugAssert(NULL != descriptor);
   Shizu_debugAssert(NULL != descriptor->construct);
   Shizu_Object* self = (Shizu_Object*)Shizu_Gc_allocateObject(state, descriptor->size);
-  Shizu_Value returnValue_ = Shizu_Value_Initializer();
+  Shizu_Value returnValue_ = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value* argumentValues_ = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Shizu_Value) * numberOfArgumentValues);
   if (!argumentValues_) {
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
