@@ -220,7 +220,7 @@ Parser_parseValueImpl
           Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
           Shizu_State2_jump(state);
         }
-        Ast* keyAst = Ast_create(state, AstType_Name, NULL);
+        Ast* keyAst = Ast_create(state, AstType_Name, getTokenText(state, self));
         step(state, self);
         if (TokenType_Colon != getTokenType(state, self))  {
           Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
