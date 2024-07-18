@@ -160,7 +160,7 @@ struct Shizu_Value {
 
 
 
-#define Shizu_Value_InitializerBoolean(VALUE) { .tag = Shizu_Value_Tag_Boolean, .booleanValue = VALUE }
+#define Shizu_Value_InitializerBoolean(VALUE) { .tag = Shizu_Value_Tag_Boolean, .booleanValue = (VALUE) }
 
 Shizu_Boolean
 Shizu_Value_getBoolean
@@ -183,7 +183,7 @@ Shizu_Value_setBoolean
 
 
 
-#define Shizu_Value_InitializerCxxFunction(VALUE) { .tag = Shizu_Value_Tag_CxxFunction, .cxxFunctionValue = VALUE }
+#define Shizu_Value_InitializerCxxFunction(VALUE) { .tag = Shizu_Value_Tag_CxxFunction, .cxxFunctionValue = (VALUE) }
 
 Shizu_CxxFunction*
 Shizu_Value_getCxxFunction
@@ -204,7 +204,7 @@ Shizu_Value_setCxxFunction
     Shizu_CxxFunction* cxxFunctionValue
   );
 
-#define Shizu_Value_InitializerFloat32(VALUE) { .tag = Shizu_Value_Tag_Float32, .float32Value = VALUE }
+#define Shizu_Value_InitializerFloat32(VALUE) { .tag = Shizu_Value_Tag_Float32, .float32Value = (VALUE) }
 
 
 
@@ -231,7 +231,7 @@ Shizu_Value_setFloat32
 
 #if 1 == Shizu_Configuration_WithFloat64
 
-#define Shizu_Value_InitializerFloat64(VALUE) { .tag = Shizu_Value_Tag_Float64, .floa64Value = VALUE }
+#define Shizu_Value_InitializerFloat64(VALUE) { .tag = Shizu_Value_Tag_Float64, .floa64Value = (VALUE) }
 
 Shizu_Float64
 Shizu_Value_getFloat64
@@ -256,7 +256,7 @@ Shizu_Value_setFloat64
 
 
 
-#define Shizu_Value_InitializerInteger32(VALUE) { .tag = Shizu_Value_Tag_Integer32, .integer32Value = VALUE }
+#define Shizu_Value_InitializerInteger32(VALUE) { .tag = Shizu_Value_Tag_Integer32, .integer32Value = (VALUE) }
 
 Shizu_Integer32
 Shizu_Value_getInteger32
@@ -281,7 +281,7 @@ Shizu_Value_setInteger32
 
 #if 1 == Shizu_Configuration_WithInteger64
 
-#define Shizu_Value_InitializerInteger64(VALUE) { .tag = Shizu_Value_Tag_Integer64, .integer64Value = VALUE }
+#define Shizu_Value_InitializerInteger64(VALUE) { .tag = Shizu_Value_Tag_Integer64, .integer64Value = (VALUE) }
 
 Shizu_Integer64
 Shizu_Value_getInteger64
@@ -306,7 +306,7 @@ Shizu_Value_setInteger64
 
 
 
-#define Shizu_Value_InitializerObject(VALUE) { .tag = Shizu_Value_Tag_Object, .objectValue = VALUE }
+#define Shizu_Value_InitializerObject(VALUE) { .tag = Shizu_Value_Tag_Object, .objectValue = (Shizu_Object*)(VALUE) }
 
 Shizu_Object*
 Shizu_Value_getObject
@@ -329,7 +329,7 @@ Shizu_Value_setObject
 
 
 
-#define Shizu_Value_InitializerType(VALUE) { .tag = Shizu_Value_Tag_Type, .typeValue = VALUE }
+#define Shizu_Value_InitializerType(VALUE) { .tag = Shizu_Value_Tag_Type, .typeValue = (VALUE) }
 
 void
 Shizu_Value_setType
@@ -352,7 +352,7 @@ Shizu_Value_isType
 
 
 
-#define Shizu_Value_InitializerVoid(VALUE) { .tag = Shizu_Value_Tag_Void, .voidValue = VALUE }
+#define Shizu_Value_InitializerVoid(VALUE) { .tag = Shizu_Value_Tag_Void, .voidValue = (VALUE) }
 
 Shizu_Void
 Shizu_Value_getVoid
@@ -372,6 +372,8 @@ Shizu_Value_setVoid
     Shizu_Value* self,
     Shizu_Void voidValue
   );
+
+
 
 Shizu_Boolean
 Shizu_Value_isEqualTo
