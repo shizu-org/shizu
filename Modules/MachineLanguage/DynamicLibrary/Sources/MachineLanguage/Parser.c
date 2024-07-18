@@ -188,8 +188,8 @@ Parser_create
     Shizu_State2* state
   )
 {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer() };
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
   Shizu_Value_setType(&argumentValues[0], Parser_getType(state));
   Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   return (Parser*)Shizu_Value_getObject(&returnValue);

@@ -202,10 +202,10 @@ Ast_create
     Shizu_String* text
   )
 {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(), Shizu_Value_Initializer(), Shizu_Value_Initializer() };
-  Shizu_Value_setType(&argumentValues[0], Ast_getType(state));
-  Shizu_Value_setInteger32(&argumentValues[1], type);
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerType(Ast_getType(state)), 
+                                   Shizu_Value_InitializerInteger32(type),
+                                   Shizu_Value_InitializerVoid(Shizu_Void_Void) };
   if (text) {
     Shizu_Value_setObject(&argumentValues[2], (Shizu_Object*)text);
   } else {

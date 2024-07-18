@@ -91,10 +91,10 @@ Token_create
     Shizu_String* text
   )
 {
-  Shizu_Value returnValue = Shizu_Value_Initializer();
-  Shizu_Value argumentValues[] = { Shizu_Value_Initializer(),
-                                   Shizu_Value_Initializer(),
-                                   Shizu_Value_Initializer() };
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void),
+                                   Shizu_Value_InitializerVoid(Shizu_Void_Void),
+                                   Shizu_Value_InitializerVoid(Shizu_Void_Void), };
   Shizu_Value_setType(&argumentValues[0], Token_getType(state));
   Shizu_Value_setInteger32(&argumentValues[1], type);
   if (text) {
