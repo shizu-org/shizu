@@ -56,7 +56,7 @@ Shizu_String_isEqualToImpl
   (
     Shizu_State2* state,
     Shizu_String* self,
-    Shizu_Object* other
+    Shizu_Value const* other
   );
 
 static void
@@ -89,7 +89,7 @@ Shizu_String_finalize
   )
 {
   if (self->bytes) {
-    free(self->bytes);
+    Shizu_State1_deallocate(Shizu_State2_getState1(state), self->bytes);
     self->bytes = NULL;
   }
 }
@@ -109,12 +109,16 @@ Shizu_String_isEqualToImpl
   (
     Shizu_State2* state,
     Shizu_String* self,
-    Shizu_Object* other
+    Shizu_Value const* other
   )
 {
-  if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_String_getType(state), Shizu_Object_getObjectType(state, other))) {
+  if (!Shizu_Value_isObject(other)) {
+    return false;
+  }
+  Shizu_Object* otherObject = Shizu_Value_getObject(other);
+  if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Object_getObjectType(state, otherObject), Shizu_String_getType(state))) {
     Shizu_String* x = self;
-    Shizu_String* y = (Shizu_String*)other;
+    Shizu_String* y = (Shizu_String*)otherObject;
     if (x->hashValue == y->hashValue && x->numberOfBytes == y->numberOfBytes) {
       return !memcmp(x->bytes, y->bytes, x->numberOfBytes);
     } else {
@@ -133,7 +137,7 @@ Shizu_String_initializeDispatch
   )
 {
   ((Shizu_Object_Dispatch*)self)->getHashValue = (Shizu_Integer32 (*)(Shizu_State2*, Shizu_Object*)) & Shizu_String_getHashValueImpl;
-  ((Shizu_Object_Dispatch*)self)->isEqualTo = (Shizu_Boolean (*)(Shizu_State2*, Shizu_Object*, Shizu_Object*)) & Shizu_String_isEqualToImpl;
+  ((Shizu_Object_Dispatch*)self)->isEqualTo = (Shizu_Boolean (*)(Shizu_State2*, Shizu_Object*, Shizu_Value const*)) & Shizu_String_isEqualToImpl;
 }
 
 void

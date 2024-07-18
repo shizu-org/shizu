@@ -25,8 +25,6 @@
 #include "Shizu/Runtime/Configure.h"
 #include "Shizu/Runtime/Value.h"
 
-// bool
-#include <stdbool.h>
 // size_t
 #include <stddef.h>
 // strlen
@@ -128,13 +126,97 @@ struct Shizu_EnumertionTypeDescriptor {
   size_t size;
 };
 
+/// @since
+/// 1.0
+/// @remarks
+/// Stable interface.
+/// @brief
+/// Get a type by its name.
+/// @details
+/// Search for a type of the name @code{(bytes, numberOfBytes)}.
+/// @param state
+/// A pointer to a Shizu_State1 object.
+/// @param self
+/// A pointer to the Shizu_Types object.
+/// @param bytes
+/// A pointer to an array of @a numberOfBytes Bytes.
+/// @param numberOfBytes
+/// The number of Bytes in the array pointed to by @a bytes.
+/// @return
+/// A pointer to the type if it was found. The null pointer otherwise.
+Shizu_Type*
+Shizu_Types_getTypeByName
+  (
+    Shizu_State1* state,
+    Shizu_Types* self,
+    uint8_t const* bytes,
+    Shizu_Integer32 numberOfBytes
+  );
+
+/// @since
+/// 1.0
+/// @remarks
+/// Stable interface.
+/// @brief
+/// Get the name of a type.
+/// @param state
+/// A pointer to a Shizu_State1 object.
+/// @param self
+/// A pointer to the Shizu_Types object.
+/// @param x
+/// A pointer to the type.
+/// @param [out] bytes
+/// A pointer to a <code>uint8_t*</code> variable.
+/// @param [out] numberOfBytes
+/// A pointer to a <code>size_t</code> variable.
+/// @post
+/// <code>*bytes</code> was assigned a pointer to an array of Bytes.
+/// <code>*numberOfBytes</code> was assigned the number of Bytes in the array assigned to <code>*bytes</code>.
+/// The array is valid for the lifetime of the type object.
+void
+Shizu_Types_getTypeName
+  (
+    Shizu_State1* state,
+    Shizu_Types* self,
+    Shizu_Type* x,
+    uint8_t const** bytes,
+    Shizu_Integer32* numberOfBytes
+  );
+
+/// @since
+/// 1.0
+/// @remarks
+/// Stable interface.
+/// @brief
+/// Get the hash value of a type.
+/// @param state
+/// A pointer to a Shizu_State1 object.
+/// @param self
+/// A pointer to the Shizu_Types object.
+/// @param x
+/// A pointer to the type.
+/// @return
+/// The hash value of the type.
+Shizu_Integer32
+Shizu_Types_getTypeHash
+  (
+    Shizu_State1* state,
+    Shizu_Types* self,
+    Shizu_Type* x
+  );
+
 /// @since 1.0
 /// @remarks Stable interface.
 /// @brief
 /// Get if a type is an object type.
-/// @param x The type.
-/// @return @a true if @a x is an object type. @a false otherwise.
-/// @remarks Stable API.
+/// @param state
+/// A pointer to a Shizu_State1 object.
+/// @param self
+/// A pointer to the Shizu_Types object.
+/// @param x
+/// A pointer to the type.
+/// @return
+/// @a true if @a x is an object type. @a false otherwise.
 bool
 Shizu_Types_isObjectType
   (
@@ -252,16 +334,6 @@ Shizu_Types_getParentType
     Shizu_Type* x
   );
 
-void
-Shizu_Types_getTypeName
-  (
-    Shizu_State1* state,
-    Shizu_Types* self,
-    Shizu_Type* x,
-    char const** bytes,
-    size_t* numberOfBytes
-  );
-
 /// @since 1.0
 /// @brief Get the dispatch of a type.
 /// @param x The type.
@@ -325,10 +397,15 @@ Shizu_Types_getDispatch
       Shizu_State2* state \
     ) \
   { \
-    Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), MlName, strlen(MlName)); \
+    size_t n = strlen(MlName); \
+    if (n > Shizu_Integer32_Maximum) { \
+      Shizu_State2_setStatus(state, Shizu_Status_ArgumentValueInvalid); \
+      Shizu_State2_jump(state); \
+    } \
+    Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), MlName, (Shizu_Integer32)n); \
     if (!type) { \
       Shizu_Dl* dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &CxxName##_getType); \
-      type = Shizu_Types_createObjectType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), MlName, strlen(MlName), ParentName##_getType(state), dl, &CxxName##_typeDestroyed, &CxxName##_Type); \
+      type = Shizu_Types_createObjectType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), MlName, (Shizu_Integer32)n, ParentName##_getType(state), dl, &CxxName##_typeDestroyed, &CxxName##_Type); \
       if (dl) { \
         Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl); \
       } \
@@ -336,22 +413,47 @@ Shizu_Types_getDispatch
     return type; \
   }
 
-/// @since 1.0
-/// @brief Get a type by its name.
-/// @details Search for a type of the name @code{(bytes, numberOfBytes)}.
-/// @param state1 A pointer to a Shizu_State1 object.
-/// @param self A pointer to the Shizu_Types object.
-/// @param bytes A pointer to an array of @a numberOfBytes Bytes.
-/// @param numberOfBytes The number of Bytes in the array pointed to by @a bytes.
-/// @return A pointer to the type if it was found. The null pointer otherwise.
-Shizu_Type*
-Shizu_Types_getTypeByName
-  (
-    Shizu_State1* state1,
-    Shizu_Types* self,
-    char const* bytes,
-    size_t numberOfBytes
-  );
+#define Shizu_declarePrimitiveType(Name) \
+  Shizu_Type* \
+  Name##_getType \
+    ( \
+      Shizu_State2* state \
+    ); 
+
+/// @remarks
+/// The DL a type is created by must not be unloaded as long as the type exists.
+/// For a type T defined in a DL we store in T.dl a reference to the DL in the type object.
+/// If T is defined in the executable we store in T.dl the null reference.
+#define Shizu_definePrimitiveType(Name) \
+  static void \
+  Name##_typeDestroyed \
+    ( \
+      Shizu_State1* state1 \
+    ); \
+  \
+  static void \
+  Name##_typeDestroyed \
+    ( \
+      Shizu_State1* state1 \
+    ) \
+  {/*Intentionally empty.*/} \
+  \
+  Shizu_Type* \
+  Name##_getType \
+    ( \
+      Shizu_State2* state \
+    ) \
+  { \
+    Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1); \
+    if (!type) { \
+      Shizu_Dl* dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &Name##_getType); \
+      type = Shizu_Types_createPrimitiveType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1, dl, &Name##_typeDestroyed, &Name##_Type); \
+      if (dl) { \
+        Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl); \
+      } \
+    } \
+    return type; \
+  }
 
 /// @since 1.0
 /// @brief Create an object type.
@@ -424,5 +526,29 @@ Shizu_Types_createPrimitiveType
     Shizu_OnTypeDestroyedCallback* typeDestroyed,
     Shizu_PrimitiveTypeDescriptor const* typeDescriptor
   );
+
+Shizu_declarePrimitiveType(Shizu_Boolean);
+
+Shizu_declarePrimitiveType(Shizu_CxxFunction);
+
+Shizu_declarePrimitiveType(Shizu_Float32);
+
+#if 1 == Shizu_Configuration_WithFloat64
+
+Shizu_declarePrimitiveType(Shizu_Float64);
+
+#endif
+
+Shizu_declarePrimitiveType(Shizu_Integer32);
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+Shizu_declarePrimitiveType(Shizu_Integer64);
+
+#endif
+
+Shizu_declarePrimitiveType(Shizu_Type);
+
+Shizu_declarePrimitiveType(Shizu_Void);
 
 #endif // SHIZU_RUNTIME_TYPE_H_INCLUDED

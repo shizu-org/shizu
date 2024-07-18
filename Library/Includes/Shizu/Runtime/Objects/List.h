@@ -43,6 +43,10 @@
 /// @endcode
 Shizu_declareObjectType(Shizu_List);
 
+/// @since 1.0
+/// @brief Clear this list.
+/// @param state A pointer to the Shizu_State2 object.
+/// @param self A pointer to this Shizu_List object.
 void
 Shizu_List_clear
   (
@@ -59,7 +63,10 @@ Shizu_List_getValue
   );
 
 /// @since 1.0
-/// @brief Get the size of this Shizu_List object.
+/// @brief Get the size of this list.
+/// @param state A pointer to the Shizu_State2 object.
+/// @param self A pointer to this Shizu_List object.
+/// @return The size of this Shizu_List object.
 Shizu_Integer32
 Shizu_List_getSize
   (

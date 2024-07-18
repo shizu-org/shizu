@@ -163,7 +163,7 @@ Shizu_Environment_get
   (
     Shizu_State2* state,
     Shizu_Environment* self,
-    Shizu_String* key
+    Shizu_String* name
   );
 
 /* Extension method. */
@@ -261,7 +261,7 @@ Shizu_Environment_isDefined
   (
     Shizu_State2* state,
     Shizu_Environment* self,
-    Shizu_String* key
+    Shizu_String* name
   );
 
 #endif // SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_H_INCLUDED

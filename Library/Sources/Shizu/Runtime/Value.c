@@ -23,125 +23,40 @@
 #include "Shizu/Runtime/Value.h"
 
 #include "Shizu/Runtime/State2.h"
+#include "Shizu/Runtime/Object.h"
 #include "Shizu/Runtime/Type.h"
 
-// The DL a type is created by must not be unloaded as long as the type exists.
-// For a type T defined in a DL we store in T.dl a reference to the DL in the type object.
-// If T is defined in the executable we store in T.dl the null reference.
-#define Shizu_definePrimitiveType(Name) \
-  static void \
-  Name##_typeDestroyed \
-    ( \
-      Shizu_State1* state1 \
-    ); \
-  \
-  static void \
-  Name##_typeDestroyed \
-    ( \
-      Shizu_State1* state1 \
-    ) \
-  {/*Intentionally empty.*/} \
-  \
-  Shizu_Type* \
-  Name##_getType \
-    ( \
-      Shizu_State2* state \
-    ) \
-  { \
-    Shizu_Type* type = Shizu_Types_getTypeByName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1); \
-    if (!type) { \
-      Shizu_Dl* dl = Shizu_State1_getDlByAdr(Shizu_State2_getState1(state), &Name##_getType); \
-      type = Shizu_Types_createPrimitiveType(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), #Name, sizeof(#Name) - 1, dl, &Name##_typeDestroyed, &Name##_Type); \
-      if (dl) { \
-        Shizu_State1_unrefDl(Shizu_State2_getState1(state), dl); \
-      } \
-    } \
-    return type; \
+// isnan
+#include <math.h>
+
+
+
+// @return A hash value within the bounds of [Shizu_Integer32_Minimum, Shizu_Integer32_Maximum].
+static Shizu_Integer32
+hashBytes
+  (
+    Shizu_State2* state,
+    uint8_t const* p,
+    size_t n
+  );
+
+static Shizu_Integer32
+hashBytes
+  (
+    Shizu_State2* state,
+    uint8_t const* p,
+    size_t n
+  )
+{
+  Shizu_debugAssert(NULL != state);
+  Shizu_debugAssert(NULL != p);
+  Shizu_Integer32 h = n;
+  Shizu_Integer32 step = 1;
+  for (; n >= step; n -= step) {
+    h = h * 37 + (Shizu_Integer32)p[n];
   }
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_Boolean_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_Boolean),
-};
-
-Shizu_definePrimitiveType(Shizu_Boolean);
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_CxxFunction_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_CxxFunction*),
-};
-
-Shizu_definePrimitiveType(Shizu_CxxFunction);
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_Float32_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_Float32),
-};
-
-Shizu_definePrimitiveType(Shizu_Float32);
-
-#if 1 == Shizu_Configuration_WithFloat64
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_Float64_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_Float64),
-};
-
-Shizu_definePrimitiveType(Shizu_Float64);
-
-#endif
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_Integer32_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_Integer32),
-};
-
-Shizu_definePrimitiveType(Shizu_Integer32);
-
-#if 1 == Shizu_Configuration_WithInteger64
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_Integer64_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_Integer64),
-};
-
-Shizu_definePrimitiveType(Shizu_Integer64);
-
-#endif
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_Type_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_Type*),
-};
-
-Shizu_definePrimitiveType(Shizu_Type);
-
-static Shizu_PrimitiveTypeDescriptor const Shizu_Void_Type = {
-  .postCreateType = NULL,
-  .preDestroyType = NULL,
-  .visitType = NULL,
-  .size = sizeof(Shizu_Void),
-};
-
-Shizu_definePrimitiveType(Shizu_Void);
-
-
-
-#undef Shizu_definePrimitiveType
+  return h;
+}
 
 Shizu_Boolean
 Shizu_Value_getBoolean
@@ -440,4 +355,117 @@ Shizu_Value_setVoid
   Shizu_debugAssert(NULL != self);
   self->voidValue = voidValue;
   self->tag = Shizu_Value_Tag_Void;
+}
+
+Shizu_Boolean
+Shizu_Value_isEqualTo
+  (
+    Shizu_State2* state,
+    Shizu_Value const* x,
+    Shizu_Value const* y
+  )
+{
+  if (Shizu_Value_Tag_Object == x->tag) {
+    return Shizu_Object_isEqualTo(state, Shizu_Value_getObject(x), y);
+  }
+  if (x->tag != y->tag) {
+    return Shizu_Boolean_False;
+  }
+  switch (x->tag) {
+    case Shizu_Value_Tag_Boolean: {
+      return x->booleanValue == y->booleanValue;
+    } break;
+    case Shizu_Value_Tag_CxxFunction: {
+      return x->cxxFunctionValue == y->cxxFunctionValue;
+    } break;
+    case Shizu_Value_Tag_Float32: {
+      return x->float32Value == y->float32Value;
+    } break;
+    case Shizu_Value_Tag_Float64: {
+      return x->float64Value == y->float64Value;
+    } break;
+    case Shizu_Value_Tag_Integer32: {
+      return x->integer32Value == y->integer32Value;
+    } break;
+    case Shizu_Value_Tag_Integer64: {
+      return x->integer64Value == y->integer64Value;
+    } break;
+    case Shizu_Value_Tag_Type: {
+      return x->typeValue == y->typeValue;
+    } break;
+    case Shizu_Value_Tag_Void: {
+      return Shizu_Boolean_True;
+    } break;
+    case Shizu_Value_Tag_Object:
+    default: {
+      Shizu_unreachableCodeReached(__FILE__, __LINE__);
+    } break;
+  };
+}
+
+Shizu_Integer32
+Shizu_Value_getHashValue
+  (
+    Shizu_State2* state,
+    Shizu_Value const* x
+  )
+{
+  switch (x->tag) {
+    case Shizu_Value_Tag_Boolean: {
+      if (x->booleanValue) {
+        return 1231;
+      } else {
+        return 1237;
+      }
+    } break;
+    case Shizu_Value_Tag_CxxFunction: {
+      return (intptr_t)(uintptr_t)x->cxxFunctionValue;
+    } break;
+    case Shizu_Value_Tag_Float32: {
+      Shizu_Float32 y = x->float32Value;
+      if (0.0f != y) {
+        if (isnan(y)) {
+          // Any nan maps to -3.
+          return -3;
+        } else {
+          return hashBytes(state, (uint8_t const*)&y, sizeof(y));
+        }
+      } else {
+        // Both -0 and +0 map to 0.
+        return 0;
+      }
+    } break;
+    case Shizu_Value_Tag_Float64: {
+      Shizu_Float64 y = x->float64Value;
+      if (0.0f != y) {
+        if (isnan(y)) {
+          // Any nan maps to -3.
+          return -3;
+        } else {
+          return hashBytes(state, (uint8_t const*)&y, sizeof(y));
+        }
+      } else {
+        // Both -0 and +0 map to 0.
+        return 0;
+      }
+    } break;
+    case Shizu_Value_Tag_Integer32: {
+      return (Shizu_Integer32)x->integer32Value;
+    } break;
+    case Shizu_Value_Tag_Integer64: {
+      return (Shizu_Integer32)x->integer64Value;
+    } break;
+    case Shizu_Value_Tag_Object: {
+      return Shizu_Object_getHashValue(state, x->objectValue);
+    } break;
+    case Shizu_Value_Tag_Type: {
+      return Shizu_Types_getTypeHash(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), x->typeValue);
+    } break;
+    case Shizu_Value_Tag_Void: {
+      return 0;
+    } break;
+    default: {
+      Shizu_unreachableCodeReached(__FILE__, __LINE__);
+    } break;
+  };
 }

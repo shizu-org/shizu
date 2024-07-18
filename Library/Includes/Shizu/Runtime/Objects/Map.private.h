@@ -38,6 +38,7 @@ struct Shizu_Map_Node {
   Shizu_Map_Node* next;
   Shizu_Value key;
   Shizu_Value value;
+  Shizu_Integer32 hashValue;
 };
 
 struct Shizu_Map_Dispatch {

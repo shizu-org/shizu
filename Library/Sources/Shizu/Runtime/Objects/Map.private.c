@@ -26,19 +26,17 @@
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
 
-// memcmp, memcpy
-#include <string.h>
-
-// fprintf, stderr
-#include <stdio.h>
-
-// exit, EXIT_FAILURE
-#include <stdlib.h>
-
 // INT_MAX, SIZE_MAX
 #include <limits.h>
 
 #include "idlib/bit_scan.h"
+
+static const char* namedMemoryName = "Shizu.Maps.NamedMemory";
+
+typedef struct Maps {
+  Shizu_Integer32 minimumCapacity;
+  Shizu_Integer32 maximumCapacity;
+} Maps;
 
 static void
 Shizu_Map_postCreateType
@@ -75,6 +73,57 @@ Shizu_Map_constructImpl
     Shizu_Value* argumentValues
   );
 
+static void
+optimize
+  (
+    Shizu_State2* state,
+    Shizu_Map* self
+  )
+{
+  float load = (float)self->size / (float)self->capacity;
+  if (load > 0.75f) {
+    Shizu_JumpTarget jumpTarget;
+    Shizu_State2_pushJumpTarget(state, &jumpTarget);
+    if (!setjmp(jumpTarget.environment)) {
+      Maps* g = NULL;
+      if (Shizu_State1_getNamedStorage(Shizu_State2_getState1(state), namedMemoryName, (void**)&g)) {
+        Shizu_State1_setStatus(Shizu_State2_getState1(state), Shizu_Status_AllocationFailed);
+        Shizu_State1_jump(Shizu_State2_getState1(state));
+      }
+      if (self->capacity == g->minimumCapacity) {
+        return;
+      }
+      Shizu_Integer32 oldCapacity = self->capacity;
+      Shizu_Integer32 newCapacity = self->capacity * 2;
+      Shizu_Map_Node** oldBuckets = self->buckets;
+      Shizu_Map_Node** newBuckets = Shizu_State1_allocate(Shizu_State2_getState1(state), (size_t)newCapacity * sizeof(Shizu_Map_Node*));
+      if (newBuckets) {
+        Shizu_State1_setStatus(Shizu_State2_getState1(state), Shizu_Status_AllocationFailed);
+        Shizu_State1_jump(Shizu_State2_getState1(state));
+      }
+      for (Shizu_Integer32 i = 0, n = newCapacity; i < n; ++i) {
+        newBuckets[i] = NULL;
+      }
+      for (Shizu_Integer32 i = 0, n = oldCapacity; i  < n; ++i) {
+        while (oldBuckets[i]){
+          Shizu_Map_Node* node = oldBuckets[i];
+          oldBuckets[i] = node->next;
+          Shizu_Integer32 hashValue = node->hashValue;
+          Shizu_Integer32 hashIndex = (hashValue & 0x7FFFFFFF) % self->capacity;
+          node->next = newBuckets[hashIndex];
+          newBuckets[hashIndex] = node;
+        }
+      }
+      Shizu_State1_deallocate(Shizu_State2_getState1(state), oldBuckets);
+      self->capacity = newCapacity;
+      self->buckets = newBuckets;
+      Shizu_State2_popJumpTarget(state);
+    } else {
+      Shizu_State2_popJumpTarget(state);
+    }
+  }
+}
+
 static Shizu_ObjectTypeDescriptor const Shizu_Map_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*) & Shizu_Map_postCreateType,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*) & Shizu_Map_preDestroyType,
@@ -87,13 +136,6 @@ static Shizu_ObjectTypeDescriptor const Shizu_Map_Type = {
   .dispatchInitialize = NULL,
   .dispatchUninitialize = NULL,
 };
-
-static const char* namedMemoryName = "Shizu.Maps.NamedMemory";
-
-typedef struct Maps {
-  size_t minimumCapacity;
-  size_t maximumCapacity;
-} Maps;
 
 static void
 Shizu_Map_postCreateType
@@ -111,16 +153,52 @@ Shizu_Map_postCreateType
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
-  g->minimumCapacity = 8;
-  g->maximumCapacity = SIZE_MAX / sizeof(Shizu_Map_Node*);
-  if (g->maximumCapacity > Shizu_Integer32_Maximum) {
-    g->maximumCapacity = Shizu_Integer32_Maximum;
+  size_t leadingZeroes;
+  size_t shift;
+  size_t t;
+  t = idlib_count_leading_zeroes_u32(0);
+  if (t != 32) {
+    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
-  if (g->maximumCapacity > INT_MAX) {
-    g->maximumCapacity = INT_MAX;
+  t = idlib_count_leading_zeroes_u32((uint32_t)Shizu_Integer32_Maximum);
+  if (t != 1) {
+    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
-  if (g->maximumCapacity > SIZE_MAX) {
-    g->maximumCapacity = SIZE_MAX;
+  // Determine minimum capacity.
+  t = 8;
+  if (t > Shizu_Integer32_Maximum) {
+    t = Shizu_Integer32_Maximum;
+  }
+  if (t > INT_MAX) {
+    t = INT_MAX;
+  }
+  g->minimumCapacity = t;
+  leadingZeroes = idlib_count_leading_zeroes_u32((uint32_t)g->minimumCapacity);
+  shift = 32 - 1 - leadingZeroes;
+  t = ((size_t)1 << shift);
+  g->minimumCapacity = t;
+  // Determine maximum capacity.
+  t = SIZE_MAX / sizeof(Shizu_Map_Node*);
+  if (t > Shizu_Integer32_Maximum) {
+    t = Shizu_Integer32_Maximum;
+  }
+  if (t > INT_MAX) {
+    t = INT_MAX;
+  }
+  g->maximumCapacity = t;
+  leadingZeroes = idlib_count_leading_zeroes_u32((uint32_t)g->maximumCapacity);
+  shift = 32 - 1 - leadingZeroes;
+  t = ((size_t)1 << shift);
+  g->maximumCapacity = t;
+  //
+  if (g->minimumCapacity > g->maximumCapacity) {
+    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
+    Shizu_State1_setStatus(state1, 1);
+    Shizu_State1_jump(state1);
   }
 }
 
@@ -162,10 +240,10 @@ Shizu_Map_finalize
     while (*bucket) {
       Shizu_Map_Node* node = *bucket;
       *bucket = node->next;
-      free(node);
+      Shizu_State1_deallocate(Shizu_State2_getState1(state), node);
     }
   }
-  free(self->buckets);
+  Shizu_State1_deallocate(Shizu_State2_getState1(state), self->buckets);
   self->buckets = NULL;
 }
 
@@ -189,7 +267,7 @@ Shizu_Map_constructImpl
   Shizu_Map* SELF = (Shizu_Map*)Shizu_Value_getObject(&argumentValues[0]);
   Shizu_Type* TYPE = Shizu_Map_getType(state);
   Shizu_Object_construct(state, (Shizu_Object*)SELF);
-  SELF->buckets = malloc(sizeof(Shizu_Map_Node*) * 8);
+  SELF->buckets = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Shizu_Map_Node*) * 8);
   if (!SELF->buckets) {
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);
@@ -204,10 +282,99 @@ Shizu_Map_constructImpl
 
 Shizu_defineObjectType("Shizu.Map", Shizu_Map, Shizu_Object);
 
-size_t
+void
+Shizu_Map_clear
+  (
+    Shizu_State2* state,
+    Shizu_Map* self
+  )
+{
+  for (size_t i = 0, n = self->capacity; i < n; ++i) {
+    for (size_t i = 0, n = self->capacity; i < n; ++i) {
+      Shizu_Map_Node** bucket = &(self->buckets[i]);
+      while (*bucket) {
+        Shizu_Map_Node* node = *bucket;
+        *bucket = node->next;
+        Shizu_State1_deallocate(Shizu_State2_getState1(state), node);
+      }
+    }
+  }
+  self->size = 0;
+}
+
+Shizu_Integer32
 Shizu_Map_getSize
   (
     Shizu_State2* state,
     Shizu_Map* self
   )
-{ return self->size; }
+{
+  Shizu_debugAssert(self->size >= 0);
+  Shizu_debugAssert(self->size <= Shizu_Integer32_Maximum);
+  return (Shizu_Integer32)self->size;
+}
+
+void
+Shizu_Map_set
+  (
+    Shizu_State2* state,
+    Shizu_Map* self,
+    Shizu_Value* key,
+    Shizu_Value* value
+  )
+{
+  if (Shizu_Value_isVoid(key)) {
+    return;
+  }
+  Shizu_Integer32 hashValue = Shizu_Value_getHashValue(state, key);
+  Shizu_Integer32 hashIndex = (hashValue & 0x7FFFFFFF) % self->capacity;
+  Shizu_Map_Node* node;
+  for (node = self->buckets[hashIndex]; NULL != node; node = node->next) {
+    if (node->hashValue == hashValue) {
+      if (Shizu_Value_isEqualTo(state, &node->key, key)) {
+        break;
+      }
+    }
+  }
+  if (node) {
+    node->key = *key;
+    node->value = *value;
+  } else {
+    node = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Shizu_Map_Node));
+    if (!node) {
+      Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+      Shizu_State2_jump(state);
+    }
+    node->key = *key;
+    node->value = *value;
+    node->hashValue = hashValue;
+    node->next = self->buckets[hashIndex];
+    self->buckets[hashIndex] = node;
+    self->size++;
+    optimize(state, self);
+  }
+}
+
+Shizu_Value
+Shizu_Map_get
+  (
+    Shizu_State2* state,
+    Shizu_Map* self,
+    Shizu_Value* key
+  )
+{
+  Shizu_Value result = Shizu_Value_Initializer();
+  if (Shizu_Value_isVoid(key)) {
+    return result;
+  }
+  Shizu_Integer32 hashValue = Shizu_Value_getHashValue(state, key);
+  Shizu_Integer32 hashIndex = (hashValue & 0x7FFFFFFF) % self->capacity;
+  for (Shizu_Map_Node* node = self->buckets[hashIndex]; NULL != node; node = node->next) {
+    if (node->hashValue == hashValue) {
+      if (Shizu_Value_isEqualTo(state, &node->key, key)) {
+        return node->value;
+      }
+    }
+  }
+  return result;
+}

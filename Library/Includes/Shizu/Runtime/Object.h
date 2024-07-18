@@ -98,7 +98,7 @@ struct Shizu_Object_Dispatch {
   Shizu_Object_Dispatch* parent;
   void (*call)(Shizu_State2* state, Shizu_Object* self, uint8_t const* methodNameBytes, size_t numberOfMethodNameBytes, Shizu_Value* returnVallue, Shizu_Integer32 numberOfArguments, Shizu_Value* arguments);
   Shizu_Integer32(*getHashValue)(Shizu_State2* state, Shizu_Object* self);
-  Shizu_Boolean(*isEqualTo)(Shizu_State2* state, Shizu_Object* self, Shizu_Object* other);
+  Shizu_Boolean(*isEqualTo)(Shizu_State2* state, Shizu_Object* self, Shizu_Value const* other);
 };
 
 struct Shizu_Object {
@@ -188,7 +188,7 @@ Shizu_Object_isEqualTo
   (
     Shizu_State2* state,
     Shizu_Object* self,
-    Shizu_Object* other
+    Shizu_Value const* other
   );
 
 /// @brief Get the Shizu_Type value of a Shizu_Object object.

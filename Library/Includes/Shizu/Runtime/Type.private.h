@@ -79,11 +79,11 @@ struct Shizu_Type {
   uint8_t flags;
   // The name of this type.
   struct {
-    size_t hashValue;
+    Shizu_Integer32 hashValue;
     // The number of Bytes including the zero terminator.
-    size_t numberOfBytes;
+    Shizu_Integer32 numberOfBytes;
     // A pointer to an array of @a numberOfBytes containing a zero-terminated C string.
-    char* bytes;
+    uint8_t* bytes;
   } name;
   // A pointer to the DL from which the type originates from or the null pointer.
   Shizu_Dl* dl;

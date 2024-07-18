@@ -49,12 +49,6 @@ typedef bool Shizu_Boolean;
 
 #define Shizu_Boolean_False (false)
 
-Shizu_Type*
-Shizu_Boolean_getType
-  (
-    Shizu_State2* state
-  );
-
 
 
 typedef float Shizu_Float32;
@@ -62,12 +56,6 @@ typedef float Shizu_Float32;
 #define Shizu_Float32_Minimum (-FLT_MAX)
 
 #define Shizu_Float32_Maximum (+FLT_MAX)
-
-Shizu_Type*
-Shizu_Float32_getType
-  (
-    Shizu_State2* state
-  );
 
 
 
@@ -79,12 +67,6 @@ typedef double Shizu_Float64;
 
 #define Shizu_Float64_Maximum (+DBL_MAX)
 
-Shizu_Type*
-Shizu_Float64_getType
-  (
-    Shizu_State2* state
-  );
-
 #endif
 
 
@@ -94,12 +76,6 @@ typedef int32_t Shizu_Integer32;
 #define Shizu_Integer32_Minimum (INT32_MIN)
 
 #define Shizu_Integer32_Maximum (INT32_MAX)
-
-Shizu_Type*
-Shizu_Integer32_getType
-  (
-    Shizu_State2* state
-  );
 
 
 
@@ -111,21 +87,7 @@ typedef int64_t Shizu_Integer64;
 
 #define Shizu_Integer64_Maximum (INT64_MAX)
 
-Shizu_Type*
-Shizu_Integer64_getType
-  (
-    Shizu_State2* state
-  );
-
 #endif
-
-
-
-Shizu_Type*
-Shizu_Type_getType
-  (
-    Shizu_State2* state
-  );
 
 
 
@@ -133,21 +95,9 @@ typedef uint8_t Shizu_Void;
 
 #define Shizu_Void_Void (0)
 
-Shizu_Type*
-Shizu_Void_getType
-  (
-    Shizu_State2* state
-  );
-
 
 
 typedef void (Shizu_CxxFunction)(Shizu_State2* state, Shizu_Value* returnValue, Shizu_Integer32 numberOfArgumentValues, Shizu_Value* argumentValues);
-
-Shizu_Type*
-Shizu_CxxFunction_getType
-  (
-    Shizu_State2* state
-  );
 
 
 
@@ -409,6 +359,19 @@ Shizu_Value_setVoid
     Shizu_Void voidValue
   );
 
+Shizu_Boolean
+Shizu_Value_isEqualTo
+  (
+    Shizu_State2* state,
+    Shizu_Value const* x,
+    Shizu_Value const* y
+  );
 
+Shizu_Integer32
+Shizu_Value_getHashValue
+  (
+    Shizu_State2* state,
+    Shizu_Value const* x
+  );
 
 #endif // SHIZU_RUNTIME_VALUE_H_INCLUDED

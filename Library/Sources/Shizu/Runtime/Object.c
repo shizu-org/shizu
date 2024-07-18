@@ -32,7 +32,7 @@ Shizu_Error_emitMethodCallContext
 
   // Callee type address/name.
   Shizu_Type* calleeType = ((Shizu_Object*)callee)->type;
-  char const* calleeTypeName; size_t calleeTypeNameLength;
+  uint8_t const* calleeTypeName; Shizu_Integer32 calleeTypeNameLength;
   Shizu_Types_getTypeName(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), calleeType, &calleeTypeName, &calleeTypeNameLength);
   fprintf(f, ", ");
   fprintf(f, "callee type: %p/", calleeType);
@@ -94,7 +94,7 @@ Shizu_Object_isEqualToImpl
   (
     Shizu_State2* state,
     Shizu_Object* self,
-    Shizu_Object* other
+    Shizu_Value const* other
   );
 
 static void
@@ -148,9 +148,14 @@ Shizu_Object_isEqualToImpl
   (
     Shizu_State2* state,
     Shizu_Object* self,
-    Shizu_Object* other
+    Shizu_Value const* other
   )
-{ return self == other; }
+{
+  if (Shizu_Value_Tag_Object != other->tag) {
+    return Shizu_Boolean_False;
+  }
+  return self == other->objectValue;
+}
 
 static void
 Shizu_Object_initializeDispatch
@@ -247,7 +252,7 @@ Shizu_Object_isEqualTo
   (
     Shizu_State2* state,
     Shizu_Object* self,
-    Shizu_Object* other
+    Shizu_Value const* other
   )
 { Shizu_VirtualCallWithReturn(Shizu_Object, isEqualTo, self, other); }
 

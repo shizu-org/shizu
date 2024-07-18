@@ -22,6 +22,7 @@
 #define SHIZU_RUNTIME_PRIVATE (1)
 #include "Shizu/Runtime/Type.h"
 
+#include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/Type.private.h"
 
 bool
@@ -165,12 +166,23 @@ Shizu_Types_getTypeName
     Shizu_State1* state,
     Shizu_Types* self,
     Shizu_Type* x,
-    char const** bytes,
-    size_t* numberOfBytes
+    uint8_t const** bytes,
+    Shizu_Integer32* numberOfBytes
   )
 {
   *bytes = x->name.bytes;
   *numberOfBytes = x->name.numberOfBytes;
+}
+
+Shizu_Integer32
+Shizu_Types_getTypeHash
+  (
+    Shizu_State1* state,
+    Shizu_Types* self,
+    Shizu_Type* x
+  )
+{
+  return x->name.hashValue;
 }
 
 Shizu_Object_Dispatch*
@@ -187,3 +199,83 @@ Shizu_Types_getDispatch
     return x->objectType.dispatch;
   }
 }
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Boolean_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Boolean),
+};
+
+Shizu_definePrimitiveType(Shizu_Boolean);
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_CxxFunction_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_CxxFunction*),
+};
+
+Shizu_definePrimitiveType(Shizu_CxxFunction);
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Float32_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Float32),
+};
+
+Shizu_definePrimitiveType(Shizu_Float32);
+
+#if 1 == Shizu_Configuration_WithFloat64
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Float64_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Float64),
+};
+
+Shizu_definePrimitiveType(Shizu_Float64);
+
+#endif
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Integer32_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Integer32),
+};
+
+Shizu_definePrimitiveType(Shizu_Integer32);
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Integer64_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Integer64),
+};
+
+Shizu_definePrimitiveType(Shizu_Integer64);
+
+#endif
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Type_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Type*),
+};
+
+Shizu_definePrimitiveType(Shizu_Type);
+
+static Shizu_PrimitiveTypeDescriptor const Shizu_Void_Type = {
+  .postCreateType = NULL,
+  .preDestroyType = NULL,
+  .visitType = NULL,
+  .size = sizeof(Shizu_Void),
+};
+
+Shizu_definePrimitiveType(Shizu_Void);

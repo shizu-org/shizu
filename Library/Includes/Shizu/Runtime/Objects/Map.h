@@ -43,11 +43,62 @@
 /// @endcode
 Shizu_declareObjectType(Shizu_Map);
 
-size_t
+/// @since 1.0
+/// @brief Clear this map.
+/// @param state A pointer to the Shizu_State2 object.
+/// @param self A pointer to this Shizu_List object.
+void
+Shizu_Map_clear
+  (
+    Shizu_State2* state,
+    Shizu_Map* self
+  );
+
+/// @since 1.0
+/// @brief Get the size of this map.
+/// @param state A pointer to the Shizu_State2 object.
+/// @param self A pointer to this Shizu_Map object.
+/// @return The size of this Shizu_Map object.
+Shizu_Integer32
 Shizu_Map_getSize
   (
     Shizu_State2* state,
     Shizu_Map* self
+  );
+
+
+/// @since 1.0
+/// @brief Set/remove a pair in this map.
+/// @param state A pointer to the Shizu_State2 object.
+/// @param self A pointer to this Shizu_Map object.
+/// @param key A pointer to the key value.
+/// @param value A pointer to the value value.
+/// @remarks
+/// If <code>*key</code> stores a Void value, then this call immediatly returns.
+/// Otherwise if <code>*value</code> stores a *Void* value, then this call is equivalent to Shizu_Map_remove(state, self, key).
+/// Otherwise the pair <code>(*key,*value)</code> is added to this map.
+void
+Shizu_Map_set
+  (
+    Shizu_State2* state,
+    Shizu_Map* self,
+    Shizu_Value* key,
+    Shizu_Value* value
+  );
+
+/// @since 1.0
+/// @brief Get the value of a pair in this map.
+/// @param state A pointer to the Shizu_State2 object.
+/// @param self A pointer to this Shizu_Map object.
+/// @remarks
+/// If <code>key</code> stores the *Void* value or no entry for the pair was found then the *Void* value is returned.
+/// otherwise the value of the pair is returned.
+Shizu_Value
+Shizu_Map_get
+  (
+    Shizu_State2* state,
+    Shizu_Map* self,
+    Shizu_Value* key
   );
 
 #endif // SHIZU_RUNTIME_MAP_H_INCLUDED

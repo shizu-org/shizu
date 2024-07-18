@@ -299,18 +299,18 @@ Shizu_Types_getTypeByName
   (
     Shizu_State1* state1,
     Shizu_Types* self,
-    char const* bytes,
-    size_t numberOfBytes
+    uint8_t const* bytes,
+    Shizu_Integer32 numberOfBytes
   )
 {
-  size_t hashValue = numberOfBytes;
-  for (size_t i = 0, n = numberOfBytes; i < n; ++i) {
-    hashValue = hashValue * 37 + (size_t)bytes[i];
+  Shizu_Integer32 hashValue = numberOfBytes;
+  for (Shizu_Integer32 i = 0, n = numberOfBytes; i < n; ++i) {
+    hashValue = hashValue * 37 + (Shizu_Integer32)bytes[i];
   }
-  size_t hashIndex = hashValue % self->capacity;
+  Shizu_Integer32 hashIndex = (hashValue & (0x7FFFFFFF)) % self->capacity;
   for (Shizu_Type* type = self->elements[hashIndex]; NULL != type; type = type->next) {
     if (type->name.hashValue == hashValue && type->name.numberOfBytes == numberOfBytes) {
-      if (!memcmp(type->name.bytes, bytes, numberOfBytes)) {
+      if (!memcmp(type->name.bytes, bytes, (size_t)numberOfBytes)) {
         return type;
       }
     }
