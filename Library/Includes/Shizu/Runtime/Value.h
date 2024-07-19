@@ -57,6 +57,13 @@ typedef float Shizu_Float32;
 
 #define Shizu_Float32_Maximum (+FLT_MAX)
 
+// See https://en.wikipedia.org/wiki/Single-precision_floating-point_format for more information.
+#define Shizu_Float32_Bits 32
+#define Shizu_Float32_SignBits 1
+#define Shizu_Float32_FractionBits 23
+#define Shizu_Float32_ExponentBits 8
+static_assert(Shizu_Float32_SignBits + Shizu_Float32_FractionBits + Shizu_Float32_ExponentBits == 32, "single precision floating point defines broken");
+
 
 
 #if 1 == Shizu_Configuration_WithFloat64
@@ -66,6 +73,13 @@ typedef double Shizu_Float64;
 #define Shizu_Float64_Minimum (-DBL_MAX)
 
 #define Shizu_Float64_Maximum (+DBL_MAX)
+
+// See https://en.wikipedia.org/wiki/Double-precision_floating-point_format for more information.
+#define Shizu_Float64_Bits 64
+#define Shizu_Float64_SignBits 1
+#define Shizu_Float64_FractionBits 52
+#define Shizu_Float64_ExponentBits 11
+static_assert(Shizu_Float64_SignBits + Shizu_Float64_FractionBits + Shizu_Float64_ExponentBits == 64, "double precision floating point defines broken");
 
 #endif
 

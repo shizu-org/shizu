@@ -83,4 +83,54 @@ Shizu_Runtime_Extensions_createWeakReference
     Shizu_Object* reference
   );
 
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isBoolean
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  );
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isFloat32
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  );
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isInteger32
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  );
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isList
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  );
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isMap
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  );
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isString
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  );
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isVoid
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  );
+
 #endif // SHIZU_RUNTIME_EXTENSIONS_H_INCLUDED

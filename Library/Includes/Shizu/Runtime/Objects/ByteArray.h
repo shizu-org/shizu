@@ -27,7 +27,13 @@
 #endif
 #include "Shizu/Runtime/Object.h"
 
-/// Shizu_ByteArray is ued to transfer Bytes between the managed and the environment.
+/// @brief
+/// The Machine Language type is
+/// @code
+/// class Shizu.ByteArray
+/// @endcode
+/// @remarks
+/// Shizu_ByteArray is used to transfer Bytes between the managed and the environment.
 Shizu_declareObjectType(Shizu_ByteArray);
 
 /// @since 1.0
@@ -137,6 +143,53 @@ Shizu_ByteArray_clear
   (
     Shizu_State2* state,
     Shizu_ByteArray* self    
+  );
+
+// Remove count Bytes from the front of the Byte array.
+// Raise an error if count is greater than the size of the Byte array.
+// Raise an error if count is negative.
+void
+Shizu_ByteArray_removeFront
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* self,
+    Shizu_Integer32 count
+  );
+
+// Remove count Bytes from the back of the Byte array.
+// Raise an error if count is greater than the size of the Byte array.
+// Raise an error if count is negative.
+void
+Shizu_ByteArray_removeBack
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* self,
+    Shizu_Integer32 count
+  );
+
+/// Remove leading occurrences of v.
+void
+Shizu_ByteArray_trimLeading
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* a,
+    Shizu_Integer32 v
+  );
+
+/// Remove trailing occurrences of v.
+void
+Shizu_ByteArray_trimTrailing
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* a,
+    Shizu_Integer32 v
+  );
+
+void
+Shizu_ByteArray_reverse
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* a
   );
 
 #endif // SHIZU_RUNTIME_OBJECTS_BYTEARRAY_H_INCLUDED

@@ -433,3 +433,97 @@ Shizu_ByteArray_clear
 {
   self->size = 0;
 }
+
+void
+Shizu_ByteArray_removeFront
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* self,
+    Shizu_Integer32 count
+  )
+{
+  if (count < 0 || count > self->size) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentValueInvalid);
+    Shizu_State2_jump(state);
+  }
+  memmove(self->elements, self->elements + count, self->size - count);
+  self->size -= count;
+}
+
+void
+Shizu_ByteArray_removeBack
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* self,
+    Shizu_Integer32 count
+  )
+{
+  if (count < 0 || count > self->size) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentValueInvalid);
+    Shizu_State2_jump(state);
+  }
+  self->size -= count;
+}
+
+void
+Shizu_ByteArray_trimLeading
+(
+  Shizu_State2* state,
+  Shizu_ByteArray* a,
+  Shizu_Integer32 v
+) {
+  uint8_t* p = Shizu_ByteArray_getRawBytes(state, a);
+  Shizu_Integer32 n = (Shizu_Integer32)Shizu_ByteArray_getNumberOfRawBytes(state, a);
+  Shizu_Integer32 count = 0; // number of consecutive occurrences of v from the left side of the string.
+  for (Shizu_Integer32 i = 0; i < n; ++i) {
+    if (v == p[i]) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  if (count) {
+    Shizu_ByteArray_removeFront(state, a, count);
+  }
+}
+
+void
+Shizu_ByteArray_trimTrailing
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* a,
+    Shizu_Integer32 v
+  )
+{
+  uint8_t* p = Shizu_ByteArray_getRawBytes(state, a);
+  Shizu_Integer32 n = (Shizu_Integer32)Shizu_ByteArray_getNumberOfRawBytes(state, a);
+  Shizu_Integer32 count = 0; // number of consecutive occurrences of v from the right side of the string.
+  for (Shizu_Integer32 i = n; i > 0; --i) {
+    if (v == p[i]) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  if (count) {
+    Shizu_ByteArray_removeBack(state, a, count);
+  }
+}
+
+void
+Shizu_ByteArray_reverse
+  (
+    Shizu_State2* state,
+    Shizu_ByteArray* a
+  )
+{
+  if (a->size < 2) {
+    return;
+  }
+  for (size_t i = 0, n = a->size / 2; i < n; ++i) {
+    size_t j = a->size - i - 1;
+    uint8_t t = a->elements[j];
+    a->elements[j] = a->elements[i];
+    a->elements[i] = t;
+  }
+}

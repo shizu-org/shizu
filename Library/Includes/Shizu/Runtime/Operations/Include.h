@@ -28,6 +28,24 @@
 
 #include "Shizu/Runtime/Value.h"
 
+void
+Shizu_Operations_toFloat32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+void
+Shizu_Operations_toInteger32
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
 /// Get the type of the specified name.
 /// @code
 /// returnValue <~ _getType(<name>)

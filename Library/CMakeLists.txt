@@ -109,6 +109,10 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Object.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/Include.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/Include.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/ToInteger32.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/ToInteger32.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/ToFloat32.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/ToFloat32.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Types/_SmallTypeArray.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Types/_SmallTypeArray.h)

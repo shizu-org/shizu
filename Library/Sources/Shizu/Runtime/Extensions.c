@@ -23,7 +23,7 @@ Shizu_Runtime_Extensions_createMap
 {
   Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void),};
-  Shizu_Value_setType(&argumentValues[0], Shizu_List_getType(state));
+  Shizu_Value_setType(&argumentValues[0], Shizu_Map_getType(state));
   Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
   return (Shizu_Map*)Shizu_Value_getObject(&returnValue);
 }
@@ -124,3 +124,79 @@ Shizu_Runtime_Extensions_createWeakReference
   Shizu_Operations_create(state, &returnValue, 2, &argumentValues[0]);
   return (Shizu_WeakReference*)Shizu_Value_getObject(&returnValue);
 }
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isFloat32
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  )
+{ return Shizu_Value_isFloat32(&value); }
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isBoolean
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  )
+{
+  return Shizu_Value_isBoolean(&value);
+}
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isInteger32
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  )
+{ return Shizu_Value_isInteger32(&value); }
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isList
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  )
+{
+  if (!Shizu_Value_isObject(&value)) {
+    return Shizu_Boolean_False;
+  }
+  Shizu_Object* o = Shizu_Value_getObject(&value);
+  return Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), o->type, Shizu_List_getType(state));
+}
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isMap
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  )
+{
+  if (!Shizu_Value_isObject(&value)) {
+    return Shizu_Boolean_False;
+  }
+  Shizu_Object* o = Shizu_Value_getObject(&value);
+  return Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), o->type, Shizu_Map_getType(state));
+}
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isString
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  )
+{
+  if (!Shizu_Value_isObject(&value)) {
+    return Shizu_Boolean_False;
+  }
+  Shizu_Object* o = Shizu_Value_getObject(&value);
+  return Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), o->type, Shizu_String_getType(state));
+}
+
+Shizu_Boolean
+Shizu_Runtime_Extensions_isVoid
+  (
+    Shizu_State2* state,
+    Shizu_Value value
+  )
+{ return Shizu_Value_isVoid(&value); }

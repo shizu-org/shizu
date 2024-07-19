@@ -28,16 +28,12 @@
 #include "Shizu/Runtime/Object.h"
 
 /// @since 1.0
-/// The CIL type
+/// The Machine Language type is
 /// @code
 /// class Shizu.List
 /// @endcode
 /// @details
-/// The CIL type
-/// @code
-/// class Shizu.List
-/// @endcode
-/// The signature of the Shizu.List constructor is
+/// The constructor is
 /// @code
 /// Shizu.List.construct()
 /// @endcode

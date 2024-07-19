@@ -28,16 +28,13 @@
 #include "Shizu/Runtime/Object.h"
 
 /// @since 1.0
-/// The CIL type
+/// @brief
+/// The Machine Language type
 /// @code
 /// class Shizu.Map
 /// @endcode
 /// @details
-/// The CIL type
-/// @code
-/// class Shizu.Map
-/// @endcode
-/// The signature of the Shizu.Map constructor is
+/// The constructor is
 /// @code
 /// Shizu.Map.construct()
 /// @endcode

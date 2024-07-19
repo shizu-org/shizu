@@ -527,19 +527,183 @@ Shizu_Types_createPrimitiveType
     Shizu_PrimitiveTypeDescriptor const* typeDescriptor
   );
 
+
+
 Shizu_declarePrimitiveType(Shizu_Boolean);
+
+
 
 Shizu_declarePrimitiveType(Shizu_CxxFunction);
 
+
+
 Shizu_declarePrimitiveType(Shizu_Float32);
+
+/// A non-negative value to subtract from the binary value of the biased exponent to receive the unbiased exponent.
+/// This value is 127.
+Shizu_Integer32
+Shizu_Float32_getBias
+  (
+    Shizu_State1* state
+  );
+
+// This value is biasedMinimumExponent - bias = 1 - 127 = -126.
+Shizu_Integer32
+Shizu_Float32_getUnbiasedMinimumExponent
+(
+  Shizu_State1* state
+);
+
+// This value is biasedMaximumExponent - bias = 254 - 127 = 127.
+Shizu_Integer32
+Shizu_Float32_getUnbiasedMaximumExponent
+  (
+    Shizu_State1* state
+  );
+
+// This value is 1 (as 0 and 2^8-1 = 255 are reserved).
+// The "biased exponent" is the "unbiased exponent" plus some non-negative "bias"
+// that ensures that the "biased exponent" is always non-negative.
+Shizu_Integer32
+Shizu_Float32_getBiasedMinimumExponent
+  (
+    Shizu_State1* state
+  );
+
+// This value is 254 (as 0 and 2^8 - 1 = 255 are reserved).
+// The "biased exponent" is the "unbiased exponent" plus some non-negative "bias"
+// that ensures that the "biased exponent" is always non-negative.
+Shizu_Integer32
+Shizu_Float32_getBiasedMaximumExponent
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer32
+Shizu_Float32_getExponentBitsMask
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer32
+Shizu_Float32_getExponentBitsShift
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer32
+Shizu_Float32_getSignBitsMask
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer32
+Shizu_Float32_getSignBitsShift
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer32
+Shizu_Float32_getFractionBitsMask
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer32
+Shizu_Float32_getFractionBitsShift
+  (
+    Shizu_State1* state
+  );
+
+
 
 #if 1 == Shizu_Configuration_WithFloat64
 
 Shizu_declarePrimitiveType(Shizu_Float64);
 
+/// A non-negative value to subtract from the binary value of the biased exponent to receive the unbiased exponent.
+/// This value is 1023.
+Shizu_Integer64
+Shizu_Float64_getBias
+  (
+    Shizu_State1* state
+  );
+
+// This value is biasedMinimumExponent - bias = 1 - 1023 = -1022.
+Shizu_Integer64
+Shizu_Float64_getUnbiasedMinimumExponent
+  (
+    Shizu_State1* state
+  );
+
+// This value is biasedMaximumExponent - bias = 2046 - 1023 = 1023.
+Shizu_Integer64
+Shizu_Float64_getUnbiasedMaximumExponent
+  (
+    Shizu_State1* state
+  );
+
+// This value is 1 (as 0 and 2^11 - 1 = 2047 are reserved).
+// The "biased exponent" is the "unbiased exponent" plus some non-negative "bias"
+// that ensures that the "biased exponent" is always non-negative.
+Shizu_Integer64
+Shizu_Float64_getBiasedMinimumExponent
+  (
+    Shizu_State1* state
+  );
+
+// This value is 2046 (as 0 and 2^11 - 1 = 2047 are reserved).
+// The "biased exponent" is the "unbiased exponent" plus some non-negative "bias"
+// that ensures that the "biased exponent" is always non-negative.
+Shizu_Integer64
+Shizu_Float64_getBiasedMaximumExponent
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer64
+Shizu_Float64_getExponentBitsMask
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer64
+Shizu_Float64_getExponentBitsShift
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer64
+Shizu_Float64_getSignBitsMask
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer64
+Shizu_Float64_getSignBitsShift
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer64
+Shizu_Float64_getFractionBitsMask
+  (
+    Shizu_State1* state
+  );
+
+Shizu_Integer64
+Shizu_Float64_getFractionBitsShift
+  (
+    Shizu_State1* state
+  );
+
 #endif
 
+
+
 Shizu_declarePrimitiveType(Shizu_Integer32);
+
+
 
 #if 1 == Shizu_Configuration_WithInteger64
 
@@ -547,7 +711,11 @@ Shizu_declarePrimitiveType(Shizu_Integer64);
 
 #endif
 
+
+
 Shizu_declarePrimitiveType(Shizu_Type);
+
+
 
 Shizu_declarePrimitiveType(Shizu_Void);
 

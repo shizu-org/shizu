@@ -165,7 +165,12 @@ test3
     Shizu_State2* state
   )
 {
-  Shizu_ByteArray_create(state);
+  {
+    Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+    Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
+    Shizu_Value_setType(&argumentValues[0], Shizu_ByteArray_getType(state));
+    Shizu_Operations_create(state, &returnValue, 1, &argumentValues[0]);
+  }
   {
     Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
     Shizu_Value argumentValues[] = { Shizu_Value_InitializerVoid(Shizu_Void_Void), };
