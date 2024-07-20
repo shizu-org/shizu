@@ -101,6 +101,9 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Environment.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/CxxProcedure.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/CxxProcedure.h)
 
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger.h)
+
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Module.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
 

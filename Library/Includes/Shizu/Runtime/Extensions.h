@@ -73,6 +73,19 @@ Shizu_Runtime_Extensions_getInteger32Value
     Shizu_Value* value
   );
 
+#if 1 == Shizu_Configuration_WithInteger64
+
+// Load an "Integer64" value from a value.
+// Raise "InvalidArgumentType" if the value does not hold a "Integer64" value.
+Shizu_Integer64
+Shizu_Runtime_Extensions_getInteger64Value
+  (
+    Shizu_State2* state,
+    Shizu_Value* value
+  );
+
+#endif
+
 // Utility function to get or create a "Shizu.WeakReference". The constructor "Shizu.WeakReference.construct(reference :
 // Object|Void)" is invoked with the "Object" value to which "reference" points to or "void" if "reference" is a null
 // pointer.

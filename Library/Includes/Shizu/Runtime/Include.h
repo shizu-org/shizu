@@ -33,6 +33,7 @@
 
 #include "Shizu/Runtime/Operations/Include.h"
 
+#include "Shizu/Runtime/Objects/BigInteger.h"
 #include "Shizu/Runtime/Objects/ByteArray.h"
 #include "Shizu/Runtime/Objects/CxxProcedure.h"
 #include "Shizu/Runtime/Objects/Environment.h"

@@ -19,6 +19,16 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-add_subdirectory(Fundamental)
-add_subdirectory(ByteArray)
-add_subdirectory(BigInteger)
+set(name ${Shizu.Runtime.project-name}.Runtime.Test.BigInteger)
+
+Shizu_beginExecutable()
+
+list(APPEND ${name}.source_files Sources/Shizu.Runtime.Test.BigInteger/Main.c)
+
+Shizu_endExecutable()
+
+target_link_libraries(${name} PRIVATE ${Shizu.Runtime.project-name})
+
+add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
+
+on_executable(${name})

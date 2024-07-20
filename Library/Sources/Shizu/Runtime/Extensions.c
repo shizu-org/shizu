@@ -106,6 +106,24 @@ Shizu_Runtime_Extensions_getInteger32Value
   return Shizu_Value_getInteger32(value);
 }
 
+#if 1 == Shizu_Configuration_WithInteger64
+
+Shizu_Integer64
+Shizu_Runtime_Extensions_getInteger64Value
+  (
+    Shizu_State2* state,
+    Shizu_Value* value
+  )
+{
+  if (!Shizu_Value_isInteger64(value)) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
+    Shizu_State2_jump(state);
+  }
+  return Shizu_Value_getInteger64(value);
+}
+
+#endif
+
 Shizu_WeakReference*
 Shizu_Runtime_Extensions_createWeakReference
   (
