@@ -1,5 +1,5 @@
 /*
-  Shizu Runtime
+  Shizu
   Copyright (C) 2024 Michael Heilmann. All rights reserved.
 
   This software is provided 'as-is', without any express or implied
@@ -29,6 +29,9 @@
 
 #include "Shizu/Runtime/Objects/ByteArray.h"
 #include "Shizu/Runtime/Objects/String.h"
+
+#include "Shizu/Runtime/Objects/BigInteger/fromInteger32.h"
+#include "Shizu/Runtime/Objects/BigInteger/fromInteger64.h"
 
 static void
 Shizu_BigInteger_finalize
@@ -119,114 +122,14 @@ Shizu_BigInteger_constructFromBigInteger
 }
 
 static void
-Shizu_BigInteger_constructFromInteger32
+Shizu_BigInteger_constructFromString
   (
     Shizu_State2* state,
     Shizu_BigInteger* SELF,
-    Shizu_Integer32 v
+    Shizu_String* other
   )
 {
-  Shizu_ByteArray* buffer = Shizu_ByteArray_create(state);
-  if (0 == v) {
-    SELF->p = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(uint8_t));
-    if (!SELF->p) {
-      Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
-      Shizu_State2_jump(state);
-    }
-    SELF->p[0] = 0;
-    SELF->n = 1;
-    SELF->sign = Shizu_Boolean_True;
-    return;
-  }
-  if (Shizu_Integer32_Minimum == v) {
-    // If v is Shizu_Integer32_Minimum, then -v would overflow.
-    // Simply (v % 10) * -1 and v' = v / 10 to extract one digit and also make v > Shizu_Integer32_Minimum.
-    uint8_t digit = (uint8_t)((v % 10) * -1);
-    v /= 10;
-    Shizu_ByteArray_appendRawBytes(state, buffer, &digit, sizeof(uint8_t));
-  }
-  if (v < 0) {
-    SELF->sign = Shizu_Boolean_False;
-    // We can safely do this now.
-    v *= -1;
-  } else {
-    SELF->sign = Shizu_Boolean_True;
-  }
-  while (v != 0) {
-    Shizu_Integer32 digit = (uint8_t)(v % 10);
-    v /= 10;
-    Shizu_ByteArray_appendRawBytes(state, buffer, &digit, sizeof(uint8_t));
-  }
-  uint8_t *p = Shizu_ByteArray_getRawBytes(state, buffer);
-  size_t n = Shizu_ByteArray_getNumberOfRawBytes(state, buffer);
-  SELF->p = Shizu_State1_allocate(Shizu_State2_getState1(state), n * sizeof(uint8_t));
-  if (!SELF->p) {
-    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
-    Shizu_State2_jump(state);
-  }
-  // This also reverses the order.
-  for (size_t i = 0; i < n; ++i) {
-    SELF->p[n - 1 - i] = p[i];
-  }
-  SELF->n = n;
 }
-
-#if 1 == Shizu_Configuration_WithInteger64
-
-static void
-Shizu_BigInteger_constructFromInteger64
-  (
-    Shizu_State2* state,
-    Shizu_BigInteger* SELF,
-    Shizu_Integer64 v
-  )
-{
-  Shizu_ByteArray* buffer = Shizu_ByteArray_create(state);
-  if (0 == v) {
-    SELF->p = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(uint8_t));
-    if (!SELF->p) {
-      Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
-      Shizu_State2_jump(state);
-    }
-    SELF->p[0] = 0;
-    SELF->n = 1;
-    SELF->sign = Shizu_Boolean_True;
-    return;
-  }
-  if (Shizu_Integer64_Minimum == v) {
-    // If v is Shizu_Integer64_Minimum, then -v would overflow.
-    // Simply (v % 10) * -1 and v' = v / 10 to extract one digit and also make v > Shizu_Integer64_Minimum.
-    uint8_t digit = (uint8_t)((v % 10) * -1);
-    v /= 10;
-    Shizu_ByteArray_appendRawBytes(state, buffer, &digit, sizeof(uint8_t));
-  }
-  if (v < 0) {
-    SELF->sign = Shizu_Boolean_False;
-    // We can safely do this now.
-    v *= -1;
-  } else {
-    SELF->sign = Shizu_Boolean_True;
-  }
-  while (v != 0) {
-    Shizu_Integer32 digit = (uint8_t)(v % 10);
-    v /= 10;
-    Shizu_ByteArray_appendRawBytes(state, buffer, &digit, sizeof(uint8_t));
-  }
-  uint8_t* p = Shizu_ByteArray_getRawBytes(state, buffer);
-  size_t n = Shizu_ByteArray_getNumberOfRawBytes(state, buffer);
-  SELF->p = Shizu_State1_allocate(Shizu_State2_getState1(state), n * sizeof(uint8_t));
-  if (!SELF->p) {
-    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
-    Shizu_State2_jump(state);
-  }
-  // This also reverses the order.
-  for (size_t i = 0; i < n; ++i) {
-    SELF->p[n - 1 - i] = p[i];
-  }
-  SELF->n = n;
-}
-
-#endif
 
 static void
 Shizu_BigInteger_constructImpl
@@ -252,16 +155,19 @@ Shizu_BigInteger_constructImpl
   } else if (numberOfArgumentValues == 2) {
     if (Shizu_Value_isObject(&argumentValues[1])) {
       Shizu_Object* object = Shizu_Value_getObject(&argumentValues[1]);
-      if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), object->type, Shizu_BigInteger_getType(state))) {
+      if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), object->type, Shizu_BigInteger_getType(state))) {
+        Shizu_BigInteger_constructFromBigInteger(state, SELF, (Shizu_BigInteger*)object);
+      } else if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), object->type, Shizu_String_getType(state))) {
+        Shizu_BigInteger_constructFromString(state, SELF, (Shizu_String*)object);
+      } else {
         Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
         Shizu_State2_jump(state);
       }
-      Shizu_BigInteger_constructFromBigInteger(state, SELF, (Shizu_BigInteger*)object);
     } else if (Shizu_Value_isInteger32(&argumentValues[1])) {
-      Shizu_BigInteger_constructFromInteger32(state, SELF, Shizu_Runtime_Extensions_getInteger32Value(state, &argumentValues[1]));
+      Shizu_BigInteger_fromInteger32(state, Shizu_Runtime_Extensions_getInteger32Value(state, &argumentValues[1]), &SELF->sign, &SELF->p, &SELF->n);
     #if 1 == Shizu_Configuration_WithInteger64
     } else if (Shizu_Value_isInteger64(&argumentValues[1])) {
-      Shizu_BigInteger_constructFromInteger64(state, SELF, Shizu_Runtime_Extensions_getInteger64Value(state, &argumentValues[1]));
+      Shizu_BigInteger_fromInteger64(state, Shizu_Runtime_Extensions_getInteger64Value(state, &argumentValues[1]), &SELF->sign, &SELF->p, &SELF->n);
     #endif
     } else {
       Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
