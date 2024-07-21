@@ -28,134 +28,53 @@ set(Shizu.Runtime.project-name "Shizu.Runtime")
 # To simply things.
 set(name "Shizu.Runtime")
 
-
-
-include(FetchContent)
+# Enable testing.
+enable_testing()
 
 #######################################################################################################################
-
-set(idlib-process.repository CACHE STRING "IdLib Process: The Git repository to check out")
-if (NOT idlib-process.repository)
-  set(idlib-process.repository https://github.com/shizu-org/idlib-process.git)
+set(idlib-process.with-tests CACHE BOOL "Idlib Process: Enable Tests")
+if (NOT idlib-process.with-tests)
+  set(idlib-process.with-tests ON)
 endif()
-
-set(idlib-process.tag CACHE STRING "IdLib Process: The Git tag to check out")
-if (NOT idlib-process.tag)
-  set(idlib-process.tag 1.6)
-endif()
-
 set(idlib-process.source-dir CACHE STRING "IdLib Process: Path to the source directory")
 if (NOT idlib-process.source-dir)
-  set(idlib-process.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-process-1.6-src")
+  set(idlib-process.source-dir "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/idlib-process")
 endif()
-
-set(idlib-process.binary-dir CACHE STRING "IdLib Process: Path to the build directory")
-if (NOT idlib-process.binary-dir)
-  set(idlib-process.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-process-1.6-bld")
-endif()
-
-FetchContent_Declare(idlib-process
-                     GIT_REPOSITORY ${idlib-process.repository}
-                     GIT_TAG ${idlib-process.tag}
-                     SOURCE_DIR ${idlib-process.source-dir}
-                     BINARY_DIR ${idlib-process.binary-dir})
-
+add_subdirectory(${idlib-process.source-dir})
 #######################################################################################################################
-
-set(idlib-bit-scan.repository CACHE STRING "IdLib Bit Scan: The Git repository to check out")
-if (NOT idlib-bit-scan.repository)
-  set(idlib-bit-scan.repository https://github.com/shizu-org/idlib-bit-scan.git)
+set(idlib-byte-sequence.with-tests CACHE BOOL "Idlib Byte Sequence: Enable Tests")
+if (NOT idlib-byte-sequence.with-tests)
+  set(idlib-byte-sequence.with-tests ON)
 endif()
-
-set(idlib-bit-scan.tag CACHE STRING "IdLib Bit Scan: The Git tag to check out")
-if (NOT idlib-bit-scan.tag)
-  set(idlib-bit-scan.tag 1.5)
-endif()
-
-set(idlib-bit-scan.source-dir CACHE STRING "IdLib Bit Scan: Path to the source directory")
-if (NOT idlib-bit-scan.source-dir)
-  set(idlib-bit-scan.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-bit-scan-1.5-src")
-endif()
-
-set(idlib-bit-scan.binary-dir CACHE STRING "IdLib Bit Scan: Path to the build directory")
-if (NOT idlib-bit-scan.binary-dir)
-  set(idlib-bit-scan.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-bit-scan-1.5-bld")
-endif()
-
-FetchContent_Declare(idlib-bit-scan
-                     GIT_REPOSITORY ${idlib-bit-scan.repository}
-                     GIT_TAG ${idlib-bit-scan.tag}
-                     SOURCE_DIR ${idlib-bit-scan.source-dir}
-                     BINARY_DIR ${idlib-bit-scan.binary-dir})
-
-#######################################################################################################################
-
-set(idlib-file-system.repository CACHE STRING "IdLib File System: The Git repository to check out")
-if (NOT idlib-file-system.repository)
-  set(idlib-file-system.repository https://github.com/shizu-org/idlib-file-system.git)
-endif()
-
-set(idlib-file-system.tag CACHE STRING "IdLib File System: The Git tag to check out")
-if (NOT idlib-file-system.tag)
-  set(idlib-file-system.tag 1.12)
-endif()
-
-set(idlib-file-system.source-dir CACHE STRING "IdLib File System: Path to the source directory")
-if (NOT idlib-file-system.source-dir)
-  set(idlib-file-system.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-file-system-1.12-src")
-endif()
-
-set(idlib-file-system.binary-dir CACHE STRING "IdLib File System: Path to the build directory")
-if (NOT idlib-file-system.binary-dir)
-  set(idlib-file-system.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-file-system-1.12-bld")
-endif()
-
-FetchContent_Declare(idlib-file-system
-                     GIT_REPOSITORY ${idlib-file-system.repository}
-                     GIT_TAG ${idlib-file-system.tag}
-                     SOURCE_DIR ${idlib-file-system.source-dir}
-                     BINARY_DIR ${idlib-file-system.binary-dir})
-
-#######################################################################################################################
-
-set(idlib-byte-sequence.repository CACHE STRING "IdLib Byte Sequence: The Git repository to check out")
-if (NOT idlib-byte-sequence.repository)
-  set(idlib-byte-sequence.repository https://github.com/shizu-org/idlib-byte-sequence.git)
-endif()
-
-set(idlib-byte-sequence.tag CACHE STRING "IdLib Byte Sequence: The Git tag to check out")
-if (NOT idlib-byte-sequence.tag)
-  set(idlib-byte-sequence.tag 1.1)
-endif()
-
 set(idlib-byte-sequence.source-dir CACHE STRING "IdLib Byte Sequence: Path to the source directory")
 if (NOT idlib-byte-sequence.source-dir)
-  set(idlib-byte-sequence.source-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-byte-sequence-1.1-src")
+  set(idlib-byte-sequence.source-dir "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/idlib-byte-sequence")
 endif()
-
-set(idlib-byte-sequence.binary-dir CACHE STRING "IdLib Byte Sequence: Path to the build directory")
-if (NOT idlib-byte-sequence.binary-dir)
-  set(idlib-byte-sequence.binary-dir "${CMAKE_CURRENT_BINARY_DIR}/idlib-byte-sequence-1.1-bld")
-endif()
-
-FetchContent_Declare(idlib-byte-sequence
-                     GIT_REPOSITORY ${idlib-byte-sequence.repository}
-                     GIT_TAG ${idlib-byte-sequence.tag}
-                     SOURCE_DIR ${idlib-byte-sequence.source-dir}
-                     BINARY_DIR ${idlib-byte-sequence.binary-dir})
-
+add_subdirectory(${idlib-byte-sequence.source-dir})
 #######################################################################################################################
-
-FetchContent_MakeAvailable(idlib-bit-scan idlib-byte-sequence idlib-file-system)
-
+set(idlib-bit-scan.with-tests CACHE BOOL "Idlib Bit Scan: Enable Tests")
+if (NOT idlib-bit-scan.with-tests)
+  set(idlib-bit-scan.with-tests ON)
+endif()
+set(idlib-bit-scan.source-dir CACHE STRING "IdLib Bit Scan: Path to the source directory")
+if (NOT idlib-bit-scan.source-dir)
+  set(idlib-bit-scan.source-dir "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/idlib-bit-scan")
+endif()
+add_subdirectory(${idlib-bit-scan.source-dir})
+#######################################################################################################################
+set(idlib-file-system.with-tests CACHE BOOL "Idlib File System: Enable Tests")
+if (NOT idlib-file-system.with-tests)
+  set(idlib-file-system.with-tests ON)
+endif()
+set(idlib-file-system.source-dir CACHE STRING "IdLib File System: Path to the source directory")
+if (NOT idlib-file-system.source-dir)
+  set(idlib-file-system.source-dir "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/idlib-file-system")
+endif()
+add_subdirectory(${idlib-file-system.source-dir})
 #######################################################################################################################
 
 # Include the cmake library.
-include(${idlib-process.source-dir}/cmake/all.cmake)
 include(CMake/all.cmake)
-
-# Enable testing.
-enable_testing()
 
 add_subdirectory(Specification)
 add_subdirectory(Library)
