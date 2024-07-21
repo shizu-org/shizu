@@ -103,6 +103,12 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/CxxProcedure.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger/fromString.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/fromString.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger/fromInteger32.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/fromInteger32.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger/fromInteger64.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/fromInteger64.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Module.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)

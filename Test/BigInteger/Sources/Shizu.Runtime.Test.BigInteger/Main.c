@@ -89,7 +89,7 @@ test2
     Shizu_State2_jump(state);
   }
 
-  bigInteger = Shizu_BigInteger_createFromInteger32(state, INT32_C(Shizu_Integer32_Minimum));
+  bigInteger = Shizu_BigInteger_createFromInteger32(state, Shizu_Integer32_Minimum);
   received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_toString(state, bigInteger));
   expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_String_create(state, "-2147483648", sizeof("-2147483648") - 1));
   if (!Shizu_Object_isEqualTo(state, (Shizu_Object*)Shizu_Value_getObject(&expected), &received)) {
@@ -97,7 +97,7 @@ test2
     Shizu_State2_jump(state);
   }
   
-  bigInteger = Shizu_BigInteger_createFromInteger32(state, INT32_C(Shizu_Integer32_Maximum));
+  bigInteger = Shizu_BigInteger_createFromInteger32(state, Shizu_Integer32_Maximum);
   received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_toString(state, bigInteger));
   expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_String_create(state, "2147483647", sizeof("2147483647") - 1));
   if (!Shizu_Object_isEqualTo(state, (Shizu_Object*)Shizu_Value_getObject(&expected), &received)) {
@@ -105,9 +105,50 @@ test2
     Shizu_State2_jump(state);
   }
 }
-
 static void
 test3
+  (
+    Shizu_State2* state
+  )
+{
+  Shizu_Value received, expected;
+  Shizu_BigInteger* bigInteger = NULL;
+
+  bigInteger = Shizu_BigInteger_create(state);
+  received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_toString(state, bigInteger));
+  expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_String_create(state, "0", sizeof("0") - 1));
+  if (!Shizu_Object_isEqualTo(state, (Shizu_Object*)Shizu_Value_getObject(&expected), &received)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+
+  bigInteger = Shizu_BigInteger_createFromInteger64(state, INT64_C(0));
+  received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_toString(state, bigInteger));
+  expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_String_create(state, "0", sizeof("0") - 1));
+  if (!Shizu_Object_isEqualTo(state, (Shizu_Object*)Shizu_Value_getObject(&expected), &received)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+
+  bigInteger = Shizu_BigInteger_createFromInteger64(state, Shizu_Integer64_Minimum);
+  received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_toString(state, bigInteger));
+  expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_String_create(state, "-9223372036854775808", sizeof("-9223372036854775808") - 1));
+  if (!Shizu_Object_isEqualTo(state, (Shizu_Object*)Shizu_Value_getObject(&expected), &received)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+
+  bigInteger = Shizu_BigInteger_createFromInteger64(state, Shizu_Integer64_Maximum);
+  received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_toString(state, bigInteger));
+  expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_String_create(state, "9223372036854775807", sizeof("9223372036854775807") - 1));
+  if (!Shizu_Object_isEqualTo(state, (Shizu_Object*)Shizu_Value_getObject(&expected), &received)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+}
+
+static void
+test4
   (
     Shizu_State2* state
   )
@@ -198,6 +239,9 @@ main
     failed = true;
   }
   if (safeExecute(&test3)) {
+    failed = true;
+  }
+  if (safeExecute(&test4)) {
     failed = true;
   }
   return failed ? EXIT_FAILURE : EXIT_SUCCESS;
