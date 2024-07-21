@@ -2,11 +2,11 @@
 
 ## Installing the dependencies
 
-*Shizu Runtime* requires
+Building *Shizu Runtime* with *GCC* requires
 - *make* Version 4.3.0 or better.
 - *gcc* Version 11.4.0 or better.
 - *cmake* Version 3.29.6 or better.
-- *git* version 2.39.2 or better.
+- Optional: *git* version 2.39.2 or better.
 - Optional: *gdb* Version 12.1 or better.
 
 In apt-enabled distributions:
@@ -20,7 +20,7 @@ The following instructions will perform an out-of-source build. An out-of-source
 by storing any build file, intermediate file, or product file in a dedicated build directory outside of the source directory.
 An out of source build is the recommended way of building *Shizu Runtime*.
 
-- Checkout `Shizu` [https://github.com/shizu-org/shizu-runtime.git](https://github.com/shizu-org/shizu-runtime.git) into a directory in your file system.
+- Checkout `Shizu Runtime` [https://github.com/shizu-org/shizu-runtime.git](https://github.com/shizu-org/shizu-runtime.git) into a directory in your file system.
   For the remainder of this manual, we call this directory *source directory* and denote it in command-line prompts by the meta variable `<source-directory>`.
 - Create a directory outside of the *source directory* in which the build will be performed.
   That directory *must not* reside in the source directory `<source-directory>`.
