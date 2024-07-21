@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-set(name ${Shizu.Runtime.project-name}.Runtime.Test.BigInteger)
+set(name ${Shizu.project-name}.Test.BigInteger)
 
 Shizu_beginExecutable()
 
@@ -27,7 +27,7 @@ list(APPEND ${name}.source_files Sources/Shizu.Runtime.Test.BigInteger/Main.c)
 
 Shizu_endExecutable()
 
-target_link_libraries(${name} PRIVATE ${Shizu.Runtime.project-name})
+target_link_libraries(${name} PRIVATE ${Shizu.project-name})
 
 add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
 

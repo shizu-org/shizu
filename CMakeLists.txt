@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2023-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -22,11 +22,11 @@
 cmake_minimum_required(VERSION 3.29)
 
 # Set the project name.
-project(Shizu.Runtime LANGUAGES C)
-set(Shizu.Runtime.project-name "Shizu.Runtime")
+project(Shizu LANGUAGES C)
+set(Shizu.project-name "Shizu")
 
 # To simply things.
-set(name "Shizu.Runtime")
+set(name "Shizu")
 
 # Enable testing.
 enable_testing()

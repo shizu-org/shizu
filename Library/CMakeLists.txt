@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-set(name ${Shizu.Runtime.project-name})
+set(name ${Shizu.project-name})
 
 Shizu_beginLibrary()
 
@@ -187,7 +187,7 @@ list(APPEND ${name}.configuration_files ${CMAKE_CURRENT_BINARY_DIR}/Includes/Shi
 
 Shizu_endLibrary()
 
-set_target_properties(Shizu.Runtime PROPERTIES modules "")
+set_target_properties(Shizu PROPERTIES modules "")
 
 target_link_libraries(${name} idlib-file-system idlib-bit-scan idlib-byte-sequence idlib-process)
 

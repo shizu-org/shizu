@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2023-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,6 +19,6 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-set(moduleName Shizu.Runtime.Modules.FileSystem)
+set(moduleName Shizu.Modules.FileSystem)
 add_subdirectory(DynamicLibrary)
 add_subdirectory(Tests)

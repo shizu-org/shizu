@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -35,8 +35,8 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${${name}.source_files})
 target_include_directories(${name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Sources)
 target_include_directories(${name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Sources)
 
-target_link_libraries(${name} Shizu.Runtime)
-add_dependencies(${name} Shizu.Runtime)
+target_link_libraries(${name} Shizu)
+add_dependencies(${name} Shizu)
 
 add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
 

@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -28,8 +28,8 @@ list(APPEND ${name}.source_files Sources/Main.c)
 
 Shizu_endExecutable()
 
-target_link_libraries(${name} Shizu.Runtime)
-add_dependencies(${name} Shizu.Runtime)
+target_link_libraries(${name} Shizu)
+add_dependencies(${name} Shizu)
 
 add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
 

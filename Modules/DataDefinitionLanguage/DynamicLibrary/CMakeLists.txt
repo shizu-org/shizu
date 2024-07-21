@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -37,11 +37,11 @@ list(APPEND ${name}.header_files Includes/DataDefinitionLanguage/Atoms.h)
 
 Shizu_endDynamicLibrary()
 
-target_link_libraries(${name} Shizu.Runtime)
+target_link_libraries(${name} Shizu)
 
 # Add the `Shizu.Runntime.Module.FileSystem` module to the prerequisite modules of this module.
 get_target_property(prerequisiteModules ${name} prerequisiteModules)
-list(APPEND prerequisiteModules Shizu.Runtime.Modules.FileSystem)
+list(APPEND prerequisiteModules Shizu.Modules.FileSystem)
 set_target_properties(${name} PROPERTIES prerequisiteModules "${prerequisiteModules}")
 
 on_executable(${name})

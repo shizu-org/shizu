@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -52,8 +52,8 @@ Shizu_endDynamicLibrary()
 # Setup the list of prerequisite modules.
 set_target_properties(${name} PROPERTIES prerequisiteModules "")
 
-target_link_libraries(${name} Shizu.Runtime)
-add_dependencies(${name} Shizu.Runtime)
+target_link_libraries(${name} Shizu)
+add_dependencies(${name} Shizu)
 get_target_property(prerequisiteModules ${name} prerequisiteModules)
 message(STATUS " - adding prerequisite modules")
 foreach (prerequisiteModule ${prerequisiteModules})
@@ -64,7 +64,6 @@ endforeach()
 
 # For each MyTarget in this list and your executable target YourTarget you need to copy <$TARGET_FILE:MyTarget> to <TARGET_FILE_DIR:YourTarget>.
 set(modules "")
-get_target_property(modules Shizu.Runtime modules)
-#message(STATUS "${name} modules: ${modules}")
+get_target_property(modules Shizu modules)
 list(APPEND modules ${name})
-set_target_properties(Shizu.Runtime PROPERTIES modules "${modules}")
+set_target_properties(Shizu PROPERTIES modules "${modules}")
