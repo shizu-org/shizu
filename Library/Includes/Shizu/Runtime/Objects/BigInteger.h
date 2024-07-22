@@ -59,6 +59,49 @@ struct Shizu_BigInteger_Dispatch {
   Shizu_Object_Dispatch _parent;
 };
 
+/// @brief Compare this big integer with another big integer.
+/// @return
+/// - 0 if both are equal.
+/// - -1 if this big integer is smaller than the other big integer.
+/// - +1 if this big integer is greater than the other big integer.
+Shizu_Integer32
+Shizu_BigInteger_compare
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_BigInteger* other
+  );
+
+/// @brief Compare this big integer with a 32 bit two's complement integer.
+/// @return
+/// - 0 if both are equal.
+/// - -1 if this big integer is smaller than the 32 bit two's complement integer.
+/// - +1 if this big integer is greater than the 32 bit two's complement integer.
+Shizu_Integer32
+Shizu_BigInteger_compareInteger32
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer32 other
+  );
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+/// @brief Compare this big integer with a 64 bit two's complement integer.
+/// @return
+/// - 0 if both are equal.
+/// - -1 if this big integer is smaller than the 64 bit two's complement integer.
+/// - +1 if this big integer is greater than the 64 bit two's complement integer.
+Shizu_Integer32
+Shizu_BigInteger_compareInteger64
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer64 other
+  );
+
+#endif
+
 Shizu_Boolean
 Shizu_BigInteger_isZero
   (
@@ -98,6 +141,13 @@ Shizu_BigInteger_createFromInteger64
 #endif
 
 Shizu_BigInteger*
+Shizu_BigInteger_createFromString
+  (
+    Shizu_State2* state,
+    Shizu_String* v
+  );
+
+Shizu_BigInteger*
 Shizu_BigInteger_createFromBigInteger
   (
     Shizu_State2* state,
@@ -119,18 +169,38 @@ Shizu_BigInteger_toString
     Shizu_BigInteger* self
   );
 
-void
-Shizu_BigInteger_add
+Shizu_Integer32
+Shizu_BigInteger_toInteger32
   (
     Shizu_State2* state,
     Shizu_BigInteger* self
   );
 
-void
-Shizu_BigInteger_multiply
+#if 1 == Shizu_Configuration_WithInteger64
+
+Shizu_Integer64
+Shizu_BigInteger_toInteger64
   (
     Shizu_State2* state,
     Shizu_BigInteger* self
+  );
+
+#endif
+
+Shizu_BigInteger*
+Shizu_BigInteger_add
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_BigInteger* other
+  );
+
+Shizu_BigInteger*
+Shizu_BigInteger_subtract
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_BigInteger* other
   );
 
 #endif // SHIZU_RUNTIME_OBJECTS_BIGINTEGER_H_INCLUDED

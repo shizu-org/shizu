@@ -19,11 +19,11 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-set(name ${Shizu.project-name}.Runtime.Test.ByteArray)
+set(name ${Shizu.project-name}.Test.ByteArray)
 
 Shizu_beginExecutable()
 
-list(APPEND ${name}.source_files Sources/Shizu.Runtime.Test.ByteArray/Main.c)
+list(APPEND ${name}.source_files Sources/Shizu.Test.ByteArray/Main.c)
 
 Shizu_endExecutable()
 

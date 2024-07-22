@@ -109,6 +109,8 @@ list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger/fromIn
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/fromInteger32.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger/fromInteger64.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/fromInteger64.h)
+list(APPEND ${name}.header_files Sources/Shizu/Runtime/Objects/BigInteger/compareMagnitudes.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/compareMagnitudes.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Module.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
@@ -118,8 +120,8 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Object.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/Include.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/Include.h)
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/ToInteger32.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/ToInteger32.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/ToInteger.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/ToInteger.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/ToFloat32.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/ToFloat32.h)
 
@@ -195,7 +197,7 @@ Shizu_endLibrary()
 
 set_target_properties(Shizu PROPERTIES modules "")
 
-target_link_libraries(${name} idlib-file-system idlib-bit-scan idlib-byte-sequence idlib-process)
+target_link_libraries(${name} IdLib.FileSystem IdLib.BitScan IdLib.ByteSequence idlib-process)
 
 # We must define _GNU_SOURCE under Linux.
 if (${${name}.operating_system_id} EQUAL ${${name}.operating_system_id_linux})

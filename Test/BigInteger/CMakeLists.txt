@@ -23,7 +23,25 @@ set(name ${Shizu.project-name}.Test.BigInteger)
 
 Shizu_beginExecutable()
 
-list(APPEND ${name}.source_files Sources/Shizu.Runtime.Test.BigInteger/Main.c)
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/Main.c)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testFromInteger.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testFromInteger.h)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testType.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testType.h)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testDefault.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testDefault.h)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testToInteger.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testToInteger.h)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testArithmetic.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testArithmetic.h)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testFromString.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testFromString.h)
 
 Shizu_endExecutable()
 

@@ -113,9 +113,12 @@ Shizu_String_isEqualToImpl
   )
 {
   if (!Shizu_Value_isObject(other)) {
-    return false;
+    return Shizu_Boolean_False;
   }
   Shizu_Object* otherObject = Shizu_Value_getObject(other);
+  if ((Shizu_Object*)self == otherObject) {
+    return Shizu_Boolean_True;
+  }
   if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Object_getObjectType(state, otherObject), Shizu_String_getType(state))) {
     Shizu_String* x = self;
     Shizu_String* y = (Shizu_String*)otherObject;

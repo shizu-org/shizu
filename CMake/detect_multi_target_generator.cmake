@@ -1,5 +1,5 @@
 #
-# IdLib Runtime
+# Shizu
 # Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,13 +19,19 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# Macro to detect a multi target generator is used.
-# Set ${target}.is_multi_target_generator to "YES" (a multi target generator is used) or "NO" (a single target generator is used).
-# @param target The target.
-# @todo Use "https://cmake.org/cmake/help/latest/prop_gbl/GENERATOR_IS_MULTI_CONFIG.html".
+# SUMMARY
+# Detect if aa multi target generator is used.
+#
+# DETAIL
+# Define ${target}.is_multi_target_generator to "YES" (a multi target generator is used) or "NO" (a single target generator is used).
+# 
+# PARAM target The target.
+#
+# TODO
+# Use "https://cmake.org/cmake/help/latest/prop_gbl/GENERATOR_IS_MULTI_CONFIG.html".
 macro(Shizu_detectMultiTargetGenerator target)
   if (NOT DEFINED ${target}.compiler_c)
-    message(FATAL_ERROR "please execute detect_compiler before Shizu_detectMultiTargetGenerator")
+    message(FATAL_ERROR "please execute Shizu_detectCompilerC before Shizu_detectMultiTargetGenerator")
   endif()
   if (${target}.compiler_c STREQUAL ${target}.compiler_c_msvc)
     set(${target}.is_multi_target_generator YES)
@@ -33,4 +39,4 @@ macro(Shizu_detectMultiTargetGenerator target)
     set(${target}.is_multi_target_generator NO)
   endif()
   message(STATUS " - ${target} multi-target generator: ${${target}.is_multi_target_generator}")
-endmacro(Shizu_detectMultiTargetGenerator)
+endmacro()

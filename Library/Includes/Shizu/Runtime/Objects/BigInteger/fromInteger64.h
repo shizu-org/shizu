@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_OBJECT_BIGINTEGER_FROMINTEGER64_H_INCLUDED)
-#define SHIZU_RUNTIME_OBJECT_BIGINTEGER_FROMINTEGER64_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_BIGINTEGER_FROMINTEGER64_H_INCLUDED)
+#define SHIZU_OBJECTS_BIGINTEGER_FROMINTEGER64_H_INCLUDED
 
 #include "Shizu/Runtime/Value.h"
 
@@ -39,4 +39,4 @@ Shizu_BigInteger_fromInteger64
 #endif // 1 == Shizu_Configuration_WithInteger64
 
 
-#endif // SHIZU_RUNTIME_OBJECT_BIGINTEGER_FROMINTEGER64_H_INCLUDED
+#endif // SHIZU_OBJECTS_BIGINTEGER_FROMINTEGER64_H_INCLUDED

@@ -1,5 +1,5 @@
 #
-# IdLib Runtime
+# Shizu
 # Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,14 +19,17 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# Macro to define an enumeration of C compilers and detect what C compiler is used.
+# SUMMARY
+# Define an enumeration of C compilers and detect the C compiler.
 #
-# First, the enumeration constants ${target}_compiler_c_(unknown|clang|msvc|gcc) are defined.
-# Each constant is a string of an unique name identifying a C compiler.
+# DETAIL
+# Define an enumeration of C compilers and detect the C compiler.
+# The detailed steps are:
+# a) The enumeration constants ${target}_compiler_c_(unknown|clang|msvc|gcc) are defined.
+#     Each constant is a string of an unique name identifying a C compiler.
+# b) The constant ${target}.compiler_c is set to the {target}.compiler_c_* values denoting the detected C compiler.
 #
-# Second, the constant ${target}.compiler_c is set to the {target}.compiler_c_* values denoting the detected C compiler.
-#
-# @param target The target.
+# PARAM target The target.
 macro(Shizu_detectCompiler_C target)
   # An unknown compiler.
   set(${target}.compiler_c_unknown "<unknown compiler>")

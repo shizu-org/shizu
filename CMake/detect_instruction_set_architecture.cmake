@@ -1,5 +1,5 @@
 #
-# IdLib Runtime
+# Shizu
 # Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,14 +19,18 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# Macro to define an enumeration of instruction set architectures and detect the instruction set architecture.
+# SUMMARY
+# Define an enumeration of instruction set architectures and detect the instruction set architecture.
 #
-# First, the enumeration constants ${target}.instruction_set_architecture_(x86|x64) are defined.
-# Each constant is a string of an unique name identifying an instruction set architecture.
+# DETAIL
+# Define an enumeration of instruction set architectures and detect the instruction set architecture.
+# The detailed steps are:
+# a) Define an enumeration of instruction set architectures.
+#    The enumeration constants ${target}.instruction_set_architecture_(x86|x64) are defined.
+#    Each constant is a string of an unique name identifying an instruction set architecture.
+# b) The constant ${target}.instruction_set_architecture is defined to the ${target}.instruction_set_architecture_* value denoting the detected instruction set architecture.
 #
-# Second, the constant ${target}.instruction_set_architecture is defined to the ${target}.instruction_set_architecture_* value denoting the detected instruction set architecture.
-#
-# @param target The target.
+# PARAM target The target.
 macro(Shizu_detectInstructionSetArchitecture target)
   # Unknown instruction set architecture.
   set(${target}.instruction_set_architecture_unknown "<unknown instruction set architecture>")
@@ -38,7 +42,7 @@ macro(Shizu_detectInstructionSetArchitecture target)
   set(${target}.instruction_set_architecture_x64 "x64")
 
   # Initialize if not yet initialized.
-  if (NOT DEFINED ${target_name}.compiler_c)
+  if (NOT DEFINED ${target_name}.instruction_set_architecture)
     set(${target}.instruction_set_architecture ${${target}.instruction_set_architecture_unknown})
   endif()
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)

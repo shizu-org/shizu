@@ -32,12 +32,21 @@
 
 #include "Shizu/Runtime/Objects/BigInteger/fromInteger32.h"
 #include "Shizu/Runtime/Objects/BigInteger/fromInteger64.h"
+#include "Shizu/Runtime/Objects/BigInteger/fromString.h"
+#include "Shizu/Runtime/Objects/BigInteger/compareMagnitudes.h"
 
 static void
 Shizu_BigInteger_finalize
   (
     Shizu_State2* state,
     Shizu_BigInteger* self
+  );
+
+static void
+Shizu_BigInteger_initializeDispatch
+  (
+    Shizu_State1* state,
+    Shizu_BigInteger_Dispatch* self
   );
 
 static void
@@ -49,16 +58,31 @@ Shizu_BigInteger_constructImpl
     Shizu_Value* argumentValues
   );
 
+static Shizu_Integer32
+Shizu_BigInteger_getHashValueImpl
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self
+  );
+
+static Shizu_Boolean
+Shizu_BigInteger_isEqualToImpl
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Value const* other
+  );
+
 static Shizu_ObjectTypeDescriptor const Shizu_BigInteger_Type = {
   .postCreateType = (Shizu_PostCreateTypeCallback*)NULL,
   .preDestroyType = (Shizu_PreDestroyTypeCallback*)NULL,
-  .visitType = NULL,
+  .visitType = (Shizu_VisitTypeCallback*)NULL,
   .size = sizeof(Shizu_BigInteger),
   .construct = &Shizu_BigInteger_constructImpl,
   .visit = (Shizu_OnVisitCallback*)NULL,
   .finalize = (Shizu_OnFinalizeCallback*)&Shizu_BigInteger_finalize,
   .dispatchSize = sizeof(Shizu_BigInteger_Dispatch),
-  .dispatchInitialize = NULL,
+  .dispatchInitialize = (Shizu_OnDispatchInitializeCallback*)&Shizu_BigInteger_initializeDispatch,
   .dispatchUninitialize = NULL,
 };
 
@@ -75,6 +99,73 @@ Shizu_BigInteger_finalize
   self->p = NULL;
   self->n = 0;
 }
+
+static void
+Shizu_BigInteger_initializeDispatch
+  (
+    Shizu_State1* state,
+    Shizu_BigInteger_Dispatch* self
+  )
+{
+  ((Shizu_Object_Dispatch*)self)->getHashValue = (Shizu_Integer32(*)(Shizu_State2*, Shizu_Object*)) & Shizu_BigInteger_getHashValueImpl;
+  ((Shizu_Object_Dispatch*)self)->isEqualTo = (Shizu_Boolean(*)(Shizu_State2*, Shizu_Object*, Shizu_Value const*)) & Shizu_BigInteger_isEqualToImpl;
+}
+
+Shizu_Integer32
+Shizu_BigInteger_compare
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_BigInteger* other
+  )
+{
+  if (self->sign == other->sign) {
+    return compareMagnitudes(state, self->p, self->n, other->p, other->n); 
+  } else {
+    // We have different signs: If self->sign = true then other->sign = false, that is, "other" is negative and "self" is non-negative.
+    // Hence "self" is greater than other "other" and we return +1. Otherwise "self" is less than "other" and we return -1.
+    return self->sign ? +1 : -1;
+  }
+}
+
+Shizu_Integer32
+Shizu_BigInteger_compareInteger32
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer32 other
+  )
+{
+  bool sign = other >= INT32_C(0);
+  // Fast path: If the signs are different, then the non-negative one is greater.
+  if (self->sign != sign) {
+    return self->sign ? +1 : -1;
+  }
+  // Slow path: The signs are equal.
+  return Shizu_BigInteger_compare(state, self, Shizu_BigInteger_createFromInteger32(state, other));
+
+}
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+Shizu_Integer32
+Shizu_BigInteger_compareInteger64
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer64 other
+  )
+{
+  bool sign = other >= INT64_C(0);
+  // Fast path: If the signs are different, then the non-negative one is greater.
+  if (self->sign != sign) {
+    return self->sign ? +1 : -1;
+  }
+  // Slow path: The signs are equal.
+  return Shizu_BigInteger_compare(state, self, Shizu_BigInteger_createFromInteger64(state, other));
+}
+
+#endif
 
 Shizu_Boolean
 Shizu_BigInteger_isZero
@@ -111,7 +202,7 @@ Shizu_BigInteger_constructFromBigInteger
 {
   SELF->n = other->n;
   SELF->sign = other->sign;
-  SELF->p = Shizu_State1_allocate(Shizu_State2_getState1(state), other->n);
+  SELF->p = Shizu_State1_allocate(Shizu_State2_getState1(state), other->n * sizeof(uint8_t));
   if (!SELF->p) {
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);
@@ -119,16 +210,6 @@ Shizu_BigInteger_constructFromBigInteger
   for (size_t i = 0, n = SELF->n; i < n; ++i) {
     SELF->p[i] = other->p[i];
   }
-}
-
-static void
-Shizu_BigInteger_constructFromString
-  (
-    Shizu_State2* state,
-    Shizu_BigInteger* SELF,
-    Shizu_String* other
-  )
-{
 }
 
 static void
@@ -158,7 +239,7 @@ Shizu_BigInteger_constructImpl
       if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), object->type, Shizu_BigInteger_getType(state))) {
         Shizu_BigInteger_constructFromBigInteger(state, SELF, (Shizu_BigInteger*)object);
       } else if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), object->type, Shizu_String_getType(state))) {
-        Shizu_BigInteger_constructFromString(state, SELF, (Shizu_String*)object);
+        Shizu_BigInteger_fromString(state, (Shizu_String*)object, &SELF->sign, &SELF->p, &SELF->n);
       } else {
         Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
         Shizu_State2_jump(state);
@@ -178,6 +259,40 @@ Shizu_BigInteger_constructImpl
     Shizu_State2_jump(state);
   }
   ((Shizu_Object*)SELF)->type = TYPE;
+}
+
+static Shizu_Integer32
+Shizu_BigInteger_getHashValueImpl
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self
+  )
+{
+  return (self->sign ? 1231 : 1237) + (self->p[0] * self->n);
+}
+
+static Shizu_Boolean
+Shizu_BigInteger_isEqualToImpl
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Value const* other
+  )
+{
+  if (!Shizu_Value_isObject(other)) {
+    return Shizu_Boolean_False;
+  }
+  Shizu_Object* otherObject = Shizu_Value_getObject(other);
+  if ((Shizu_Object*)self == otherObject) {
+    return Shizu_Boolean_True;
+  }
+  if (Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Object_getObjectType(state, otherObject), Shizu_BigInteger_getType(state))) {
+    Shizu_BigInteger* x = self;
+    Shizu_BigInteger* y = (Shizu_BigInteger*)otherObject;
+    return x->sign == y->sign && !compareMagnitudes(state, x->p, x->n, y->p, y->n);
+  } else {
+    return Shizu_Boolean_False;
+  }
 }
 
 Shizu_BigInteger*
@@ -234,6 +349,23 @@ Shizu_BigInteger_createFromInteger64
 #endif
 
 Shizu_BigInteger*
+Shizu_BigInteger_createFromString
+  (
+    Shizu_State2* state,
+    Shizu_String* v
+  )
+{
+  Shizu_Type* TYPE = Shizu_BigInteger_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_BigInteger* SELF = (Shizu_BigInteger*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
+  Shizu_Value argumentValues[] = { Shizu_Value_InitializerObject(SELF),
+                                   Shizu_Value_InitializerObject(v), };
+  DESCRIPTOR->construct(state, &returnValue, 2, &(argumentValues[0]));
+  return SELF;
+}
+
+Shizu_BigInteger*
 Shizu_BigInteger_createFromBigInteger
   (
     Shizu_State2* state,
@@ -248,28 +380,6 @@ Shizu_BigInteger_createFromBigInteger
                                    Shizu_Value_InitializerObject(v), };
   DESCRIPTOR->construct(state, &returnValue, 2, &(argumentValues[0]));
   return SELF;
-}
-
-Shizu_Boolean
-Shizu_BigInteger_isEqualTo
-  (
-    Shizu_State2* state,
-    Shizu_BigInteger* self,
-    Shizu_BigInteger* other
-  )
-{
-  if (self == other) {
-    return Shizu_Boolean_True;
-  }
-  if (self->n != other->n) {
-    return Shizu_Boolean_False;
-  }
-  for (size_t i = 0, n = self->n; i < n; ++i) {
-    if (self->p[i] != other->p[i]) {
-      return Shizu_Boolean_False;
-    }
-  }
-  return Shizu_Boolean_True;
 }
 
 Shizu_String*
@@ -295,4 +405,290 @@ Shizu_BigInteger_toString
     Shizu_ByteArray_appendRawBytes(state, buffer, &c, sizeof(uint8_t));
   }
   return Shizu_String_create(state, Shizu_ByteArray_getRawBytes(state, buffer), Shizu_ByteArray_getNumberOfRawBytes(state, buffer));
+}
+
+// if |x| >= |y| compute |x| - |y| and return true.
+// otherwise compute |y| - |x| and return false. 
+static bool
+subtractDigits
+  (
+    Shizu_State2* state,
+    uint8_t const* x,
+    Shizu_Integer32 xn,
+    uint8_t const* y,
+    Shizu_Integer32 yn,
+    uint8_t** pz,
+    Shizu_Integer32* pzn
+  )
+{
+  Shizu_Integer32 compareResult = compareMagnitudes(state, x, xn, y, yn);
+  if (compareResult < 0) {
+    uint8_t const* t = x;
+    x = y;
+    y = t;
+    Shizu_Integer32 tn = xn;
+    xn = yn;
+    yn = tn;
+  }
+  Shizu_Integer32 zn = xn;
+  uint8_t* z = Shizu_State1_allocate(Shizu_State2_getState1(state), zn);
+  if (!z) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  bool borrow = false;
+  // Subtract common part.
+  while (yn > 0) {
+    uint8_t u = x[--xn];
+    uint8_t v = y[--yn] + (borrow ? 1 : 0);
+    uint8_t r = (u < v) ? v - u : u - v;
+    bool borrow = (u < v);
+    z[xn] = r;
+  }
+  // Subtract part specific to the longer number while propagating borrow.
+  while (xn > 0 && borrow) { 
+    uint8_t u = x[--xn];
+    uint8_t v = (borrow ? 1 : 0);
+    uint8_t r = (u < v) ? v - u : u - v;
+    bool borrow = (u < v);
+    z[xn] = r;
+  }
+  // Subtract part specific to the longer number.
+  while (xn > 0)  {
+    z[--xn] = x[xn];
+  }
+  *pz = z;
+  *pzn = zn;
+  return compareResult >= 0;
+}
+
+static void
+addDigits
+  (
+    Shizu_State2* state,
+    uint8_t const* x,
+    Shizu_Integer32 xn,
+    uint8_t const* y,
+    Shizu_Integer32 yn,
+    uint8_t** pz,
+    Shizu_Integer32* pzn
+)
+{
+  if (xn < yn) {
+    uint8_t const* t1 = x;
+    x = y;
+    y = t1;
+    Shizu_Integer32 t2 = xn;
+    xn = yn;
+    yn = t2;
+  }
+  Shizu_Integer32 zn = xn;
+  uint8_t* z = Shizu_State1_allocate(Shizu_State2_getState1(state), xn);
+  if (!z) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  bool carry = false;
+  // Add common part.
+  while (yn > 0) {
+    uint8_t r = x[--xn] + y[--yn] + (carry ? 1 : 0);
+    z[xn] = r % 10;
+    carry = r / 10;
+  }
+  // Add part specific to the longer number while propagating carry.
+  while (xn > 0 && carry) {
+    carry = (0 == (z[--xn] = x[xn] + 1));
+  }
+  // Add part specific to the longer number.
+  while (xn > 0) {
+    z[--xn] = x[xn];
+  }
+  // Handle remaining carry (if any).
+  if (carry) {
+    uint8_t* w = Shizu_State1_allocate(Shizu_State2_getState1(state), zn + 1);
+    if (!w) {
+      Shizu_State1_deallocate(Shizu_State2_getState1(state), z);
+      Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+      Shizu_State2_jump(state);
+    }
+    memcpy(w + 1, z, zn);
+    w[0] = carry;
+    zn++;
+    Shizu_State1_deallocate(Shizu_State2_getState1(state), z);
+    z = w;
+  }
+  *pz = z;
+  *pzn = zn;
+}
+
+Shizu_Integer32
+Shizu_BigInteger_toInteger32
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self
+  )
+{
+  // If we could store somewhere Shizu_Integer32_Minimum and Shizu_Integer32_Maximum as Shizu_BigInteger values,
+  // then a test if this would overflow would be very fast.
+  if (Shizu_BigInteger_compareInteger32(state, self, Shizu_Integer32_Minimum) < 0) {
+    Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+    Shizu_State2_jump(state);
+  }
+  if (Shizu_BigInteger_compareInteger32(state, self, Shizu_Integer32_Maximum) > 0) {
+    Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer32 v = 0;
+  for (size_t i = 0, n = self->n; i < n; ++i) {
+    uint8_t digit = self->p[i];
+    v *= 10;
+    v += digit;
+  }
+  if (!self->sign) {
+    v *= -1;
+  }
+  return v;
+}
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+Shizu_Integer64
+Shizu_BigInteger_toInteger64
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self
+  )
+{
+  // If we could store somewhere Shizu_Integer75_Minimum and Shizu_Integer64_Maximum as Shizu_BigInteger values,
+  // then a test if this would overflow would be very fast.
+  if (Shizu_BigInteger_compareInteger64(state, self, Shizu_Integer64_Minimum) < 0) {
+    Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+    Shizu_State2_jump(state);
+  }
+  if (Shizu_BigInteger_compareInteger64(state, self, Shizu_Integer64_Maximum) > 0) {
+    Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Integer64 v = 0;
+  for (size_t i = 0, n = self->n; i < n; ++i) {
+    uint8_t digit = self->p[i];
+    v *= 10;
+    v += digit;
+  }
+  if (!self->sign) {
+    v *= -1;
+  }
+  return v;
+}
+
+#endif
+
+Shizu_BigInteger*
+Shizu_BigInteger_add
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_BigInteger* other
+  )
+{
+  if (Shizu_BigInteger_isZero(state, self)) {
+    return other;
+  }
+  if (Shizu_BigInteger_isZero(state, other)) {
+    return self;
+  }
+  Shizu_Type* TYPE = Shizu_BigInteger_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_BigInteger* RESULT = (Shizu_BigInteger*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Object_construct(state, (Shizu_Object*)RESULT);
+  // Neither "self" nor "other" is zero. If their signs are equal, then this reduces to an addition of the magnitudes of "self" and "other"
+  // and the sign of the result is the sign of "self". Otherwise we invoke "subtractDigits". If "subtractDigits" returns "true" then "self"
+  // >= "other" and hence the sign is the sign of "self". If "subtractDigits" returns "false" then "self" < "other" and the sign is the
+  // sign of "other". "subtractDigits" may return a number of leading zeroes, we also fix that.
+  if (self->sign == other->sign) {
+    // Signs are the same. Add magnitudes. Retain sign.
+    RESULT->sign = self->sign;
+    addDigits(state, self->p, self->n, other->p, other->n, &RESULT->p, &RESULT->n);
+  } else {
+    // Signs are different.
+    bool result = subtractDigits(state, self->p, self->n, other->p, other->n, &RESULT->p, &RESULT->n);
+    RESULT->sign = result ? self->sign : other->sign;
+    // Remove leading zeroes and adjust sign.
+    size_t count = 0;
+    for (size_t i = 0, n = RESULT->n; i < n; ++i) {
+      if (RESULT->p[0]) {
+        break;
+      } else {
+        count++;
+      }
+    }
+    if (count) {
+      // Do not remove the only remaining zero.
+      if (count == RESULT->n) {
+        count--;
+      }
+      memmove(RESULT->p, RESULT->p + count, RESULT->n - count);
+      RESULT->n -= count;
+    }
+    if (RESULT->n == 1 && !RESULT->p[0]) {
+      RESULT->sign = Shizu_Boolean_True;
+    }
+  }
+  //
+  ((Shizu_Object*)RESULT)->type = TYPE;
+  return RESULT;
+}
+
+Shizu_BigInteger*
+Shizu_BigInteger_subtract
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_BigInteger* other
+  )
+{
+  if (Shizu_BigInteger_isZero(state, self)) {
+    return Shizu_BigInteger_negate(state, other);
+  }
+  if (Shizu_BigInteger_isZero(state, other)) {
+    return self;
+  }
+  Shizu_Type* TYPE = Shizu_BigInteger_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_BigInteger* RESULT = (Shizu_BigInteger*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Object_construct(state, (Shizu_Object*)RESULT);
+  // Neither "self" nor "other" is zero. If their signs are different, then this reduces to an addition of the magnitudes of "self" and "other"
+  // and the sign of the result is the sign of "self". Otherwise we invoke "subtractDigits". If "subtractDigits" returns "true" then "self"
+  // >= "other" and hence the sign is the sign of "self". If "subtractDigits" returns "false" then "self" < "other" and the sign is the
+  // sign of minus "self". "subtractDigits" may return a number of leading zeroes, we also fix that.
+  if (self->sign != other->sign) {
+    RESULT->sign = self->sign;
+    addDigits(state, self->p, self->n, other->p, other->n, &RESULT->p, &RESULT->n);
+  } else {
+    bool result = subtractDigits(state, self->p, self->n, other->p, other->n, &RESULT->p, &RESULT->n);
+    RESULT->sign = result ? self->sign : !self->sign;
+    // Remove leading zeroes and adjust sign.
+    size_t count = 0;
+    for (size_t i = 0, n = RESULT->n; i < n; ++i) {
+      if (RESULT->p[0]) {
+        break;
+      } else {
+        count++;
+      }
+    }    
+    if (count) {
+      // Do not remove the only remaining zero.
+      if (count == RESULT->n) {
+        count--;
+      }
+      memmove(RESULT->p, RESULT->p + count, RESULT->n - count);
+      RESULT->n -= count;
+    }
+    if (RESULT->n == 1 && !RESULT->p[0]) {
+      RESULT->sign = Shizu_Boolean_True;;
+    }
+  }
+  //
+  ((Shizu_Object*)RESULT)->type = TYPE;
+  return RESULT;
 }

@@ -23,7 +23,7 @@ set(name ${Shizu.project-name}.Test.Fundamental)
 
 Shizu_beginExecutable()
 
-list(APPEND ${name}.source_files Sources/Shizu.Runtime.Test.Fundamental/Main.c)
+list(APPEND ${name}.source_files Sources/Shizu.Test.Fundamental/Main.c)
 
 Shizu_endExecutable()
 

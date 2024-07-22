@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,19 +19,23 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# Macro to define an enumeration of operating systems and detect the operating system.
+# SUMMARY
+# Define an enumeration of operating systems and detect the operating system.
 #
-# First, the enumeration constants ${target}.operating_system_(unknown|windows|unix|linux|macos|cygwin|msys|mingw|ios|ios_simulator) are defined.
-# Each constant is a string of an unique name identifying an operating system.
+# DETAIL
+# Define an enumeration of operating systems and detect the operating system.
+# The detailed steps are:
+# a) Define an enumeration of operating systems.
+#    The enumeration constants ${target}.operating_system_(unknown|windows|unix|linux|macos|cygwin|msys|mingw|ios|ios_simulator) are defined.
+#    Each constant is a string of an unique name identifying an operating system.
+# b) The constant ${target}.operating_system is defined to the ${target}.operating_system_* value denoting the detected operating system.
 #
-# Second, the constant ${target}.operating_system is defined to the ${target}.operating_system_* value denoting the detected operating system.
+# PARAM target The target.
 #
-# @param target The target.
-#
-# @remarks
-# - "mingw" and/or "msys" is a "toolchain". The "operating system" is still "windows".
-# - We are not aware of a reliable procedure to detect what Apple "operating system" is used.
-#   This configuration script detects "Mac OS" even if the "operating system" is "iOS", "iOS Simulator", "watchOS", ... from within CMake?
+# REMARKS:
+# - "MinGW" and "MSYS" is toolchains. The operating system is still "Windows".
+# - We are not aware of a reliable procedure to detect what Apple operating system is used.
+#   This configuration script detects "MacOS" even if the operating system is "iOS", "iOS Simulator", or "watchOS".
 macro(Shizu_detectOperatingSystem target)
   set(${target}.operating_system_unknown "<unknown operating system>")
 
@@ -53,7 +57,7 @@ macro(Shizu_detectOperatingSystem target)
 
   set(${target}.operating_system_ios_simulator "IOS SIMULATOR")
 
-  if (NOT DEFINED ${target}.operating_system_id)  
+  if (NOT DEFINED ${target}.operating_system)  
     set(${target}.operating_system ${${target}.operating_system_unknown})
     if (WIN32)
       set(${target}.operating_system ${${target}.operating_system_windows})

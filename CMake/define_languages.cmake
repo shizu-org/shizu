@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,12 +19,15 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# Macro to define an enumeration of languages.
+# SUMMARY
+# Define an enumeration of languages.
 #
+# DETAIL
+# Define an enumeration of languages.
 # The enumeration constants ${target}.language_(unknown|c|cpp|masm) are defined.
 # Each constant is a string of an unique name identifying a language.
 #
-# @param target The target.
+# PARAM target The target.
 macro(Shizu_defineLanguages target)
   # Unknown language.
   set(${target}.language_unknown "<unknown language>")

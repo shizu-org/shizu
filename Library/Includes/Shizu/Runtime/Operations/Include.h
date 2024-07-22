@@ -46,6 +46,19 @@ Shizu_Operations_toInteger32
     Shizu_Value* argumentValues
   );
 
+#if 1 == Shizu_Configuration_WithInteger64
+
+void
+Shizu_Operations_toInteger64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  );
+
+#endif
+
 /// Get the type of the specified name.
 /// @code
 /// returnValue <~ _getType(<name>)

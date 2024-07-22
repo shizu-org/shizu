@@ -89,17 +89,6 @@ isPeriod
   return '.' == self->symbol;
 }
 
-static inline Shizu_Boolean
-isExponentPrefix
-  (
-    Shizu_State2* state,
-    Parser* self
-  )
-{
-  return 'e' == self->symbol
-      || 'E' == self->symbol;
-}
-
 static inline void
 next
   (
@@ -111,12 +100,11 @@ next
     return;
   } else if (self->symbol != Symbol_StartOfInput) {
     self->current++;
+  }
+  if (self->current == self->end) {
+    self->symbol = Symbol_EndOfInput;
   } else {
-    if (self->current == self->end) {
-      self->symbol = Symbol_EndOfInput;
-    } else {
-      self->symbol = *self->current;
-    }
+    self->symbol = *self->current;
   }
 }
 
@@ -143,18 +131,23 @@ Parser_run
   }
   next(state, self);
   if (isSign(state, self)) {
-    uint8_t x = self->symbol;
-    Shizu_ByteArray_appendRawBytes(state, self->integral, &x, sizeof(uint8_t));
+    Shizu_debugAssert(Shizu_Boolean_True == self->sign);
+    if ('-' == self->symbol) {
+      self->sign = Shizu_Boolean_False;
+    }
     next(state, self);
   }
   if (!isDigit(state, self)) {
     syntacticalError(state, self);
   }
   do {
-    uint8_t x = self->symbol;
+    uint8_t x = (uint8_t)(self->symbol - (uint32_t)'0');
     Shizu_ByteArray_appendRawBytes(state, self->integral, &x, sizeof(uint8_t));
     next(state, self);
   } while (isDigit(state, self));
+  if (!isEndOfInput(state, self)) {
+    syntacticalError(state, self);
+  }
 }
 
 static inline void

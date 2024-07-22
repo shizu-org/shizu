@@ -30,7 +30,7 @@
 #include "Shizu/Runtime/CxxUtilities.h"
 
 #include "Shizu/Runtime/Operations/ToFloat32.h"
-#include "Shizu/Runtime/Operations/ToInteger32.h"
+#include "Shizu/Runtime/Operations/ToInteger.h"
 
 void
 Shizu_Operations_toFloat32
@@ -51,6 +51,20 @@ Shizu_Operations_toInteger32
     Shizu_Value* argumentValues
   )
 { Shizu_Operations_toInteger32Version1(state, returnValue, numberOfArgumentValues, argumentValues); }
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+void
+Shizu_Operations_toInteger64
+  (
+    Shizu_State2* state,
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
+  )
+{ Shizu_Operations_toInteger64Version1(state, returnValue, numberOfArgumentValues, argumentValues); }
+
+#endif
 
 void
 Shizu_Operations_getType

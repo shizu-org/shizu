@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,8 +19,15 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# For GCC: Turn several warnings into errors.
+# SUMMARY
+# Configure warnings and errors for a static libraries, module libraries, and executables.
+# 
+# DETAIL
+# Configure warnings and errors for a static libraries, module libraries, and executables.
+# For GCC:  Turn several warnings into errors.
 # For MSVC: Turn several warnings into errors.
+#
+# PARAM target The target.
 macro(Shizu_configureWarningsAndErrors target)
   if (NOT DEFINED ${target}.compiler_c)
     message(FATAL_ERROR "please execute detect_compiler before Shizu_configureWarningsAndErrors")
@@ -45,6 +52,8 @@ macro(Shizu_configureWarningsAndErrors target)
     list(APPEND ${target}.compile_options "/we4716")
     # C4013: 'function' undefined; assuming extern returning int
     list(APPEND ${target}.compile_options "/we4013")
+    # C4028: formal parameter 'number' different from declaration
+    list(APPEND ${target}.compile_options "/we4028")
 
     # The quotes around "${${target}.compile_options}" concatenate the list elements to a single string separated by semicolons.
     set_source_files_properties(${${target}.source_files} PROPERTIES COMPILE_OPTIONS "${${target}.compile_options}")

@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_OBJECT_BIGINTEGER_FROMSTRING_H_INCLUDED)
-#define SHIZU_RUNTIME_OBJECT_BIGINTEGER_FROMSTRING_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_BIGINTEGER_FROMSTRING_H_INCLUDED)
+#define SHIZU_OBJECTS_BIGINTEGER_FROMSTRING_H_INCLUDED
 
 #include "Shizu/Runtime/Value.h"
 #include "Shizu/Runtime/Objects/String.h"
@@ -36,4 +36,4 @@ Shizu_BigInteger_fromString
     uint32_t* n
   );
 
-#endif // SHIZU_RUNTIME_OBJECT_BIGINTEGER_FROMSTRING_H_INCLUDED
+#endif // SHIZU_OBJECTS_BIGINTEGER_FROMSTRING_H_INCLUDED

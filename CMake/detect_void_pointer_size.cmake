@@ -1,5 +1,5 @@
 #
-# Shizu Runtime
+# Shizu
 # Copyright (C) 2018-2024 Michael Heilmann. All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -19,8 +19,13 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-# Macro to define ${target}.sizeof_void_pointer.
-# @param target The target.
+# SUMMARY
+# Define ${target}.sizeof_void_pointer to the size, in Bytes, of a void pointer.
+#
+# DETAIL
+# Define ${target}.sizeof_void_pointer to the size, in Bytes, of a void pointer.
+# This is usually 4 (on 32 Bit systems) or 8 (on 64 Bit systems).
+# PARAM target The target.
 macro(Shizu_defineVoidPointerSize target)
   set(${target}.sizeof_void_pointer ${CMAKE_SIZEOF_VOID_P})
 endmacro()
