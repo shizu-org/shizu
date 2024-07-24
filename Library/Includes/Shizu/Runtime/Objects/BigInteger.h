@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_OBJECTS_BIGINTEGER_H_INCLUDED)
-#define SHIZU_RUNTIME_OBJECTS_BIGINTEGER_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_BIGINTEGER_H_INCLUDED)
+#define SHIZU_OBJECTS_BIGINTEGER_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
 #error("Do not include `Shizu/Runtime/Objects/BigInteger.h` directly. Include `Shizu/Runtime/Include.h` instead.")
@@ -154,14 +154,6 @@ Shizu_BigInteger_createFromBigInteger
     Shizu_BigInteger* v
   );
 
-Shizu_Boolean
-Shizu_BigInteger_isEqualTo
-  (
-    Shizu_State2* state,
-    Shizu_BigInteger* self,
-    Shizu_BigInteger* other
-  );
-
 Shizu_String*
 Shizu_BigInteger_toString
   (
@@ -203,4 +195,4 @@ Shizu_BigInteger_subtract
     Shizu_BigInteger* other
   );
 
-#endif // SHIZU_RUNTIME_OBJECTS_BIGINTEGER_H_INCLUDED
+#endif // SHIZU_OBJECTS_BIGINTEGER_H_INCLUDED

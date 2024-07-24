@@ -19,7 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_STRING_H_INCLUDED)
+#if !defined(SHIZU_OBJECTS_STRING_H_INCLUDED)
 #define SHIZU_RUNTIME_STRING_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE

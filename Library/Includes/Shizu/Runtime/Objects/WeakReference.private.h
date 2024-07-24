@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_WEAKREFERENCE_PRIVATE_H_INCLUDED)
-#define SHIZU_RUNTIME_WEAKREFERENCE_PRIVATE_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_WEAKREFERENCE_PRIVATE_H_INCLUDED)
+#define SHIZU_OBJECTS_WEAKREFERENCE_PRIVATE_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
   #error("Do not include `Shizu/Runtime/Objects/WeakReference.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
@@ -60,4 +60,4 @@ Shizu_WeakReferenceState_notifyObjectFinalize
     Shizu_Object* reference
   );
 
-#endif // SHIZU_RUNTIME_WEAKREFERENCE_PRIVATE_H_INCLUDED
+#endif // SHIZU_OBJECTS_WEAKREFERENCE_PRIVATE_H_INCLUDED

@@ -102,18 +102,6 @@ struct Shizu_Object_Dispatch {
 };
 
 struct Shizu_Object {
-  // Shizu_Object are kept in a singly-linked list.
-  Shizu_Object* next;
-  // Shizu_Object values are kept in the singly-linked "gray" list.
-  Shizu_Object* gray;
-  // Can assume the following values;
-  // - 1 (decimal) or 01 (binary).
-  // Indicates the color WHITE.
-  // - 2 (decimal) or 10 (binary).
-  // Indicates the color BLACK.
-  // - 3 (decimal) or 01 | 10 (binary).
-  // Indicates the color GRAY.
-  uint8_t flags;
   // Pointer to the Shizu_Type object.
   Shizu_Type* type;
 };

@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_H_INCLUDED)
-#define SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_ENVIRONMENT_H_INCLUDED)
+#define SHIZU_OBJECTS_ENVIRONMENT_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
 #error("Do not include `Shizu/Runtime/Objects/Environment.h` directly. Include `Shizu/Runtime/Include.h` instead.")
@@ -264,4 +264,4 @@ Shizu_Environment_isDefined
     Shizu_String* name
   );
 
-#endif // SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_H_INCLUDED
+#endif // SHIZU_OBJECTS_ENVIRONMENT_H_INCLUDED

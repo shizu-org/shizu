@@ -113,13 +113,13 @@ static void shutdown2(Shizu_State2* state) {
 }
 
 static void startup3(Shizu_State2* state) {
-  state->gc = Shizu_Gc_create(state->state1);
+  state->gc = Shizu_Gc_create(state);
 }
 
 static void shutdown3(Shizu_State2* state) {
   Shizu_debugAssert(NULL == state->stack);
   Shizu_debugAssert(NULL == state->locks);
-  Shizu_Gc_destroy(state->state1, state->gc);
+  Shizu_Gc_destroy(state, state->gc);
   state->gc = NULL;
 }
 

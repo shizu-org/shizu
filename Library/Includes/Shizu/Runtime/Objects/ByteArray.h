@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_OBJECTS_BYTEARRAY_H_INCLUDED)
-#define SHIZU_RUNTIME_OBJECTS_BYTEARRAY_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_BYTEARRAY_H_INCLUDED)
+#define SHIZU_OBJECTS_BYTEARRAY_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
   #error("Do not include `Shizu/Runtime/Objects/ByteArray.h` directly. Include `Shizu/Runtime/Include.h` instead.")
@@ -192,4 +192,4 @@ Shizu_ByteArray_reverse
     Shizu_ByteArray* a
   );
 
-#endif // SHIZU_RUNTIME_OBJECTS_BYTEARRAY_H_INCLUDED
+#endif // SHIZU_OBJECTS_BYTEARRAY_H_INCLUDED

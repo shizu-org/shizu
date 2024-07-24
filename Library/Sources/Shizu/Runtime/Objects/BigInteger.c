@@ -20,7 +20,7 @@
 */
 
 #define SHIZU_RUNTIME_PRIVATE (1)
-#include "Shizu/Runtime/Objects/Biginteger.h"
+#include "Shizu/Runtime/Objects/BigInteger.h"
 
 #include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"

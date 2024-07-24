@@ -19,7 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_MAP_PRIVATE_H_INCLUDED)
+#if !defined(SHIZU_OBJECTS_MAP_PRIVATE_H_INCLUDED)
 #define SHIZU_RUNTIME_MAP_PRIVATE_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
@@ -52,4 +52,4 @@ struct Shizu_Map {
   size_t capacity;
 };
 
-#endif // SHIZU_RUNTIME_MAP_PRIVATE_H_INCLUDED
+#endif // SHIZU_OBJECTS_MAP_PRIVATE_H_INCLUDED

@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_LIST_H_INCLUDED)
-#define SHIZU_RUNTIME_LIST_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_LIST_H_INCLUDED)
+#define SHIZU_OBJECTS_LIST_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
   #error("Do not include `Shizu/Runtime/Objects/List.h` directly. Include `Shizu/Runtime/Include.h` instead.")
@@ -203,4 +203,4 @@ Shizu_List_appendVoid
   Shizu_List_appendValue(state, self, &value);
 }
 
-#endif // SHIZU_RUNTIME_LIST_H_INCLUDED
+#endif // SHIZU_OBJECTS_LIST_H_INCLUDED

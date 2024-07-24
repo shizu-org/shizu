@@ -19,33 +19,45 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_OBJECTS_WEAKREFERENCE_H_INCLUDED)
-#define SHIZU_OBJECTS_WEAKREFERENCE_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_BIGFLOAT_H_INCLUDED)
+#define SHIZU_OBJECTS_BIGFLOAT_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
-  #error("Do not include `Shizu/Runtime/Objects/WeakReference.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
+#error("Do not include `Shizu/Runtime/Objects/BigFloat.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Object.h"
+typedef struct Shizu_BigInteger Shizu_BigInteger;
+typedef struct Shizu_String Shizu_String;
 
-/// The "weak references" state.
-/// @todo Rename to "Shizu_WeakReferencesState".
-typedef struct Shizu_WeakReferences Shizu_WeakReferences;
+/// @brief A big float implementation.
+/// @detail
+/// The Machine Language type is
+/// @code
+/// class Shizu.BigFloat
+/// @endcode
+/// Its constructor is
+/// @code
+/// Shizu.BigFloat.construct()
+/// @endcode
+/// A big float consists of an big integer (Shizu.BigInteger) <code>x</code> and a Shizu_Integer32 scale <code>s</code>.
+/// The value represented by a big float is given by <code>x 10^(-scale)</code>.
+/// The same numerical values can have different representions.
+Shizu_declareObjectType(Shizu_BigFloat);
 
-/// @since 1.0
-/// @since 1.0
-/// The CIL type
-/// @code
-/// class Shizu.WeakReference
-/// @endcode
-/// @details
-/// The CIL type
-/// @code
-/// class Shizu.WeakReference
-/// @endcode
-/// The signature of the Shizu.WeakReference constructor is
-/// @code
-/// Shizu.Map.construct(reference:Shizu.Object|Shizu.Void)
-/// @endcode
-Shizu_declareObjectType(Shizu_WeakReference);
+struct Shizu_BigFloat {
+  Shizu_Object _parent;
+  Shizu_BigInteger* integer;
+  Shizu_Integer32 scale;
+};
 
-#endif // SHIZU_OBJECTS_WEAKREFERENCE_H_INCLUDED
+struct Shizu_BigFloat_Dispatch {
+  Shizu_Object_Dispatch _parent;
+};
+
+Shizu_BigFloat*
+Shizu_BigFloat_create
+  (
+    Shizu_State2* state
+  );
+
+#endif // SHIZU_OBJECTS_BIGFLOAT_H_INCLUDED

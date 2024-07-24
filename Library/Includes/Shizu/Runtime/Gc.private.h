@@ -26,6 +26,7 @@
   #error("Do not include `Shizu/Runtime/Gc.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Gc.h"
+#include "Shizu/Gc/Include.h"
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -55,6 +56,8 @@ typedef struct Shizu_Gc Shizu_Gc;
 
 struct Shizu_Gc {
   int referenceCount;
+  /// The GCX type for "Shizu.Object".
+  Shizu_Gcx_Type* type;
   Shizu_Object* all;
   Shizu_Object* gray;
   struct {
@@ -77,7 +80,7 @@ struct Shizu_Gc {
 Shizu_Gc*
 Shizu_Gc_create
   (
-    Shizu_State1* state1
+    Shizu_State2* state
   );
 
 /// @since 1.0
@@ -87,7 +90,7 @@ Shizu_Gc_create
 void
 Shizu_Gc_destroy
   (
-    Shizu_State1* state1,
+    Shizu_State2* state,
     Shizu_Gc* self
   );
 
@@ -103,7 +106,7 @@ Shizu_Object_setWhite
 /// @since 1.0
 /// @brief Get if an Shizu_Object value is colored white.
 /// @param object A pointer to a Shizu_Object value.
-/// @return @a true if the object is color gray. @a false otherwise.
+/// @return @a true if the object is colored gray. @a false otherwise.
 bool
 Shizu_Object_isWhite
   (
@@ -122,7 +125,7 @@ Shizu_Object_setGray
 /// @since 1.0
 /// @brief Get if an Shizu_Object value is colored gray.
 /// @param object A pointer to a Shizu_Object value.
-/// @return @a true if the object is color gray. @a false otherwise.
+/// @return @a true if the object is colored gray. @a false otherwise.
 bool
 Shizu_Object_isGray
   (
@@ -141,7 +144,7 @@ Shizu_Object_setBlack
 /// @since 1.0
 /// @brief Get if an Shizu_Object value is colored black.
 /// @param object A pointer to a Shizu_Object value.
-/// @return @a true if the object is color black. @a false otherwise.
+/// @return @a true if the object is colored black. @a false otherwise.
 bool
 Shizu_Object_isBlack
   (

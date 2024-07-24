@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED)
-#define SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED
+#if !defined(SHIZU_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED)
+#define SHIZU_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED
 
 #if !defined(SHIZU_RUNTIME_PRIVATE) && 1 != SHIZU_RUNTIME_PRIVATE
   #error("Do not include `Shizu/Runtime/Objects/Environment.private.h` directly. Include `Shizu/Runtime/Include.h` instead.")
@@ -51,5 +51,5 @@ struct Shizu_Environment {
   size_t capacity;
 };
 
-#endif // SHIZU_RUNTIME_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED
+#endif // SHIZU_OBJECTS_ENVIRONMENT_PRIVATE_H_INCLUDED
 

@@ -33,6 +33,20 @@
 // exit, EXIT_FAILURE
 #include <stdlib.h>
 
+static void
+Shizu_GcxInterface_finalizeCallback
+  (
+    void* finalizeContext,
+    void* object
+  );
+
+static void
+Shizu_GcxInterface_visitCallback
+  (
+    void* visitContext,
+    void* object
+  );
+
 #define Shizu_Object_Flags_White (1)
 
 #define Shizu_Object_Flags_Black (2)
@@ -42,14 +56,35 @@
 Shizu_Gc*
 Shizu_Gc_create
   (
-    Shizu_State1* state1
+    Shizu_State2* state
   )
 {
-  Shizu_Gc* self = Shizu_State1_allocate(state1, sizeof(Shizu_Gc));
-  if (!self) {
-    Shizu_State1_setStatus(state1, Shizu_Status_AllocationFailed);
-    Shizu_State1_jump(state1);
+  if (Shizu_Gcx_startup()) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
   }
+  Shizu_Gc* self = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Shizu_Gc));
+  if (!self) {
+    Shizu_Gcx_shutdown();
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  if (Shizu_Gcx_registerType("Shizu.GcxInterface.Object", strlen("Shizu.GcxInterface.Object"), state, &Shizu_GcxInterface_visitCallback, state, &Shizu_GcxInterface_finalizeCallback)) {
+    Shizu_Gcx_shutdown();
+    free(self);
+    self = NULL;
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  if (Shizu_Gcx_acquireType("Shizu.GcxInterface.Object", strlen("Shizu.GcxInterface.Object"), &self->type)) {
+    Shizu_Gcx_unregisterType("Shizu.GcxInterface.Object", strlen("Shizu.GcxInterface.Object"));
+    Shizu_Gcx_shutdown();
+    free(self);
+    self = NULL;
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+
   self->all = NULL;
   self->gray = NULL;
   self->preMarkHooks.nodes = NULL;
@@ -63,7 +98,7 @@ Shizu_Gc_create
 void
 Shizu_Gc_destroy
   (
-    Shizu_State1* state1,
+    Shizu_State2* state,
     Shizu_Gc* self
   )
 {
@@ -84,7 +119,7 @@ Shizu_Gc_destroy
       if (!node->dead) {
         live++;
       }
-      Shizu_State1_deallocate(state1, node);
+      Shizu_State1_deallocate(Shizu_State2_getState1(state), node);
     } while (self->preMarkHooks.nodes);
     fprintf(stderr, "%s: %d: warning: pre mark hook node list not empty\n", __FILE__, __LINE__);
   }
@@ -96,57 +131,19 @@ Shizu_Gc_destroy
       if (!node->dead) {
         live++;
       }
-      Shizu_State1_deallocate(state1, node);
+      Shizu_State1_deallocate(Shizu_State2_getState1(state), node);
     } while (self->objectFinalizeHooks.nodes);
     if (live) {
       fprintf(stderr, "%s: %d: warning: object finalize hook node list not empty\n", __FILE__, __LINE__);
     }
   }
-  Shizu_State1_deallocate(state1, self);
+  Shizu_Gcx_relinquishType(self->type);
+  self->type = NULL;
+  Shizu_Gcx_unregisterType("Shizu.GcxInterface.Object", strlen("Shizu.GcxInterface.Object"));
+  Shizu_State1_deallocate(Shizu_State2_getState1(state), self);
   self = NULL;
+  Shizu_Gcx_shutdown();
 }
-
-void
-Shizu_Object_setWhite
-  (
-    Shizu_Object* object
-  )
-{ object->flags = (object->flags & ~Shizu_Object_Flags_Gray) | Shizu_Object_Flags_White; }
-
-bool
-Shizu_Object_isWhite
-  (
-    Shizu_Object const* object
-  )
-{ return Shizu_Object_Flags_White == (Shizu_Object_Flags_Gray & object->flags); }
-
-void
-Shizu_Object_setGray
-  (
-    Shizu_Object* object
-  )
-{ object->flags |= Shizu_Object_Flags_Gray; }
-
-bool
-Shizu_Object_isGray
-  (
-    Shizu_Object const* object
-  )
-{ return Shizu_Object_Flags_Gray == (Shizu_Object_Flags_Gray & object->flags); }
-
-void
-Shizu_Object_setBlack
-  (
-    Shizu_Object* object
-  )
-{ object->flags = (object->flags & ~Shizu_Object_Flags_Gray) | Shizu_Object_Flags_Black; }
-
-bool
-Shizu_Object_isBlack
-  (
-    Shizu_Object const* object
-  )
-{ return Shizu_Object_Flags_Black == (Shizu_Object_Flags_Gray & object->flags); }
 
 Shizu_Object*
 Shizu_Gc_allocateObject
@@ -167,18 +164,13 @@ Shizu_Gc_allocateObject
     Shizu_State1_setStatus(Shizu_State2_getState1(state), 1);
     Shizu_State1_jump(Shizu_State2_getState1(state));
   }
-  Shizu_Object* self = Shizu_State1_allocate(Shizu_State2_getState1(state), size);
-  if (!self) {
+  Shizu_Object* self = NULL;
+  if (Shizu_Gcx_allocate(size, Shizu_State2_getGc(state)->type, &self)) {
     fprintf(stderr, "%s:%d: unable to allocate `%zu` Bytes\n", __FILE__, __LINE__, size);
     Shizu_State1_setStatus(Shizu_State2_getState1(state), Shizu_Status_AllocationFailed);
     Shizu_State1_jump(Shizu_State2_getState1(state));
   }
-  Shizu_Gc* gc = Shizu_State2_getGc(state);
-  self->gray = NULL;
-  self->flags = Shizu_Object_Flags_White;
   self->type = Shizu_Object_getType(state);
-  self->next = gc->all;
-  gc->all = self;
   return self;
 }
 
@@ -259,6 +251,46 @@ notifyPreMarkHooks
   }
 }
 
+static void
+Shizu_GcxInterface_finalizeCallback
+  (
+    void* finalizeContext,
+    void* object
+  )
+{
+  Shizu_State2* state1 = (Shizu_State2*)finalizeContext;
+  Shizu_Object* object1 = (Shizu_Object*)object;
+
+  // TODO: Shizu_Locks_notifyDestroy as well as Shizu_WeakReferences_notifyDestroy perform an object address hash lookup.
+  //       Investigage if there is a relevant performance gain when only one hash table is used?
+  notifyObjectFinalizeHooks(state1, Shizu_State2_getGc(state1), object);
+  while (object1->type) {
+    if (object1->type->objectType.descriptor->finalize) {
+      object1->type->objectType.descriptor->finalize(state1, object);
+    }
+    object1->type = object1->type->objectType.parentType;
+  }
+}
+
+static void
+Shizu_GcxInterface_visitCallback
+  (
+    void* visitContext,
+    void* object
+  )
+{
+  Shizu_State2* state1 = (Shizu_State2*)visitContext;
+  Shizu_Object* object1 = (Shizu_Object*)object;
+  Shizu_debugAssert(NULL != object1->type->objectType.descriptor->visit);
+  Shizu_Type* type = object1->type;
+  while (type) {
+    if (type->objectType.descriptor->visit) {
+      type->objectType.descriptor->visit(state1, object1);
+    }
+    type = type->objectType.parentType;
+  }
+}
+
 void
 Shizu_Gc_run
   (
@@ -269,6 +301,9 @@ Shizu_Gc_run
 {
   Shizu_debugAssert(NULL == self->gray);
   notifyPreMarkHooks(state, self);
+  size_t dead, live;
+  Shizu_Gcx_run(&dead, &live);
+#if 0
   // Mark.
   while (self->gray) {
     Shizu_Object* object = self->gray;
@@ -310,9 +345,10 @@ Shizu_Gc_run
       live++;
     }
   }
+#endif
   if (sweepInfo) {
-    sweepInfo->live = live;
     sweepInfo->dead = dead;
+    sweepInfo->live = live;
   }
 }
 
@@ -324,18 +360,7 @@ Shizu_Gc_visitObject
     Shizu_Object* object
   )
 {
-  if (Shizu_Object_isWhite(object)) {
-    if (object->type->objectType.descriptor->visit) {
-      // If there is a visit function, put the object in the gray list and color it gray.
-      Shizu_Object_setGray(object);
-      Shizu_debugAssert(NULL == object->gray);
-      object->gray = gc->gray;
-      gc->gray = object;
-    } else {
-      // Otherwise color it black.
-      Shizu_Object_setBlack(object);
-    }
-  }
+  Shizu_Gcx_visit(object);
 }
 
 void

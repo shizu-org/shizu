@@ -25,6 +25,9 @@ Shizu_beginLibrary()
 
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Configure.h.in)
 
+list(APPEND ${name}.source_files Sources/Shizu/Gc/Include.c)
+list(APPEND ${name}.header_files Includes/Shizu/Gc/Include.h)
+
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Include.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Include.h)
 
@@ -65,23 +68,23 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/Locks.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Locks.private.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Locks.private.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/List.private.c)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/List.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/List.private.h)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/List.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/Map.private.c)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/Map.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Map.private.h)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Map.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/String.private.c)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/String.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/String.private.h)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/String.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/WeakReference.private.c)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/WeakReference.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/WeakReference.private.h)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/WeakReference.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/ByteArray.private.c)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/ByteArray.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/ByteArray.private.h)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/ByteArray.h)
 
@@ -94,7 +97,7 @@ list(APPEND ${name}.header_files Includes/Shizu/Runtime/CxxUtilities.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/getWorkingDirectory.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/getWorkingDirectory.h)
 
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/Environment.private.c)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/Environment.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Environment.private.h)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/Environment.h)
 
@@ -111,6 +114,9 @@ list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigInteger/fromIn
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/fromInteger64.h)
 list(APPEND ${name}.header_files Sources/Shizu/Runtime/Objects/BigInteger/compareMagnitudes.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigInteger/compareMagnitudes.h)
+
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Objects/BigFloat.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Objects/BigFloat.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Module.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Module.h)
