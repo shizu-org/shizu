@@ -19,22 +19,50 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#define SHIZU_CXX_PRIVATE (1)
+#include "Shizu/Cxx/Debug.h"
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
+#if defined(_DEBUG)
 
-#define _GNU_SOURCE
+// fprintf, stderr
+#include <stdio.h>
 
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
+// exit, EXIT_FAILURE
+#include <stdlib.h>
 
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
+void
+Shizu_Cxx_Debug_printf
+  (
+    char const* format,
+    ...
+  )
+{
+  va_list arguments;
+  va_start(arguments, format);
+  Shizu_Cxx_Debug_printfv(format, arguments);
+  va_end(arguments);
+}
 
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
+void
+Shizu_Cxx_Debug_printfv
+  (
+    char const* format,
+    va_list arguments
+  )
+{
+  vfprintf(stdout, format, arguments);
+}
 
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+Shizu_Cxx_NoReturn() void
+Shizu_Cxx_Debug_assertionFailed
+  (
+    char const* file,
+    int line,
+    char const* expression
+  )
+{
+  fprintf(stderr, "%s:%d: debug assertion `%s` failed\n", file, line, expression);
+  exit(EXIT_FAILURE);
+}
+
+#endif

@@ -19,7 +19,25 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-add_subdirectory(Fundamental)
-add_subdirectory(ByteArray)
-add_subdirectory(BigInteger)
-add_subdirectory(BigFloat)
+set(name ${Shizu.project-name}.Test.BigFloat)
+
+Shizu_beginExecutable()
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/Main.c)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/testType.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigFloat/testType.h)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/testDefault.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigFloat/testDefault.h)
+
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/testFromInteger.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigFloat/testFromInteger.h)
+
+Shizu_endExecutable()
+
+target_link_libraries(${name} PRIVATE ${Shizu.project-name})
+
+add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY $<TARGET_FILE_DIR:${name}>)
+
+on_executable(${name})

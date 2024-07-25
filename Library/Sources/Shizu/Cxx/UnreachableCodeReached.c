@@ -19,22 +19,22 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#define SHIZU_CXX_PRIVATE (1)
+#include "Shizu/Cxx/UnreachableCodeReached.h"
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
+// fprintf, stderr
+#include <stdio.h>
 
-#define _GNU_SOURCE
+// exit, EXIT_FAILURE
+#include <stdlib.h>
 
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
-
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
-
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
-
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+Shizu_Cxx_NoReturn() void
+Shizu_Cxx_onUnreachableCodeReached
+  (
+    char const* file,
+    int line
+  )
+{
+  fprintf(stderr, "%s:%d: unreachable code reached\n", file, line);
+  exit(EXIT_FAILURE);
+}

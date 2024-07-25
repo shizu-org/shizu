@@ -19,28 +19,31 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#define SHIZU_RUNTIME_PRIVATE (1)
-#include "Shizu/Runtime/CxxUtilities.h"
+#if !defined(SHIZU_TEST_BIGFLOAT_TESTFROMINTEGER_H_INCLUDED)
+#define SHIZU_TEST_BIGFLOAT_TESTFROMINTEGER_H_INCLUDED
 
-// fprintf, stderr
-#include <stdio.h>
-
-// exit, EXIT_FAILURE
+#include "Shizu/Runtime/Include.h"
+// EXIT_SUCCESS, EXIT_FAILURE
 #include <stdlib.h>
+// fprintf, stdout, stderr
+#include <stdio.h>
+// strlen
+#include <string.h>
 
-Shizu_NoReturn() void
-Shizu_debugAssertionFailed
+void
+Shizu_Test_BigFloat_testFromInteger32
   (
-    char const* file,
-    int line,
-    char const* expression
-  )
-{
-  fprintf(stderr, "%s:%d: debug assertion `%s` failed\n", file, line, expression);
-  exit(EXIT_FAILURE);
-}
+    Shizu_State2* state
+  );
 
-Shizu_NoReturn() void Shizu_unreachableCodeReached(char const* file, int line) {
-  fprintf(stderr, "%s:%d: unreachable code reached\n", file, line);
-  exit(EXIT_FAILURE);
-}
+#if 1 == Shizu_Configuration_WithInteger64
+
+void
+Shizu_Test_BigFloat_testFromInteger64
+  (
+    Shizu_State2* state
+  );
+
+#endif // Shizu_Configuration_WithInteger64
+
+#endif // SHIZU_TEST_BIGFLOAT_TESTFROMINTEGER_H_INCLUDED

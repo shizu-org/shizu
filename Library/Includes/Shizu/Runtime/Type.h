@@ -23,6 +23,7 @@
 #define SHIZU_RUNTIME_TYPE_H_INCLUDED
 
 #include "Shizu/Runtime/Configure.h"
+#include "Shizu/Cxx/Include.h"
 #include "Shizu/Runtime/Value.h"
 
 // size_t

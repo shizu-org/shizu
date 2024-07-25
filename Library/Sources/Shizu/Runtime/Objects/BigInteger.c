@@ -692,3 +692,123 @@ Shizu_BigInteger_subtract
   ((Shizu_Object*)RESULT)->type = TYPE;
   return RESULT;
 }
+
+Shizu_BigInteger*
+Shizu_BigInteger_zero
+  (
+    Shizu_State2* state
+  )
+{
+// As the number is not zero, this is as easy as appending n zero digits.
+  Shizu_Type* TYPE = Shizu_BigInteger_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_BigInteger* RESULT = (Shizu_BigInteger*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Object_construct(state, (Shizu_Object*)RESULT);
+  RESULT->p = Shizu_State1_allocate(Shizu_State2_getState1(state), 1);
+  if (!RESULT->p) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  RESULT->p[0] = 0;
+  RESULT->n = 1;
+  RESULT->sign = Shizu_Boolean_True;
+  ((Shizu_Object*)RESULT)->type = TYPE;
+  return RESULT;
+}
+
+Shizu_BigInteger*
+Shizu_BigInteger_one
+  (
+    Shizu_State2* state
+  )
+{
+  Shizu_Type* TYPE = Shizu_BigInteger_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_BigInteger* RESULT = (Shizu_BigInteger*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Object_construct(state, (Shizu_Object*)RESULT);
+  RESULT->p = Shizu_State1_allocate(Shizu_State2_getState1(state), 1);
+  if (!RESULT->p) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  RESULT->p[0] = 1;
+  RESULT->n = 1;
+  RESULT->sign = Shizu_Boolean_True;
+  ((Shizu_Object*)RESULT)->type = TYPE;
+  return RESULT;
+}
+
+Shizu_BigInteger*
+Shizu_BigInteger_multiply10
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer32 n
+  )
+{
+  if (!self || n < 0) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentValueInvalid);
+    Shizu_State2_jump(state);
+  }
+  // x = 0 or n = 0 => x * 10^n = x
+  if (Shizu_BigInteger_isZero(state, self) || 0 == n) {
+    return self;
+  }
+  // There is an upper limit for the number of digits.
+  if (UINT32_MAX - self->n < n) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  // As the number is not zero, this is as easy as appending n zero digits.
+  Shizu_Type* TYPE = Shizu_BigInteger_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_BigInteger* RESULT = (Shizu_BigInteger*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Object_construct(state, (Shizu_Object*)RESULT);
+  RESULT->p = Shizu_State1_allocate(Shizu_State2_getState1(state), self->n + n);
+  if (!RESULT->p) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  memcpy(RESULT->p, self->p, self->n);
+  for (size_t i = 0; i < n; ++i) {
+    RESULT->p[self->n + i] = 0;
+  }
+  RESULT->n = self->n + n;
+  RESULT->sign = self->sign;
+  ((Shizu_Object*)RESULT)->type = TYPE;
+  return RESULT;
+}
+
+Shizu_BigInteger*
+Shizu_BigInteger_divide10
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer32 n
+  )
+{
+  if (!self || n < 0) {
+    Shizu_State2_setStatus(state, Shizu_Status_ArgumentValueInvalid);
+    Shizu_State2_jump(state);
+  }
+  // if self->p[0] = 0 then self->n = 1 hence self = 0 and hence floor(self / 10^n) for any n>=0 is 0.
+  // if self->p[0] != 0 then self->n >= 1. Hence we have a non-zero digit followed by n - 1 digits.
+  // Hence if we divide by 10^n then the result is 0. Example 997 is n = 3. Dividing by 10^n = 10^3 = 10 * 10 * 10 yields 0.
+  if (self->p[0] == 0 || self->n <= n) {
+    return Shizu_BigInteger_zero(state);
+  }
+  Shizu_Type* TYPE = Shizu_BigInteger_getType(state);
+  Shizu_ObjectTypeDescriptor const* DESCRIPTOR = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), TYPE);
+  Shizu_BigInteger* RESULT = (Shizu_BigInteger*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
+  Shizu_Object_construct(state, (Shizu_Object*)RESULT);
+  RESULT->p = Shizu_State1_allocate(Shizu_State2_getState1(state), self->n - n);
+  if (!RESULT->p) {
+    Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State2_jump(state);
+  }
+  memcpy(RESULT->p, self->p, self->n - n);
+  RESULT->n = self->n - n;
+  RESULT->sign = self->sign;
+  ((Shizu_Object*)RESULT)->type = TYPE;
+  return RESULT;
+}

@@ -61,7 +61,7 @@ getFileContents
     Shizu_Value* argumentValues
   )
 {
-  Shizu_debugAssert(NULL != returnValue);
+  Shizu_Cxx_Debug_assert(NULL != returnValue);
   if (1 != numberOfArgumentValues) {
     Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);

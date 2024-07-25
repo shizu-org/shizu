@@ -21,12 +21,9 @@
 
 #include "Shizu/Runtime/Include.h"
 
-#include "testArithmetic.h"
 #include "testDefault.h"
 #include "testFromInteger.h"
-#include "testToInteger.h"
 #include "testType.h"
-#include "testFromString.h"
 
 static int
 safeExecute
@@ -67,48 +64,21 @@ main
 {
   bool failed = false;
   // Type (testType.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testType)) {
+  if (safeExecute(&Shizu_Test_BigFloat_testType)) {
     failed = true;
   }
   // Default (constructor) (testDefault.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testDefault)) {
+  if (safeExecute(&Shizu_Test_BigFloat_testDefault)) {
     failed = true;
   }
   // From integer (constructor) (testFromInteger.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testFromInteger32)) {
+  if (safeExecute(&Shizu_Test_BigFloat_testFromInteger32)) {
     failed = true;
   }
 #if 1 == Shizu_Configuration_WithInteger64
-  if (safeExecute(&Shizu_Test_BigInteger_testFromInteger64)) {
+  if (safeExecute(&Shizu_Test_BigFloat_testFromInteger64)) {
     failed = true;
   }
 #endif
-  // From string (constructor) (testFromString.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testFromString)) {
-    failed = true;
-  }
-  // Arithmetic operations (testArithmetic.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testNegate)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger_testAddition)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger_testSubtraction)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger_testMultiplyBy10)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger_testDivideBy10)) {
-    failed = true;
-  }
-  // To integer conversions (testToInteger.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testToInteger32)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger_testToInteger64)) {
-    failed = true;
-  }
   return failed ? EXIT_FAILURE : EXIT_SUCCESS;
 }

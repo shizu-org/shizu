@@ -360,7 +360,7 @@ Shizu_State1_pushJumpTarget
     Shizu_JumpTarget* jumpTarget
   )
 {
-  Shizu_debugAssert(NULL != jumpTarget);
+  Shizu_Cxx_Debug_assert(NULL != jumpTarget);
   jumpTarget->previous = self->jumpTargets;
   self->jumpTargets = jumpTarget;
 }
@@ -371,18 +371,18 @@ Shizu_State1_popJumpTarget
     Shizu_State1* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->jumpTargets = self->jumpTargets->previous;
 }
 
-Shizu_NoReturn() void
+Shizu_Cxx_NoReturn() void
 Shizu_State1_jump
   (
     Shizu_State1* self
   )
 {
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != self->jumpTargets);
+  Shizu_Cxx_Debug_assert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self->jumpTargets);
   longjmp(self->jumpTargets->environment, -1);
 }
 
@@ -393,7 +393,7 @@ Shizu_State1_setStatus
     Shizu_Status status
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->status = status;
 }
 
@@ -403,7 +403,7 @@ Shizu_State1_getStatus
     Shizu_State1* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return self->status;
 }
 
@@ -414,7 +414,7 @@ Shizu_State1_setProcessExitRequested
     bool processExitRequested
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->processExitRequested = processExitRequested;
 }
 
@@ -424,7 +424,7 @@ Shizu_State1_getProcessExitRequested
     Shizu_State1* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return self->processExitRequested;
 }
 

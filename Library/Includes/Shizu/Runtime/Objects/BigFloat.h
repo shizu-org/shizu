@@ -54,10 +54,60 @@ struct Shizu_BigFloat_Dispatch {
   Shizu_Object_Dispatch _parent;
 };
 
+/// @code
+/// v * 10^0
+/// @endcode
+/// where @a v is the specified Shizu_Integer32 value.
 Shizu_BigFloat*
-Shizu_BigFloat_create
+Shizu_BigFloat_createFromInteger32
+  (
+    Shizu_State2* state,
+    Shizu_Integer32 v
+  );
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+/// @code
+/// v * 10^0
+/// @endcode
+/// where @a v is the specified Shizu_Integer64 value.
+Shizu_BigFloat*
+Shizu_BigFloat_createFromInteger64
+  (
+    Shizu_State2* state,
+    Shizu_Integer64 v
+  );
+
+#endif
+
+/// @code
+/// 0 * 10^0
+/// @endcode
+Shizu_BigFloat*
+Shizu_BigFloat_zero
   (
     Shizu_State2* state
+  );
+
+/// @code
+/// 1 * 10^0
+/// @endcode
+Shizu_BigFloat*
+Shizu_BigFloat_one
+  (
+    Shizu_State2* state
+  );
+
+/// @code
+/// x * 10^s
+/// @endcode
+/// where @a x is the specified big integer and @a s is the scale.
+Shizu_BigFloat*
+Shizu_BigFloat_createExplicit
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* x,
+    Shizu_Integer32 s
   );
 
 #endif // SHIZU_OBJECTS_BIGFLOAT_H_INCLUDED

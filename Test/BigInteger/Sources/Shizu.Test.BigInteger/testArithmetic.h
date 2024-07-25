@@ -48,4 +48,16 @@ Shizu_Test_BigInteger_testSubtraction
     Shizu_State2* state
   );
 
+void
+Shizu_Test_BigInteger_testMultiplyBy10
+  (
+    Shizu_State2* state
+  );
+
+void
+Shizu_Test_BigInteger_testDivideBy10
+  (
+    Shizu_State2* state
+  );
+
 #endif // SHIZU_TEST_BIGINTEGER_TESTARITHMETIC_H_INCLUDED

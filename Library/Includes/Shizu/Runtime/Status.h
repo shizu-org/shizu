@@ -22,7 +22,7 @@
 #if !defined(SHIZU_RUNTIME_STATUS_H_INCLUDED)
 #define SHIZU_RUNTIME_STATUS_H_INCLUDED
 
-#include "Shizu/Runtime/CxxUtilities.h"
+#include "Shizu/Cxx/Include.h"
 
 typedef enum Shizu_Status Shizu_Status;
 

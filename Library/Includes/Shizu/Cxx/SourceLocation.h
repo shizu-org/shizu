@@ -19,22 +19,34 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#if !defined(SHIZU_CXX_SOURCELOCATION_H_INCLUDED)
+#define SHIZU_CXX_SOURCELOCATION_H_INCLUDED
+
+#if !defined(SHIZU_CXX_PRIVATE) && 1 != SHIZU_CXX_PRIVATE
+  #error("Do not include `Shizu/Cxx/SourceLocation.h` directly. Include `Shizu/Cxx/Include.h` instead.")
+#endif
 
 #include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
 
-#define _GNU_SOURCE
+// bool, true, false
+#include <stdbool.h>
 
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
+// size_t
+#include <stddef.h>
 
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
+typedef struct Shizu_Cxx_SourceLocation {
+  char const* file;
+  int line;
+} Shizu_Cxx_SourceLocation;
 
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
+#define Shizu_Cxx_SourceFileName() \
+  __FILE__
 
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#define Shizu_Cxx_SourceFileLine() \
+  __LINE__
+
+#define Shizu_Cxx_SourceLocation() \
+  (Shizu_Cxx_SourceLocation) {. file = Shizu_Cxx_SourceFileName(), .line = Shizu_Cxx_SourceFileLine() }
+
+
+#endif // SHIZU_CXX_SOURCELOCATION_H_INCLUDED

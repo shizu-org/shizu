@@ -19,22 +19,27 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#if !defined(SHIZU_CXX_NORETURN_H_INCLUDED)
+#define SHIZU_CXX_NORETURN_H_INCLUDED
+
+#if !defined(SHIZU_CXX_PRIVATE) && 1 != SHIZU_CXX_PRIVATE
+  #error("Do not include `Shizu/Cxx/NoReturn.h` directly. Include `Shizu/Cxx/Include.h` instead.")
+#endif
 
 #include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
 
-#define _GNU_SOURCE
+/// @since 1.0
+/// @brief
+/// Function annotation indicating a function does not return normally.
+/// The function either terminates the program (cf. exit) or returns via a jump (cf. longjmp).
+#if Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
 
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
+  #define Shizu_Cxx_NoReturn() __declspec(noreturn)
 
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
+#else
 
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
+  #define Shizu_Cxx_NoReturn()
 
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#endif
+
+#endif // SHIZU_CXX_NORETURN_H_INCLUDED

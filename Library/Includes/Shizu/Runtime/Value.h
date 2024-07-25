@@ -22,9 +22,8 @@
 #if !defined(SHIZU_RUNTIME_VALUE_H_INCLUDED)
 #define SHIZU_RUNTIME_VALUE_H_INCLUDED
 
-
-
 #include "Shizu/Runtime/Configure.h"
+#include "Shizu/Cxx/Include.h"
 
 // int32_t, INT32_MIN, INT32_MAX
 #include <inttypes.h>

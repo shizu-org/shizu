@@ -19,22 +19,26 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#if !defined(SHIZU_CXX_UNREACHABLECODEREACHED_H_INCLUDED)
+#define SHIZU_CXX_UNREACHABLECODEREACHED_H_INCLUDED
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
+#if !defined(SHIZU_CXX_PRIVATE) && 1 != SHIZU_CXX_PRIVATE
+  #error("Do not include `Shizu/Cxx/UnreachableCodeReached.h` directly. Include `Shizu/Cxx/Include.h` instead.")
+#endif
 
-#define _GNU_SOURCE
+#include "Shizu/Cxx/NoReturn.h"
 
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
+/// @since 1.90
+/// @brief Print an error message and terminate the program.
+/// If this is invoked, then the user discovered a bug.
+Shizu_Cxx_NoReturn() void
+Shizu_Cxx_onUnreachableCodeReached
+  (
+    char const* file,
+    int line
+  );
 
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
+#define Shizu_Cxx_unreachableCodeReached() \
+  Shizu_Cxx_onUnreachableCodeReached(__FILE__, __LINE__)
 
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
-
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#endif // SHIZU_CXX_UNREACHABLECODEREACHED_H_INCLUDED

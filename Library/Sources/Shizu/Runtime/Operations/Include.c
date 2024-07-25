@@ -27,7 +27,6 @@
 #include "Shizu/Runtime/Objects/String.h"
 #include "Shizu/Runtime/Gc.h"
 #include "Shizu/Runtime/Extensions.h"
-#include "Shizu/Runtime/CxxUtilities.h"
 
 #include "Shizu/Runtime/Operations/ToFloat32.h"
 #include "Shizu/Runtime/Operations/ToInteger.h"
@@ -75,8 +74,8 @@ Shizu_Operations_getType
     Shizu_Value* argumentValues
   )
 {
-  Shizu_debugAssert(NULL != returnValue);
-  Shizu_debugAssert(NULL != argumentValues);
+  Shizu_Cxx_Debug_assert(NULL != returnValue);
+  Shizu_Cxx_Debug_assert(NULL != argumentValues);
   if (1 != numberOfArgumentValues) {
     Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);
@@ -99,8 +98,8 @@ Shizu_Operations_typeOf
     Shizu_Value* argumentValues
   )
 {
-  Shizu_debugAssert(NULL != returnValue);
-  Shizu_debugAssert(NULL != argumentValues);
+  Shizu_Cxx_Debug_assert(NULL != returnValue);
+  Shizu_Cxx_Debug_assert(NULL != argumentValues);
   if (1 != numberOfArgumentValues) {
     Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);
@@ -129,7 +128,7 @@ Shizu_Operations_typeOf
       Shizu_Value_setType(returnValue, Shizu_Void_getType(state));
     } break;
     default: {
-      Shizu_unreachableCodeReached(__FILE__, __LINE__);
+      Shizu_Cxx_unreachableCodeReached();
     } break;
   };
 }
@@ -159,8 +158,8 @@ Shizu_Operations_create
   Shizu_ObjectTypeDescriptor const* descriptor = Shizu_Type_getObjectTypeDescriptor(Shizu_State2_getState1(state),
                                                                                     Shizu_State2_getTypes(state),
                                                                                     type);
-  Shizu_debugAssert(NULL != descriptor);
-  Shizu_debugAssert(NULL != descriptor->construct);
+  Shizu_Cxx_Debug_assert(NULL != descriptor);
+  Shizu_Cxx_Debug_assert(NULL != descriptor->construct);
   Shizu_Object* self = (Shizu_Object*)Shizu_Gc_allocateObject(state, descriptor->size);
   Shizu_Value returnValue_ = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value* argumentValues_ = Shizu_State1_allocate(Shizu_State2_getState1(state), sizeof(Shizu_Value) * numberOfArgumentValues);

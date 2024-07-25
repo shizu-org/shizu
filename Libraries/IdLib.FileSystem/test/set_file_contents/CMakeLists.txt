@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.20)
 
 include(${idlib-process.source-dir}/cmake/all.cmake)
 
-set(name idlib-file-system-test-set-file-contents)
+set(name IdLib.FileSystem.Test.setFileContents)
 begin_executable()
 
 if (${${name}.compiler_c} STREQUAL ${${name}.compiler_c_msvc})

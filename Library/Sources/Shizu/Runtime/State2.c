@@ -35,7 +35,7 @@
 #include "idlib/process.h"
 #include "idlib/file_system.h"
 
-#include "Shizu/Runtime/CxxUtilities.h"
+#include "Shizu/Cxx/Include.h"
 #include "Shizu/Runtime/State1.h"
 
 #include "Shizu/Runtime/getWorkingDirectory.h"
@@ -117,8 +117,8 @@ static void startup3(Shizu_State2* state) {
 }
 
 static void shutdown3(Shizu_State2* state) {
-  Shizu_debugAssert(NULL == state->stack);
-  Shizu_debugAssert(NULL == state->locks);
+  Shizu_Cxx_Debug_assert(NULL == state->stack);
+  Shizu_Cxx_Debug_assert(NULL == state->locks);
   Shizu_Gc_destroy(state, state->gc);
   state->gc = NULL;
 }
@@ -152,7 +152,7 @@ static void startup4(Shizu_State2* state) {
 }
 
 static void shutdown4(Shizu_State2* state) {
-  Shizu_debugAssert(NULL == state->stack);
+  Shizu_Cxx_Debug_assert(NULL == state->stack);
   size_t size;
   size = Shizu_Locks_getSize(state->state1, state->locks);
   if (size > 0) {
@@ -243,12 +243,12 @@ static void shutdown8(Shizu_State2* state) {
       Shizu_Value elementValue = Shizu_List_getValue(state, state->modules, i - 1);
       if (!Shizu_Value_isObject(&elementValue)) {
         // Developer error if this occurs.
-        Shizu_unreachableCodeReached(__FILE__, __LINE__);
+        Shizu_Cxx_unreachableCodeReached();
       }
       Shizu_Object* elementObject = Shizu_Value_getObject(&elementValue);
       if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Object_getObjectType(state, elementObject), Shizu_Module_getType(state))) {
         // Developer error if this occurs.
-        Shizu_unreachableCodeReached(__FILE__, __LINE__);
+        Shizu_Cxx_unreachableCodeReached();
       }
       Shizu_Module* elementModule = (Shizu_Module*)elementObject;
       Shizu_Module_ensureUnloaded(state, elementModule);
@@ -257,7 +257,7 @@ static void shutdown8(Shizu_State2* state) {
   } else {
     Shizu_State2_popJumpTarget(state);
     // Developer error if this occurs.
-    Shizu_unreachableCodeReached(__FILE__, __LINE__);
+    Shizu_Cxx_unreachableCodeReached();
   }
   Shizu_Object_unlock(Shizu_State2_getState1(state), Shizu_State2_getLocks(state), (Shizu_Object*)state->modules);
   state->modules = NULL;
@@ -459,9 +459,9 @@ Shizu_State2_pushJumpTarget
     Shizu_JumpTarget* jumpTarget
   )
 {
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != self->state1);
-  Shizu_debugAssert(NULL != jumpTarget);
+  Shizu_Cxx_Debug_assert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self->state1);
+  Shizu_Cxx_Debug_assert(NULL != jumpTarget);
   Shizu_State1_pushJumpTarget(self->state1, jumpTarget);
 }
 
@@ -471,17 +471,17 @@ Shizu_State2_popJumpTarget
     Shizu_State2* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   Shizu_State1_popJumpTarget(self->state1);
 }
 
-Shizu_NoReturn() void
+Shizu_Cxx_NoReturn() void
 Shizu_State2_jump
   (
     Shizu_State2* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   Shizu_State1_jump(self->state1);
 }
 
@@ -492,7 +492,7 @@ Shizu_State2_setStatus
     Shizu_Status status
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   Shizu_State1_setStatus(self->state1, status);
 }
 
@@ -502,7 +502,7 @@ Shizu_State2_getStatus
     Shizu_State2* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_State1_getStatus(self->state1);
 }
 
@@ -513,7 +513,7 @@ Shizu_State2_setProcessExitRequested
     bool processExitRequested
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   Shizu_State1_setProcessExitRequested(self->state1, processExitRequested);
 }
 
@@ -523,7 +523,7 @@ Shizu_State2_getProcessExitRequested
     Shizu_State2* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_State1_getProcessExitRequested(self->state1);
 }
 

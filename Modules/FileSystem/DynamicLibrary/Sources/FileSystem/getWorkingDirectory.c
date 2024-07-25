@@ -21,6 +21,7 @@
 
 #include "FileSystem/getWorkingDirectory.h"
 
+#include "Shizu/Cxx/Include.h"
 #include "Shizu/Runtime/Include.h"
 #include "idlib/file_system.h"
 
@@ -55,9 +56,9 @@ getWorkingDirectory
     Shizu_Value* argumentValues
   )
 {
-  Shizu_debugAssert(NULL != state);
-  Shizu_debugAssert(NULL != returnValue);
-  Shizu_debugAssert(NULL != argumentValues);
+  Shizu_Cxx_Debug_assert(NULL != state);
+  Shizu_Cxx_Debug_assert(NULL != returnValue);
+  Shizu_Cxx_Debug_assert(NULL != argumentValues);
   if (0 != numberOfArgumentValues) {
     Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);

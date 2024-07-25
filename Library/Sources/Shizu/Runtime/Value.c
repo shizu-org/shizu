@@ -48,8 +48,8 @@ hashBytes
     size_t n
   )
 {
-  Shizu_debugAssert(NULL != state);
-  Shizu_debugAssert(NULL != p);
+  Shizu_Cxx_Debug_assert(NULL != state);
+  Shizu_Cxx_Debug_assert(NULL != p);
   Shizu_Integer32 h = n;
   Shizu_Integer32 step = 1;
   for (; n >= step; n -= step) {
@@ -64,7 +64,7 @@ Shizu_Value_getBoolean
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isBoolean(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isBoolean(self));
   return self->booleanValue;
 }
 
@@ -74,7 +74,7 @@ Shizu_Value_isBoolean
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Boolean == self->tag;
 }
 
@@ -85,7 +85,7 @@ Shizu_Value_setBoolean
     Shizu_Boolean booleanValue
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->booleanValue = booleanValue;
   self->tag = Shizu_Value_Tag_Boolean;
 }
@@ -96,7 +96,7 @@ Shizu_Value_getCxxFunction
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isCxxFunction(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isCxxFunction(self));
   return self->cxxFunctionValue;
 }
 
@@ -106,7 +106,7 @@ Shizu_Value_isCxxFunction
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_CxxFunction == self->tag;
 }
 
@@ -117,8 +117,8 @@ Shizu_Value_setCxxFunction
     Shizu_CxxFunction* cxxFunctionValue
   )
 {
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != cxxFunctionValue);
+  Shizu_Cxx_Debug_assert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != cxxFunctionValue);
   self->cxxFunctionValue = cxxFunctionValue;
   self->tag = Shizu_Value_Tag_CxxFunction;
 }
@@ -129,7 +129,7 @@ Shizu_Value_getFloat32
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isFloat32(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isFloat32(self));
   return self->float32Value;
 }
 
@@ -139,7 +139,7 @@ Shizu_Value_isFloat32
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Float32 == self->tag;
 }
 
@@ -150,7 +150,7 @@ Shizu_Value_setFloat32
     Shizu_Float32 float32Value
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->float32Value = float32Value;
   self->tag = Shizu_Value_Tag_Float32;
 }
@@ -163,7 +163,7 @@ Shizu_Value_getFloat64
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isFloat64(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isFloat64(self));
   return self->float64Value;
 }
 
@@ -173,7 +173,7 @@ Shizu_Value_isFloat64
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Float64 == self->tag;
 }
 
@@ -184,7 +184,7 @@ Shizu_Value_setFloat64
     Shizu_Float64 float64Value
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->float64Value = float64Value;
   self->tag = Shizu_Value_Tag_Float64;
 }
@@ -197,7 +197,7 @@ Shizu_Value_getInteger32
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isInteger32(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isInteger32(self));
   return self->integer32Value;
 }
 
@@ -207,7 +207,7 @@ Shizu_Value_isInteger32
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Integer32 == self->tag;
 }
 
@@ -218,7 +218,7 @@ Shizu_Value_setInteger32
     Shizu_Integer32 integer32Value
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->integer32Value = integer32Value;
   self->tag = Shizu_Value_Tag_Integer32;
 }
@@ -231,7 +231,7 @@ Shizu_Value_getInteger64
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isInteger64(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isInteger64(self));
   return self->integer64Value;
 }
 
@@ -241,7 +241,7 @@ Shizu_Value_isInteger64
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Integer64 == self->tag;
 }
 
@@ -252,7 +252,7 @@ Shizu_Value_setInteger64
     Shizu_Integer64 integer64Value
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->integer64Value = integer64Value;
   self->tag = Shizu_Value_Tag_Integer64;
 }
@@ -265,7 +265,7 @@ Shizu_Value_getObject
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isObject(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isObject(self));
   return self->objectValue;
 }
 
@@ -275,7 +275,7 @@ Shizu_Value_isObject
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Object == self->tag;
 }
 
@@ -286,8 +286,8 @@ Shizu_Value_setObject
     Shizu_Object* objectValue
   )
 {
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != objectValue);
+  Shizu_Cxx_Debug_assert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != objectValue);
   self->objectValue = objectValue;
   self->tag = Shizu_Value_Tag_Object;
 }
@@ -298,7 +298,7 @@ Shizu_Value_getType
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isType(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isType(self));
   return self->typeValue;
 }
 
@@ -308,7 +308,7 @@ Shizu_Value_isType
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Type == self->tag;
 }
 
@@ -319,8 +319,8 @@ Shizu_Value_setType
     Shizu_Type* typeValue
   )
 {
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != typeValue);
+  Shizu_Cxx_Debug_assert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != typeValue);
   self->typeValue = typeValue;
   self->tag = Shizu_Value_Tag_Type;
 }
@@ -331,7 +331,7 @@ Shizu_Value_getVoid
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(Shizu_Value_isVoid(self));
+  Shizu_Cxx_Debug_assert(Shizu_Value_isVoid(self));
   return self->voidValue;
 }
 
@@ -341,7 +341,7 @@ Shizu_Value_isVoid
     Shizu_Value const* self
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   return Shizu_Value_Tag_Void == self->tag;
 }
 
@@ -352,7 +352,7 @@ Shizu_Value_setVoid
     Shizu_Void voidValue
   )
 {
-  Shizu_debugAssert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != self);
   self->voidValue = voidValue;
   self->tag = Shizu_Value_Tag_Void;
 }
@@ -398,7 +398,7 @@ Shizu_Value_isEqualTo
     } break;
     case Shizu_Value_Tag_Object:
     default: {
-      Shizu_unreachableCodeReached(__FILE__, __LINE__);
+      Shizu_Cxx_unreachableCodeReached();
     } break;
   };
 }
@@ -465,7 +465,7 @@ Shizu_Value_getHashValue
       return 0;
     } break;
     default: {
-      Shizu_unreachableCodeReached(__FILE__, __LINE__);
+      Shizu_Cxx_unreachableCodeReached();
     } break;
   };
 }

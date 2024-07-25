@@ -19,22 +19,15 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#include "testDefault.h"
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
+void
+Shizu_Test_BigFloat_testDefault
+  (
+    Shizu_State2* state
+  )
+{
+  Shizu_BigFloat* x = NULL;
 
-#define _GNU_SOURCE
-
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
-
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
-
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
-
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+  x = Shizu_BigFloat_zero(state);
+}

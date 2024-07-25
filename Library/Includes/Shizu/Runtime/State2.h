@@ -119,7 +119,7 @@ Shizu_State2_getStatus
     Shizu_State2* self
   );
 
-Shizu_NoReturn() void
+Shizu_Cxx_NoReturn() void
 Shizu_State2_jump
   (
     Shizu_State2* self

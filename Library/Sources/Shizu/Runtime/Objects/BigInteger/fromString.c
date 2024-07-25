@@ -131,7 +131,7 @@ Parser_run
   }
   next(state, self);
   if (isSign(state, self)) {
-    Shizu_debugAssert(Shizu_Boolean_True == self->sign);
+    Shizu_Cxx_Debug_assert(Shizu_Boolean_True == self->sign);
     if ('-' == self->symbol) {
       self->sign = Shizu_Boolean_False;
     }

@@ -19,22 +19,32 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#if !defined(SHIZU_CXX_STATICASSERT_H_INCLUDED)
+#define SHIZU_CXX_STATICASSERT_H_INCLUDED
+
+#if !defined(SHIZU_CXX_PRIVATE) && 1 != SHIZU_CXX_PRIVATE
+  #error("Do not include `Shizu/Cxx/StaticAssert.h` directly. Include `Shizu/Cxx/Include.h` instead.")
+#endif
 
 #include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
 
-#define _GNU_SOURCE
+/// @since 1.0
+/// @brief
+/// Macro aliasing `static_assert`/`_Static_assert`.
+/// @details If the expression @a expression evaluates to logically false then a compilation error is generated with the message @a message.
+/// @param expression A compile-time evaluable expression that can be converted into logically true or logically false.
+/// @param message A string literal.
+#if Shizu_Configuration_CompilerC_Msvc == Shizu_Configuration_CompilerC
 
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
+  #define Shizu_Cxx_staticAssert(expression, message) \
+      static_assert(expression, message);
 
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
+#else
 
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
+  #define Shizu_Cxx_staticAssert(expression, message) \
+      _Static_assert(expression, message);
 
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#endif
+
+
+#endif // SHIZU_CXX_STATICASSERT_H_INCLUDED

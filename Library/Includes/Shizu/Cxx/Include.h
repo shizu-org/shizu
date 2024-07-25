@@ -19,22 +19,15 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#if !defined(SHIZU_CXX_INCLUDE_H_INCLUDED)
+#define SHIZU_CXX_INCLUDE_H_INCLUDED
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
+#define SHIZU_CXX_PRIVATE (1)
+#include "Shizu/Cxx/Debug.h"
+#include "Shizu/Cxx/NoReturn.h"
+#include "Shizu/Cxx/SourceLocation.h"
+#include "Shizu/Cxx/StaticAssert.h"
+#include "Shizu/Cxx/UnreachableCodeReached.h"
+#undef SHIZU_CXX_PRIVATE
 
-#define _GNU_SOURCE
-
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
-
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
-
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
-
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#endif // SHIZU_CXX_INCLUDE_H_INCLUDED

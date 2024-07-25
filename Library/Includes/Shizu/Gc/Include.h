@@ -1,6 +1,8 @@
 #if !defined(SHIZU_GC_H_INCLUDED)
 #define SHIZU_GC_H_INCLUDED
 
+#include "Shizu/Runtime/Configure.h"
+#include "Shizu/Cxx/Include.h"
 #include <stdint.h>
 
 typedef int32_t Shizu_Gcx_Status;

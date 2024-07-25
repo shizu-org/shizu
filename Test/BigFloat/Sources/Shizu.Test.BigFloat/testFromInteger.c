@@ -19,22 +19,38 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#include "testFromInteger.h"
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
+void
+Shizu_Test_BigFloat_testFromInteger32
+  (
+    Shizu_State2* state
+  )
+{
+  Shizu_BigFloat* x = NULL;
 
-#define _GNU_SOURCE
+  x = Shizu_BigFloat_createFromInteger32(state, INT32_C(0));
 
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
+  x = Shizu_BigFloat_createFromInteger32(state, Shizu_Integer32_Minimum);
 
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
+  x = Shizu_BigFloat_createFromInteger32(state, Shizu_Integer32_Maximum);
+}
 
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
+#if 1 == Shizu_Configuration_WithInteger64
 
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+void
+Shizu_Test_BigFloat_testFromInteger64
+  (
+    Shizu_State2* state
+  )
+{
+  Shizu_BigFloat* x = NULL;
+
+  x = Shizu_BigFloat_createFromInteger64(state, INT64_C(0));
+
+  x = Shizu_BigFloat_createFromInteger64(state, Shizu_Integer64_Minimum);
+
+  x = Shizu_BigFloat_createFromInteger64(state, Shizu_Integer64_Maximum);
+}
+
+#endif // Shizu_Configuration_WithInteger64

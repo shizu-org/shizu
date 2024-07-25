@@ -33,8 +33,8 @@ Shizu_Types_isObjectType
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(NULL != state1);
-  Shizu_debugAssert(NULL != x);
+  Shizu_Cxx_Debug_assert(NULL != state1);
+  Shizu_Cxx_Debug_assert(NULL != x);
   return (Shizu_TypeFlags_ObjectType == (Shizu_TypeFlags_ObjectType & x->flags));
 }
 
@@ -46,8 +46,8 @@ Shizu_Types_isPrimitiveType
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(NULL != state1);
-  Shizu_debugAssert(NULL != x);
+  Shizu_Cxx_Debug_assert(NULL != state1);
+  Shizu_Cxx_Debug_assert(NULL != x);
   return (Shizu_TypeFlags_PrimitiveType == (Shizu_TypeFlags_PrimitiveType & x->flags));
 }
 
@@ -59,8 +59,8 @@ Shizu_Types_isEnumerationType
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(NULL != state1);
-  Shizu_debugAssert(NULL != x);
+  Shizu_Cxx_Debug_assert(NULL != state1);
+  Shizu_Cxx_Debug_assert(NULL != x);
   return (Shizu_TypeFlags_EnumerationType == (Shizu_TypeFlags_EnumerationType & x->flags));
 }
 
@@ -129,7 +129,7 @@ Shizu_Type_getObjectTypeDescriptor
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(Shizu_Types_isObjectType(state, self, x));
+  Shizu_Cxx_Debug_assert(Shizu_Types_isObjectType(state, self, x));
   return x->objectType.descriptor;
 }
 
@@ -141,7 +141,7 @@ Shizu_Type_getPrimitiveTypeDescriptor
     Shizu_Type const* x
   )
 {
-  Shizu_debugAssert(Shizu_Types_isPrimitiveType(state, self, x));
+  Shizu_Cxx_Debug_assert(Shizu_Types_isPrimitiveType(state, self, x));
   return x->primitiveType.descriptor;
 }
 

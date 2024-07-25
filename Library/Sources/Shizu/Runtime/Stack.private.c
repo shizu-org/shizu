@@ -23,7 +23,6 @@
 #include "Shizu/Runtime/Stack.private.h"
 
 #include "Shizu/Runtime/State1.h"
-#include "Shizu/Runtime/CxxUtilities.h"
 #include "Shizu/Runtime/Gc.h"
 
 struct Shizu_Stack {
@@ -109,7 +108,7 @@ Shizu_Stack_getSize
     Shizu_Stack* self
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   return self->size;
 }
 
@@ -120,7 +119,7 @@ Shizu_Stack_peek
     Shizu_Stack* self
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (0 == self->size) {
     Shizu_State1_setStatus(state, 1);
     Shizu_State1_jump(state);
@@ -135,7 +134,7 @@ Shizu_Stack_pop
     Shizu_Stack* self
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (0 == self->size) {
     Shizu_State1_setStatus(state, 1);
     Shizu_State1_jump(state);
@@ -151,7 +150,7 @@ Shizu_Stack_push
     Shizu_Value value
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (self->capacity == self->size) {
     if (self->maximalCapacity == self->capacity) {
       Shizu_State1_setStatus(state, Shizu_Status_StackOverflow);
@@ -179,7 +178,7 @@ Shizu_Stack_clear
     Shizu_Stack* self
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   self->size = 0;
 }
 
@@ -191,7 +190,7 @@ Shizu_Stack_isBoolean
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -207,7 +206,7 @@ Shizu_Stack_isCxxFunction
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -223,7 +222,7 @@ Shizu_Stack_isFloat32
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -239,7 +238,7 @@ Shizu_Stack_isInteger32
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -255,7 +254,7 @@ Shizu_Stack_isObject
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -271,7 +270,7 @@ Shizu_Stack_isVoid
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -287,7 +286,7 @@ Shizu_Stack_getBoolean
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -308,7 +307,7 @@ Shizu_Stack_getCxxFunction
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -329,7 +328,7 @@ Shizu_Stack_getFloat32
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -350,7 +349,7 @@ Shizu_Stack_getInteger32
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -371,7 +370,7 @@ Shizu_Stack_getObject
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);
@@ -392,7 +391,7 @@ Shizu_Stack_getVoid
     size_t index
   )
 {
-  Shizu_debugAssert(NULL != state && NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != state && NULL != self);
   if (index >= self->size) {
     Shizu_State1_setStatus(state, Shizu_Status_StackIndexOutOfBounds);
     Shizu_State1_jump(state);

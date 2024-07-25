@@ -195,4 +195,44 @@ Shizu_BigInteger_subtract
     Shizu_BigInteger* other
   );
 
+/// @code
+/// 0
+/// @endcode
+Shizu_BigInteger*
+Shizu_BigInteger_zero
+  (
+    Shizu_State2* state
+  );
+
+/// @code
+/// 1
+/// @endcode
+Shizu_BigInteger*
+Shizu_BigInteger_one
+  (
+    Shizu_State2* state
+  );
+
+/// @code
+/// x * 10^n, n >= 0
+/// @endcode
+Shizu_BigInteger*
+Shizu_BigInteger_multiply10
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer32 x
+  );
+
+/// @code
+/// floor(x / 10^n), n >= 0
+/// @endcode
+Shizu_BigInteger*
+Shizu_BigInteger_divide10
+  (
+    Shizu_State2* state,
+    Shizu_BigInteger* self,
+    Shizu_Integer32 n
+  );
+
 #endif // SHIZU_OBJECTS_BIGINTEGER_H_INCLUDED

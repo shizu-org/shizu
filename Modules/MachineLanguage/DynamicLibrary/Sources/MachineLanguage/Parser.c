@@ -225,7 +225,7 @@ getTokenText
 { return Scanner_getTokenText(state, self->scanner); }
 
 static Ast* parseClass(Shizu_State2* state, Parser* self) {
-  Shizu_debugAssert(TokenType_ClassKeyword == getTokenType(state, self));
+  Shizu_Cxx_Debug_assert(TokenType_ClassKeyword == getTokenType(state, self));
   step(state, self);
   if (TokenType_Name != getTokenType(state, self)) {
     Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);
@@ -288,7 +288,7 @@ static Ast* parseParameterList(Shizu_State2* state, Parser* self) {
 }
 
 static Ast* parseProcedure(Shizu_State2* state, Parser* self) {
-  Shizu_debugAssert(TokenType_ProcedureKeyword == getTokenType(state, self));
+  Shizu_Cxx_Debug_assert(TokenType_ProcedureKeyword == getTokenType(state, self));
   step(state, self);
   if (TokenType_Name != getTokenType(state, self)) {
     Shizu_State2_setStatus(state, Shizu_Status_SyntacticalError);

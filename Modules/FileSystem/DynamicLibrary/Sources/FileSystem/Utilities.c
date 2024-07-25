@@ -31,7 +31,7 @@ Shizu_Value_getByteArrayArgument
   )
 {
   Shizu_Type* type = Shizu_ByteArray_getType(state);
-  Shizu_debugAssert(NULL != type);
+  Shizu_Cxx_Debug_assert(NULL != type);
   if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), Shizu_Object_getObjectType(state, Shizu_Value_getObject(value)), type)) {
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
@@ -47,7 +47,7 @@ Shizu_Value_getStringArgument
   )
 {
   Shizu_Type* type = Shizu_String_getType(state);
-  Shizu_debugAssert(NULL != type);
+  Shizu_Cxx_Debug_assert(NULL != type);
   if (!Shizu_Value_isObject(value)) {
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);

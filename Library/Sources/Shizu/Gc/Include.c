@@ -1,8 +1,6 @@
 #include "Shizu/Gc/Include.h"
 
-#include "Shizu/Runtime/Configure.h"
-
-
+#include "Shizu/Cxx/Include.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -856,7 +854,7 @@ Shizu_Gcx_run
       while (node->gray) {
         // Dequeue from gray list.
         Tag* tag = node->gray;
-        node->gray = tag->next;
+        node->gray = tag->gray;
         // Restore the type pointer.
         tag->type = node;
         // Mark the object as black.
@@ -865,7 +863,6 @@ Shizu_Gcx_run
         if (node->visitCallback) {
           node->visitCallback(tag->type->visitContext, (void*)(tag + 1));
         }
-
       }
       node = node->next;
     }
@@ -909,16 +906,10 @@ Shizu_Gcx_visit
 {
   Tag* tag = ((Tag*)object) - 1;
   if (Tag_isWhite(tag)) {
-    if (tag->type->visitCallback) {
-      // If there is a visit callback, put the tag in the gray list of its type and color the tag gray.
-      // This trashes the tag.type pointer.
-      TypeNode* type = tag->type;
-      tag->gray = type->gray;
-      tag->type->gray = tag;
-      Tag_setWhite(tag);
-    } else {
-      // Otherwise color the tag black.
-      Tag_setBlack(tag);
-    }
+    TypeNode* type = tag->type;
+    Shizu_Cxx_Debug_assert(NULL != type);
+    tag->gray = type->gray;
+    type->gray = tag;
+    Tag_setGray(tag);
   }
 }

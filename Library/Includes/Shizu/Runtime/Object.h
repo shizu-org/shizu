@@ -24,27 +24,27 @@
 
 #include "Shizu/Runtime/Type.h"
 #include "Shizu/Runtime/Value.h"
-#include "Shizu/Runtime/CxxUtilities.h"
+#include "Shizu/Cxx/Include.h"
 typedef struct Shizu_Object Shizu_Object;
 typedef struct Shizu_Object_Dispatch Shizu_Object_Dispatch;
 typedef struct Shizu_Type Shizu_Type;
 typedef struct Shizu_State2 Shizu_State2;
 
-Shizu_NoReturn() void
+Shizu_Cxx_NoReturn() void
 Shizu_Errors_raiseDispatchNotExists
   (
     Shizu_State2* state,
-    Shizu_SourceLocationC sourceLocationC,
+    Shizu_Cxx_SourceLocation cxxSourceLocation,
     Shizu_Object* target,
     char const* methodName,
     size_t methodNameLength
   );
 
-Shizu_NoReturn() void
+Shizu_Cxx_NoReturn() void
 Shizu_Errors_raiseMethodNotImplemented
   (
     Shizu_State2* state,
-    Shizu_SourceLocationC sourceLocationC,
+    Shizu_Cxx_SourceLocation cxxSourceLocation,
     Shizu_Object* target,
     char const* methodName,
     size_t methodNameLength
@@ -64,10 +64,10 @@ Shizu_Errors_raiseMethodNotImplemented
 #define Shizu_VirtualCall(TYPE, METHOD, ...) \
   TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_Object_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
-    Shizu_Errors_raiseDispatchNotExists(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseDispatchNotExists(state, Shizu_Cxx_SourceLocation(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   if (!dispatch->METHOD) { \
-    Shizu_Errors_raiseMethodNotImplemented(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseMethodNotImplemented(state, Shizu_Cxx_SourceLocation(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   dispatch->METHOD(state, __VA_ARGS__);
 
@@ -85,10 +85,10 @@ Shizu_Errors_raiseMethodNotImplemented
 #define Shizu_VirtualCallWithReturn(TYPE, METHOD, ...) \
   TYPE##_Dispatch* dispatch = (TYPE##_Dispatch*)Shizu_Object_getObjectDispatch(state, (Shizu_Object*)self); \
   if (!dispatch) { \
-    Shizu_Errors_raiseDispatchNotExists(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseDispatchNotExists(state, Shizu_Cxx_SourceLocation(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   if (!dispatch->METHOD) { \
-    Shizu_Errors_raiseMethodNotImplemented(state, Shizu_SourceLocationC(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
+    Shizu_Errors_raiseMethodNotImplemented(state, Shizu_Cxx_SourceLocation(), (Shizu_Object*)self, #METHOD, sizeof(#METHOD) - 1); \
   } \
   return dispatch->METHOD(state, __VA_ARGS__);
 

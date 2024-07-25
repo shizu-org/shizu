@@ -309,8 +309,8 @@ Shizu_Map_getSize
     Shizu_Map* self
   )
 {
-  Shizu_debugAssert(self->size >= 0);
-  Shizu_debugAssert(self->size <= Shizu_Integer32_Maximum);
+  Shizu_Cxx_Debug_assert(self->size >= 0);
+  Shizu_Cxx_Debug_assert(self->size <= Shizu_Integer32_Maximum);
   return (Shizu_Integer32)self->size;
 }
 

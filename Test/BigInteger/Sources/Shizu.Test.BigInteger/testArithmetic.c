@@ -187,3 +187,60 @@ Shizu_Test_BigInteger_testSubtraction
     Shizu_State2_jump(state);
   }
 }
+
+void
+Shizu_Test_BigInteger_testMultiplyBy10
+  (
+    Shizu_State2* state
+  )
+{ 
+#define TEST(X,F,Y) \
+    { \
+      Shizu_BigInteger* x = Shizu_BigInteger_createFromString(state, Shizu_String_create(state, X, strlen(X))); \
+      Shizu_Value received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_multiply10(state, x, F)); \
+      Shizu_Value expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_createFromString(state, Shizu_String_create(state, Y, strlen(Y)))); \
+      if (!Shizu_Value_isEqualTo(state, &expected, &received)) { \
+        Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed); \
+        Shizu_State2_jump(state); \
+      } \
+    }
+  
+  TEST("-9", 0, "-9");
+  TEST("-9", 1, "-90");
+  TEST("-9", 2, "-900");
+
+#undef TEST
+}
+
+void
+Shizu_Test_BigInteger_testDivideBy10
+  (
+    Shizu_State2* state
+  )
+{
+#define TEST(X,F,Y) \
+    { \
+      Shizu_BigInteger* x = Shizu_BigInteger_createFromString(state, Shizu_String_create(state, X, strlen(X))); \
+      Shizu_Value received = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_divide10(state, x, F)); \
+      Shizu_Value expected = (Shizu_Value)Shizu_Value_InitializerObject(Shizu_BigInteger_createFromString(state, Shizu_String_create(state, Y, strlen(Y)))); \
+      if (!Shizu_Value_isEqualTo(state, &expected, &received)) { \
+        Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed); \
+        Shizu_State2_jump(state); \
+      } \
+    }
+
+  TEST("0", 0, "0");
+  TEST("0", 1, "0");
+  TEST("0", 2, "0");
+
+  TEST("1", 1, "0");
+  TEST("7", 1, "0");
+
+  // 983 is the largest 3 digit prime with all its digits different.
+  TEST("983", 0, "983");
+  TEST("983", 1, "98");
+  TEST("983", 2, "9");
+  TEST("983", 3, "0");
+
+#undef TEST
+}

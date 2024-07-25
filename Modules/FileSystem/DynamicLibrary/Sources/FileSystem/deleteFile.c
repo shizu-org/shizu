@@ -21,6 +21,7 @@
 
 #include "FileSystem/deleteFile.h"
 
+#include "Shizu/Cxx/Include.h"
 #include "FileSystem/Utilities.h"
 #include "idlib/file_system.h"
 
@@ -36,8 +37,8 @@ deleteFile
     Shizu_Value* argumentValues
   )
 {
-  Shizu_debugAssert(NULL != returnValue);
-  Shizu_debugAssert(NULL != argumentValues);
+  Shizu_Cxx_Debug_assert(NULL != returnValue);
+  Shizu_Cxx_Debug_assert(NULL != argumentValues);
   if (1 != numberOfArgumentValues) {
     Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);

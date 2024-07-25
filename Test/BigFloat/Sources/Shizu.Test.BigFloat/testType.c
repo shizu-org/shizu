@@ -19,22 +19,26 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED)
-#define SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+#include "testType.h"
 
-#include "Shizu/Runtime/Configure.h"
-#include "Shizu/Cxx/Include.h"
-
-#define _GNU_SOURCE
-
-// setjmp, jmp_buf, longjmp
-#include <setjmp.h>
-
-typedef struct Shizu_JumpTarget Shizu_JumpTarget;
-
-struct Shizu_JumpTarget {
-  Shizu_JumpTarget* previous;
-  jmp_buf environment;
-};
-
-#endif // SHIZU_RUNTIME_JUMPTARGET_H_INCLUDED
+void
+Shizu_Test_BigFloat_testType
+  (
+    Shizu_State2* state
+  )
+{
+  Shizu_Type* objectType = Shizu_Object_getType(state);
+  if (!objectType) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+  Shizu_Type* bigFloatType = Shizu_BigFloat_getType(state);
+  if (!bigFloatType) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+  if (!Shizu_Types_isTrueSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), bigFloatType, objectType)) {
+    Shizu_State2_setStatus(state, Shizu_Status_EnvironmentFailed);
+    Shizu_State2_jump(state);
+  }
+}

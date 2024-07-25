@@ -273,10 +273,10 @@ Shizu_Environment_getObject
     Shizu_Type* type
   )
 {
-  Shizu_debugAssert(NULL != state);
-  Shizu_debugAssert(NULL != self);
-  Shizu_debugAssert(NULL != name);
-  Shizu_debugAssert(NULL != type);
+  Shizu_Cxx_Debug_assert(NULL != state);
+  Shizu_Cxx_Debug_assert(NULL != self);
+  Shizu_Cxx_Debug_assert(NULL != name);
+  Shizu_Cxx_Debug_assert(NULL != type);
   if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), type, Shizu_Object_getType(state))) {
     Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
     Shizu_State2_jump(state);
