@@ -21,12 +21,14 @@
 
 #include "Shizu/Runtime/Include.h"
 
-#include "testArithmetic.h"
-#include "testDefault.h"
-#include "testFromInteger.h"
-#include "testToInteger.h"
-#include "testType.h"
-#include "testFromString.h"
+#include "Shizu.Test.BigInteger10/testArithmetic.h"
+#include "Shizu.Test.BigInteger10/testDefault.h"
+#include "Shizu.Test.BigInteger10/testFromInteger.h"
+#include "Shizu.Test.BigInteger10/testToInteger.h"
+#include "Shizu.Test.BigInteger10/testType.h"
+#include "Shizu.Test.BigInteger10/testFromString.h"
+
+#include "Shizu.Test.BigInteger2/testType.h"
 
 static int
 safeExecute
@@ -67,47 +69,53 @@ main
 {
   bool failed = false;
   // Type (testType.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testType)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testType)) {
+    failed = true;
+  }
+  if (safeExecute(&Shizu_Test_BigInteger2_testType)) {
     failed = true;
   }
   // Default (constructor) (testDefault.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testDefault)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testDefault)) {
     failed = true;
   }
   // From integer (constructor) (testFromInteger.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testFromInteger32)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testFromInteger32)) {
     failed = true;
   }
 #if 1 == Shizu_Configuration_WithInteger64
-  if (safeExecute(&Shizu_Test_BigInteger_testFromInteger64)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testFromInteger64)) {
     failed = true;
   }
 #endif
   // From string (constructor) (testFromString.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testFromString)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testFromString)) {
     failed = true;
   }
   // Arithmetic operations (testArithmetic.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testNegate)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testNegate)) {
     failed = true;
   }
-  if (safeExecute(&Shizu_Test_BigInteger_testAddition)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testAddition)) {
     failed = true;
   }
-  if (safeExecute(&Shizu_Test_BigInteger_testSubtraction)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testSubtraction)) {
     failed = true;
   }
-  if (safeExecute(&Shizu_Test_BigInteger_testMultiplyBy10)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testMultiplyBy10)) {
     failed = true;
   }
-  if (safeExecute(&Shizu_Test_BigInteger_testDivideBy10)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testDivideBy10)) {
+    failed = true;
+  }
+  if (safeExecute(&Shizu_Test_BigInteger10_testMultiply)) {
     failed = true;
   }
   // To integer conversions (testToInteger.h).
-  if (safeExecute(&Shizu_Test_BigInteger_testToInteger32)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testToInteger32)) {
     failed = true;
   }
-  if (safeExecute(&Shizu_Test_BigInteger_testToInteger64)) {
+  if (safeExecute(&Shizu_Test_BigInteger10_testToInteger64)) {
     failed = true;
   }
   return failed ? EXIT_FAILURE : EXIT_SUCCESS;

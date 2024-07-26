@@ -41,8 +41,6 @@
 // exit, EXIT_FAILURE
 #include <stdlib.h>
 
-#include "idlib/bit_scan.h"
-
 static void
 Shizu_Environment_postCreateType
   (

@@ -28,11 +28,54 @@
 // int32_t, INT32_MIN, INT32_MAX
 #include <inttypes.h>
 
+// Minimum number of decimal digits required to represent any int64_t value.
+// INT64_MAX i s +9,223,372,036,854,775,807 and the minimum value is -9,223,372,036,854,775,808.
+#define INT64_DECIMAL_DIG (19)
+
+// Minimum number of decimal digits required to represent any int32_t value.
+// INT32_MAX is +2,147,483,647, INT32_MIN is -2,147,483,648. Hence 10 digits are required. 
+#define INT32_DECIMAL_DIG (10)
+
+// Minimal number of decimal digits required to represent any uint64_t value.
+// UINT64_MAX is 18,446,744,073,709,551,615. Hence 20 decimal digits are required.
+#define UINT64_DECIMAL_DIG (20)
+
+// Minimal number of decimal digits required to represent any uint32_t value.
+// UINT32_MAX is 4,294,967,295. Hence 10 digits are required.
+#define UINT32_DECIMAL_DIG (10)
+
+// Minimal number of decimal digits required to represent any uint16_t value.
+// UINT16_MAX is 65,535. Hence 5 digits are required.
+#define UINT16_DECIMAL_DIG (5)
+
+// Minimal number of decimal digits required to represent any uint8_t value.
+// UINT8_MAX is 255. Hence 3 digits are required.
+#define UINT8_DECIMAL_DIG (3)
+
+// Greatest power of 10 an uint64_t can hold.
+#define UINT64_MAX_POW10 10000000000000000000
+static_assert(UINT64_MAX_POW10 <= UINT64_MAX, "<internal error>"); // UINT64_MAX is 18.446.744.073.709.551.615
+
+// Greatest power of 10 an uint32_t can hold.
+#define UINT32_MAX_POW10 1000000000
+static_assert(UINT32_MAX_POW10 <= UINT32_MAX, "<internal error>"); // UINT32_MAX is 4.294.967.295
+
+// Greatest power of 10 an uin16_t can hold.
+#define UINT16_MAX_POW10 10000
+static_assert(UINT16_MAX_POW10 <= UINT16_MAX, "<internal error>"); // UINT16_MAX is 65.535
+
+// Greatest power of 10 an uint8_t can hold.
+#define UINT8_MAX_POW10 100
+static_assert(UINT8_MAX_POW10 <= UINT8_MAX, "<internal error>");   // UINT8_MAX is 255
+
 // bool, true, false
 #include <stdbool.h>
 
 // FLT_MAX
 #include <float.h>
+
+// HUGE_VALF, HUGE_VAL
+#include <math.h>
 
 // Forward declaration.
 typedef struct Shizu_Object Shizu_Object;
@@ -56,13 +99,63 @@ typedef float Shizu_Float32;
 
 #define Shizu_Float32_Maximum (+FLT_MAX)
 
+#define Shizu_Float32_Infinity ((float)HUGE_VALF)
+
+/// The minimum of the actual exponent value range.
+/// The exponent is an 8 bit field (Shizu_Float32_ExponentBits) which encodes value [0,+255].
+/// The values 0 and 255 never represent an actual exponent value.
+/// Hence the values [+1,+254] remain.
+/// Add a bias of -127 to these values to obtain the actual exponent value range [-126,+127].
+/// 
+/// Note that FLT_MIN_EXP evaluates to -125 (that is, one more than this constant).
+/// Quote: "minimum negative integer such that FLT_RADIX raised by power one less than that integer is a normalized float"
+#define Shizu_Float32_MinimumExponent (-126) /*FLT_MIN_EXP-1*/
+/// The maximum of the actual exponent value range.
+///
+/// Note that FLT_MAX_EXP evaluates to +128 (that is one more than this constant).
+/// Quote: "maximum positive integer such that FLT_RADIX raised by power one less than that integer is a representable finite float"
+#define Shizu_Float32_MaximumExponent (+127) /*FLT_MAX_EXP - 1*/
+
+/// Note that this constant and FLT_MIN_10_EXP both are defined as -37.
+/// Note: This is something like floor(log10(2^Shizu_Float32_MinimumExponent)) = floor(log10(2^-126)).
+#define Shizu_Float32_MinimumDecimalExponent (-37)
+/// Note that this constant and FLT_MAX_10_EXP both are defined as 38.
+/// Note: This is something like floor(log10(2^Shizu_Float32_MaximumExponent)) = floor(log10(2^127)).
+#define Shizu_Float32_MaximumDecimalExponent (38)
+
+#define Shizu_Float32_ExponentBias (127)
+
+/// The maximum number of digits of the significand that are considered when converting from decimal to binary.
+#define Shizu_Float32_MaximumInputDecimalDigits (200)
+
 // See https://en.wikipedia.org/wiki/Single-precision_floating-point_format for more information.
 #define Shizu_Float32_Bits 32
-#define Shizu_Float32_SignBits 1
-#define Shizu_Float32_FractionBits 23
-#define Shizu_Float32_ExponentBits 8
-static_assert(Shizu_Float32_SignBits + Shizu_Float32_FractionBits + Shizu_Float32_ExponentBits == 32, "single precision floating point defines broken");
 
+/// The number sign bits.
+#define Shizu_Float32_SignBits 1
+/// The shift of the sign bits.
+#define Shizu_Float32_SignShift (Shizu_Float32_ExponentBits + Shizu_Float32_SignificandBits)
+/// Mask for the sign bits.
+#define Shizu_Float32_SignMask (((1 << Shizu_Float32_SignBits) - 1) << Shizu_Float32_SignShift)
+
+/// The number of stored significand bits (this is 23).
+#define Shizu_Float32_SignificandBits 23
+/// The shift of the significand bits.
+#define Shizu_Float32_SignificandShift (0)
+/// Mask for the significand bits.
+#define Shizu_Float32_SignificandMask (((1 << Shizu_Float32_SignificandBits) - 1) << Shizu_Float32_SignificandShift)
+
+/// The number of exponent bits.
+#define Shizu_Float32_ExponentBits 8
+/// The shift of the exponent bits.
+#define Shizu_Float32_ExponentShift (Shizu_Float32_SignificandBits)
+/// Mask for the exponent bits.
+#define Shizu_Float32_ExponentMask (((1 << Shizu_Float32_ExponentBits) - 1) << Shizu_Float32_ExponentShift) 
+
+
+static_assert(Shizu_Float32_SignBits + Shizu_Float32_SignificandBits + Shizu_Float32_ExponentBits == 32, "single precision floating point defines broken");
+/// The "precision" is the number of explicitly stored significand bits plus the implicit leading 1 bit.
+#define Shizu_Float32_Precision (Shizu_Float32_SignificandBits + 1)
 
 
 #if 1 == Shizu_Configuration_WithFloat64
@@ -73,12 +166,61 @@ typedef double Shizu_Float64;
 
 #define Shizu_Float64_Maximum (+DBL_MAX)
 
+#define Shizu_Float64_Infinity ((double)HUGE_VAL)
+
+/// The maximum of the actual exponent value range.
+/// The exponent is an 11 bit field (Shizu_Float64_ExponentBits) which encodes value [0,+2047].
+/// The values 0 and 2047 never represent an actual exponent value.
+/// Hence the values [+1,+2046] remain.
+/// Add a bias of -1023 to these values to obtain the actual exponent value range [-1022,+1023].
+/// 
+/// Note that DBL_MIN_EXP evaluates to -1021 (that is, one more than this constant).
+/// Quote: "minimum negative integer such that DBL_RADIX raised by power one less than that integer is a normalized double"
+#define Shizu_Float64_MinimumExponent (-1022) /*DBL_MIN_EXP + 1*/
+
+/// The minimum of the actual exponent value range.
+///
+/// Note that DBL_MAX_EXP evaluates to +1024 (that is one more than this constant).
+/// Quote: "maximum positive integer such that DBL_RADIX raised by power one less than that integer is a representable finite float"
+#define Shizu_Float64_MaximumExponent (+1023) /*DBL_MAX_EXP - 1*/
+
+/// Note that both DBL_MIN_10_EXP and this constant are defined as 307.
+#define Shizu_Float64_MinimumDecimalExponent (-307)
+/// Note that both DBL_MAX_10_EXP and this constant are defined as 308.
+#define Shizu_Float64_MaximumDecimalExponent (308)
+
+#define Shizu_Float64_ExponentBias (1023)
+
+/// The maximum number of digits of the significand that are considered when converting from decimal to binary.
+#define Shizu_Float64_MaximumInputDecimalDigits (1100)
+
 // See https://en.wikipedia.org/wiki/Double-precision_floating-point_format for more information.
 #define Shizu_Float64_Bits 64
+
+/// The number of sign bits.
 #define Shizu_Float64_SignBits 1
-#define Shizu_Float64_FractionBits 52
+/// The shift of the sign bits.
+#define Shizu_Float64_SignShift (Shizu_Float64_ExponentBits + Shizu_Float64_SignificandBits)
+/// Mask for the sign bits.
+#define Shizu_Float64_SignMask (((1 << Shizu_Float64_SignBits) - 1) << Shizu_Float64_SignShift)
+
+/// The number of significand bits.
+#define Shizu_Float64_SignificandBits 52
+/// The shift of the significand bits.
+#define Shizu_Float64_SignificandShift (0)
+/// Mask for the significand bits.
+#define Shizu_Float64_SignificandMask (((1 << Shizu_Float64_SignificandBits) - 1) << Shizu_Float64_SignificandShift)
+
+/// The number of exponent bits.
 #define Shizu_Float64_ExponentBits 11
-static_assert(Shizu_Float64_SignBits + Shizu_Float64_FractionBits + Shizu_Float64_ExponentBits == 64, "double precision floating point defines broken");
+/// The shift of the exponent bits.
+#define Shizu_Float64_ExponentShift (Shizu_Float64_SignificandBits)
+/// Mask for the exponent bits.
+#define Shizu_Float64_ExponentMask (((1 << Shizu_Float64_ExponentBits) - 1) << Shizu_Float64_ExponentShift)
+
+static_assert(Shizu_Float64_SignBits + Shizu_Float64_SignificandBits + Shizu_Float64_ExponentBits == 64, "double precision floating point defines broken");
+/// The "precision" is the number of explicitly stored significand bits plus the implicit leading 1 bit.
+#define Shizu_Float64_Precision (Shizu_Float64_SignificandBits + 1)
 
 #endif
 

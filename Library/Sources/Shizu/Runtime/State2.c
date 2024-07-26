@@ -670,7 +670,7 @@ Shizu_State2_ensureModulesLoaded
 {
   Shizu_String* workingDirectory = Shizu_getWorkingDirectory(state);
   Shizu_List* modules = Shizu_Runtime_Extensions_createList(state);
-  LoadModulesContext context;
+  LoadModulesContext context = { .state = NULL, .list = NULL, .prefix = NULL };
   context.state = state;
   context.list = modules;
   context.prefix = Shizu_String_concatenate(state, workingDirectory, Shizu_String_create(state, Shizu_OperatingSystem_DirectorySeparator, strlen(Shizu_OperatingSystem_DirectorySeparator)));

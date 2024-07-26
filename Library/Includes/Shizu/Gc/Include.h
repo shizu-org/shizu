@@ -16,6 +16,9 @@ typedef int32_t Shizu_Gcx_Status;
 #define Shizu_Gcx_Status_ReferenceCounterOverflow (7)
 #define Shizu_Gcx_Status_NotInitialized (8)
 
+#define Shizu_Gcx_Status_PlsExists (9)
+#define Shizu_Gcx_Status_PlsNotExists (10)
+
 typedef void (Shizu_Gcx_VisitCallback)(void *visitContext, void *object);
 typedef void (Shizu_Gcx_FinalizeCallback)(void *finalizeContext, void* object);
 
@@ -83,5 +86,53 @@ Shizu_Gcx_visit
   (
     void* object
   );
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+// Destroy process local storage.
+// Shizu_Gcx_Status_ArgumentInvalid
+// Shizu_Gcx_Status_PlsNotExists
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_destroy
+  (
+    char const* name,
+    size_t nameLength
+  );
+
+// Get if process local storage exists.
+// Shizu_Gcx_Status_ArgumentValueInvalid
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_exists
+  (
+    char const* name,
+    size_t nameLength,
+    bool* exists
+  );
+
+/// Get process local storage.
+/// Shizu_Gcx_Status_PlsNotExists
+/// Shizu_Gcx_Status_ArgumentInvalid
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_get
+  (
+    char const* name,
+    size_t nameLength,
+    void **p
+  );
+
+/// Create process local storage.
+/// Shizu_Gcx_Status_PlsExists
+/// Shizu_Gcx_Status_ArgumentInvalid
+/// Shizu_Gcx_Status_AllocationFailed
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_create
+  (
+    char const* name,
+    size_t nameLength,
+    size_t sz,
+    void **p
+  );
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 #endif // SHIZU_GCX_H_INCLUDED

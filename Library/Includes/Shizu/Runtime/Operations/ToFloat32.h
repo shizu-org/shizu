@@ -33,4 +33,14 @@ Shizu_Operations_toFloat32Version1
     Shizu_Value* argumentValues
   );
 
+#if defined(Shizu_Configuration_WithTests)
+
+void
+Shizu_Operations_toFloat32Version1_tests
+  (
+    Shizu_State2* state
+  );
+
+#endif
+
 #endif // SHIZU_RUNTIME_OPERATIONS_TOFLOAT32_H_INCLUDED

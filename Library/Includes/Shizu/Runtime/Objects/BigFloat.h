@@ -26,7 +26,7 @@
 #error("Do not include `Shizu/Runtime/Objects/BigFloat.h` directly. Include `Shizu/Runtime/Include.h` instead.")
 #endif
 #include "Shizu/Runtime/Object.h"
-typedef struct Shizu_BigInteger Shizu_BigInteger;
+typedef struct Shizu_BigInteger10 Shizu_BigInteger10;
 typedef struct Shizu_String Shizu_String;
 
 /// @brief A big float implementation.
@@ -46,7 +46,7 @@ Shizu_declareObjectType(Shizu_BigFloat);
 
 struct Shizu_BigFloat {
   Shizu_Object _parent;
-  Shizu_BigInteger* integer;
+  Shizu_BigInteger10* integer;
   Shizu_Integer32 scale;
 };
 
@@ -106,7 +106,7 @@ Shizu_BigFloat*
 Shizu_BigFloat_createExplicit
   (
     Shizu_State2* state,
-    Shizu_BigInteger* x,
+    Shizu_BigInteger10* x,
     Shizu_Integer32 s
   );
 

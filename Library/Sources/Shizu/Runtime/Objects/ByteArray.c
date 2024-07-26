@@ -34,8 +34,7 @@
 
 // exit, EXIT_FAILURE
 #include <stdlib.h>
-
-#include "idlib/bit_scan.h"
+#include "Shizu/Runtime/powerOfTwoGreaterThanOrEqualTo.h"
 
 static size_t
 getNewBestCapacity
@@ -127,8 +126,13 @@ getNewBestCapacity
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);
   }
-  int result = idlib_power_of_two_ge_sz(&newCapacity, newCapacity);
-  if (result) {
+  Shizu_JumpTarget jumpTarget;
+  Shizu_State2_pushJumpTarget(state, &jumpTarget);
+  if (!setjmp(jumpTarget.environment)) {
+    newCapacity = Shizu_powerOfTwoGreaterThanOrEqualToSz(Shizu_State2_getState1(state), newCapacity);
+    Shizu_State2_popJumpTarget(state);
+  } else {
+    Shizu_State2_popJumpTarget(state);
     Shizu_State2_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State2_jump(state);
   }

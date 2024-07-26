@@ -3,11 +3,20 @@
 #include "Shizu/Cxx/Include.h"
 #include <malloc.h>
 #include <stdio.h>
-#include <stdbool.h>
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+typedef struct PlsNode PlsNode;
+typedef struct PlsManager PlsManager;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 typedef struct Tag Tag;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
 typedef struct TypeNode TypeNode;
-typedef struct Types Types;
+typedef struct TypeManager TypeManager;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -96,6 +105,22 @@ Tag_setBlack
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+struct PlsNode {
+  PlsNode* next;
+  char* name;
+  size_t nameLength;
+  size_t hashValue;
+  size_t sz;
+  void* p;
+};
+
+struct PlsManager {
+  PlsNode** p;
+  size_t sz, cp;
+};
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
 struct TypeNode {
   TypeNode* next;
   uint64_t usage;
@@ -112,19 +137,20 @@ struct TypeNode {
   Tag* all; // All objects of this type.
 };
 
-struct Types {
+struct TypeManager {
   TypeNode** p;
   size_t sz, cp;
 };
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
 typedef struct Singleton {
-  Types* types;
+  PlsManager* plsManager;
+  TypeManager* typeManager;
   int64_t referenceCount;
 } Singleton;
 
 static Singleton* g_singleton = NULL;
-
-#include "Shizu/Runtime/Configure.h"
 
 #if (Shizu_Configuration_OperatingSystem == Shizu_Configuration_OperatingSystem_Linux)  || \
     (Shizu_Configuration_OperatingSystem == Shizu_Configuration_OperatingSystem_Cygwin) || \
@@ -230,12 +256,22 @@ hashName
   );
 
 static Shizu_Gcx_Status
-startupTypes
+startupPlsManager
   (
   );
 
 static Shizu_Gcx_Status
-shutdownTypes
+shutdownPlsManager
+  (
+  );
+
+static Shizu_Gcx_Status
+startupTypeManager
+  (
+  );
+
+static Shizu_Gcx_Status
+shutdownTypeManager
   (
   );
 
@@ -272,7 +308,7 @@ hashName
 }
 
 static Shizu_Gcx_Status
-startupTypes
+startupPlsManager
   (
   )
 {
@@ -282,28 +318,28 @@ startupTypes
   if (status) {
     return status;
   }
-  (*singleton)->types = malloc(sizeof(Types));
-  if (!(*singleton)->types) {
-    fprintf(stdout, "%s:%d: unable to allocate %zu Bytes\n", __FILE__, __LINE__, sizeof(Types));
+  (*singleton)->plsManager = malloc(sizeof(PlsManager));
+  if (!(*singleton)->plsManager) {
+    fprintf(stdout, "%s:%d: unable to allocate %zu Bytes\n", __FILE__, __LINE__, sizeof(PlsManager));
     return Shizu_Gcx_Status_AllocationFailed;
   }
-  (*singleton)->types->p = malloc(sizeof(TypeNode*) * 8);
-  if (!(*singleton)->types->p) {
-    fprintf(stdout, "%s:%d: unable to allocate %zu Bytes\n", __FILE__, __LINE__, sizeof(TypeNode*) * 8);
-    free((*singleton)->types);
-    (*singleton)->types = NULL;
+  (*singleton)->plsManager->p = malloc(sizeof(PlsNode*) * 8);
+  if (!(*singleton)->plsManager->p) {
+    fprintf(stdout, "%s:%d: unable to allocate %zu Bytes\n", __FILE__, __LINE__, sizeof(PlsNode*) * 8);
+    free((*singleton)->plsManager);
+    (*singleton)->plsManager = NULL;
     return Shizu_Gcx_Status_AllocationFailed;
   }
   for (size_t i = 0, n = 8; i < n; ++i) {
-    (*singleton)->types->p[i] = NULL;
+    (*singleton)->plsManager->p[i] = NULL;
   }
-  (*singleton)->types->sz = 0;
-  (*singleton)->types->cp = 8;
+  (*singleton)->plsManager->sz = 0;
+  (*singleton)->plsManager->cp = 8;
   return Shizu_Gcx_Status_Success;
 }
 
 static Shizu_Gcx_Status
-shutdownTypes
+shutdownPlsManager
   (
   )
 {
@@ -313,9 +349,77 @@ shutdownTypes
   if (status) {
     return status;
   }
-  for (size_t i = 0, n = (*singleton)->types->cp; i < n; ++i) {
-    TypeNode** previous = &((*singleton)->types->p[i]);
-    TypeNode* current = (*singleton)->types->p[i];
+  for (size_t i = 0, n = (*singleton)->plsManager->cp; i < n; ++i) {
+    PlsNode** previous = &((*singleton)->plsManager->p[i]);
+    PlsNode* current = (*singleton)->plsManager->p[i];
+    while (current) {
+      //if (!current->usage) {
+        PlsNode* node = current;
+        *previous = current->next;
+        current = current->next;
+        free(node->name);
+        free(node);
+        (*singleton)->plsManager->sz--;
+      //} else {
+      //previous = &(current->next);
+      //current = current->next;
+      //}
+    }
+  }
+  if ((*singleton)->plsManager->sz > 0) {
+    return Shizu_Gcx_Status_TypeExists;
+  }
+  free((*singleton)->plsManager->p);
+  free((*singleton)->plsManager);
+  (*singleton)->plsManager = NULL;
+  return Shizu_Gcx_Status_Success;
+}
+
+static Shizu_Gcx_Status
+startupTypeManager
+  (
+  )
+{
+  Singleton** singleton = NULL;
+  Shizu_Gcx_Status status;
+  status = getSingletonVar(&singleton);
+  if (status) {
+    return status;
+  }
+  (*singleton)->typeManager = malloc(sizeof(TypeManager));
+  if (!(*singleton)->typeManager) {
+    fprintf(stdout, "%s:%d: unable to allocate %zu Bytes\n", __FILE__, __LINE__, sizeof(TypeManager));
+    return Shizu_Gcx_Status_AllocationFailed;
+  }
+  (*singleton)->typeManager->p = malloc(sizeof(TypeNode*) * 8);
+  if (!(*singleton)->typeManager->p) {
+    fprintf(stdout, "%s:%d: unable to allocate %zu Bytes\n", __FILE__, __LINE__, sizeof(TypeNode*) * 8);
+    free((*singleton)->typeManager);
+    (*singleton)->typeManager = NULL;
+    return Shizu_Gcx_Status_AllocationFailed;
+  }
+  for (size_t i = 0, n = 8; i < n; ++i) {
+    (*singleton)->typeManager->p[i] = NULL;
+  }
+  (*singleton)->typeManager->sz = 0;
+  (*singleton)->typeManager->cp = 8;
+  return Shizu_Gcx_Status_Success;
+}
+
+static Shizu_Gcx_Status
+shutdownTypeManager
+  (
+  )
+{
+  Singleton** singleton = NULL;
+  Shizu_Gcx_Status status;
+  status = getSingletonVar(&singleton);
+  if (status) {
+    return status;
+  }
+  for (size_t i = 0, n = (*singleton)->typeManager->cp; i < n; ++i) {
+    TypeNode** previous = &((*singleton)->typeManager->p[i]);
+    TypeNode* current = (*singleton)->typeManager->p[i];
     while (current) {
       if (!current->usage) {
         TypeNode* node = current;
@@ -323,19 +427,19 @@ shutdownTypes
         current = current->next;
         free(node->name);
         free(node);
-        (*singleton)->types->sz--;
+        (*singleton)->typeManager->sz--;
       } else {
         previous = &(current->next);
         current = current->next;
       }
     }
   }
-  if ((*singleton)->types->sz > 0) {
+  if ((*singleton)->typeManager->sz > 0) {
     return Shizu_Gcx_Status_TypeExists;
   }
-  free((*singleton)->types->p);
-  free((*singleton)->types);
-  (*singleton)->types = NULL;
+  free((*singleton)->typeManager->p);
+  free((*singleton)->typeManager);
+  (*singleton)->typeManager = NULL;
   return Shizu_Gcx_Status_Success;
 }
 
@@ -456,11 +560,17 @@ Shizu_Gcx_startup
       return Shizu_Gcx_Status_AllocationFailed;
     }
     (*singleton)->referenceCount = 0;
-    (*singleton)->types = NULL;
+    (*singleton)->typeManager = NULL;
   }
   if (0 == (*singleton)->referenceCount) {
-    status = startupTypes();
+    status = startupTypeManager();
     if (status) {
+      unlockMutex();
+      return status;
+    }
+    status = startupPlsManager();
+    if (status) {
+      shutdownTypeManager();
       unlockMutex();
       return status;
     }
@@ -495,10 +605,13 @@ Shizu_Gcx_shutdown
     return status;
   }
   if (1 == (*singleton)->referenceCount) {
-    status = shutdownTypes();
+    status = shutdownPlsManager();
     if (status) {
-      unlockMutex();
-      return status;
+      /*We have to ignore this. Must not be reached. Proof of non-reachability required.*/
+    }
+    status = shutdownTypeManager();
+    if (status) {
+      /*We have to ignore this. Must not be reached. Proof of non-reachability required.*/
     }
     free(*singleton);
     (*singleton) = NULL;
@@ -545,7 +658,7 @@ Shizu_Gcx_registerType
     return status;
   }
  
-  if (!(*singleton)->types) {
+  if (!(*singleton)->typeManager) {
     unlockMutex();
     status = Shizu_Gcx_Status_NotInitialized;
     return status;
@@ -558,9 +671,9 @@ Shizu_Gcx_registerType
     return status;
   }
 
-  size_t hashIndex = hashValue % (*singleton)->types->cp;
+  size_t hashIndex = hashValue % (*singleton)->typeManager->cp;
   
-  for (TypeNode* node = (*singleton)->types->p[hashIndex]; NULL != node; node = node->next) {
+  for (TypeNode* node = (*singleton)->typeManager->p[hashIndex]; NULL != node; node = node->next) {
     if (node->hashValue == hashValue && node->nameLength == nameLength) {
       if (!memcmp(node->name, name, nameLength)) {
         unlockMutex();
@@ -571,7 +684,7 @@ Shizu_Gcx_registerType
   }
 
   // Too many types?
-  if ((*singleton)->types->sz == SIZE_MAX / sizeof(TypeNode*)) {
+  if ((*singleton)->typeManager->sz == SIZE_MAX / sizeof(TypeNode*)) {
     unlockMutex();
     return Shizu_Gcx_Status_AllocationFailed;
   }
@@ -603,9 +716,9 @@ Shizu_Gcx_registerType
   node->all = NULL;
   node->gray = NULL;
 
-  node->next = (*singleton)->types->p[hashIndex];
-  (*singleton)->types->p[hashIndex] = node;
-  (*singleton)->types->sz++;
+  node->next = (*singleton)->typeManager->p[hashIndex];
+  (*singleton)->typeManager->p[hashIndex] = node;
+  (*singleton)->typeManager->sz++;
   
   unlockMutex();
   return Shizu_Gcx_Status_Success;
@@ -643,9 +756,9 @@ Shizu_Gcx_unregisterType
     return status;
   }
 
-  size_t hashIndex = hashValue % (*singleton)->types->cp;
+  size_t hashIndex = hashValue % (*singleton)->typeManager->cp;
 
-  for (TypeNode* node = (*singleton)->types->p[hashIndex]; NULL != node; node = node->next) {
+  for (TypeNode* node = (*singleton)->typeManager->p[hashIndex]; NULL != node; node = node->next) {
     if (node->hashValue == hashValue && node->nameLength == nameLength) {
       if (!memcmp(node->name, name, nameLength)) {
         if (!node->usage) {
@@ -693,7 +806,7 @@ Shizu_Gcx_acquireType
     return status;
   }
 
-  if (!(*singleton)->types) {
+  if (!(*singleton)->typeManager) {
     unlockMutex();
     status = Shizu_Gcx_Status_NotInitialized;
     return status;
@@ -706,9 +819,9 @@ Shizu_Gcx_acquireType
     return status;
   }
 
-  size_t hashIndex = hashValue % (*singleton)->types->cp;
+  size_t hashIndex = hashValue % (*singleton)->typeManager->cp;
 
-  for (TypeNode* node = (*singleton)->types->p[hashIndex]; NULL != node; node = node->next) {
+  for (TypeNode* node = (*singleton)->typeManager->p[hashIndex]; NULL != node; node = node->next) {
     if (node->hashValue == hashValue && node->nameLength == nameLength) {
       if (!memcmp(node->name, name, nameLength)) {
         if (INT64_MAX == node->usage) {
@@ -753,7 +866,7 @@ Shizu_Gcx_relinquishType
     return status;
   }
 
-  if (!(*singleton)->types) {
+  if (!(*singleton)->typeManager) {
     unlockMutex();
     status = Shizu_Gcx_Status_NotInitialized;
     return status;
@@ -796,7 +909,7 @@ Shizu_Gcx_allocate
     return status;
   }
 
-  if (!(*singleton)->types) {
+  if (!(*singleton)->typeManager) {
     unlockMutex();
     status = Shizu_Gcx_Status_NotInitialized;
     return status;
@@ -848,8 +961,8 @@ Shizu_Gcx_run
     return status;
   }
 
-  for (size_t i = 0, n = (*singleton)->types->cp; i < n; ++i) {
-    TypeNode* node = (*singleton)->types->p[i];
+  for (size_t i = 0, n = (*singleton)->typeManager->cp; i < n; ++i) {
+    TypeNode* node = (*singleton)->typeManager->p[i];
     while (node) {
       while (node->gray) {
         // Dequeue from gray list.
@@ -867,8 +980,8 @@ Shizu_Gcx_run
       node = node->next;
     }
   }
-  for (size_t i = 0; i < (*singleton)->types->cp; ++i) {
-    TypeNode* node = (*singleton)->types->p[i];
+  for (size_t i = 0; i < (*singleton)->typeManager->cp; ++i) {
+    TypeNode* node = (*singleton)->typeManager->p[i];
     while (node) {
       Tag** previous = &(node->all);
       Tag* current = node->all;
@@ -913,3 +1026,253 @@ Shizu_Gcx_visit
     Tag_setGray(tag);
   }
 }
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_destroy
+  (
+    char const* name,
+    size_t nameLength
+  )
+{
+  Shizu_Gcx_Status status;
+  if (!name) {
+    status = Shizu_Gcx_Status_ArgumentInvalid;
+    return status;
+  }
+  status = lockMutex();
+  if (status) {
+    return status;
+  }
+  Singleton** singleton = NULL;
+  status = getSingletonVar(&singleton);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  if (!(*singleton)->plsManager) {
+    unlockMutex();
+    status = Shizu_Gcx_Status_NotInitialized;
+    return status;
+  }
+
+  size_t hashValue;
+  status = hashName(name, nameLength, &hashValue);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  size_t hashIndex = hashValue % (*singleton)->plsManager->cp;
+
+  PlsNode** previous = &((*singleton)->plsManager->p[hashIndex]);
+  PlsNode* current = (*singleton)->plsManager->p[hashIndex];
+  while (current) {
+    if (current->hashValue == hashValue && current->nameLength == nameLength) {
+      if (!memcmp(current->name, name, nameLength)) {
+        *previous = current->next;
+        free(current->p);
+        free(current->name);
+        free(current);
+        (*singleton)->plsManager->sz--;
+        unlockMutex();
+        return Shizu_Gcx_Status_Success;
+      }
+    }
+    previous = &current->next;
+    current = current->next;
+  }
+
+  unlockMutex();
+  return Shizu_Gcx_Status_PlsNotExists;
+}
+
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_exists
+  (
+    char const* name,
+    size_t nameLength,
+    bool* exists
+  )
+{
+  Shizu_Gcx_Status status;
+  if (!name || !exists) {
+    status = Shizu_Gcx_Status_ArgumentInvalid;
+    return status;
+  }
+  status = lockMutex();
+  if (status) {
+    return status;
+  }
+  Singleton** singleton = NULL;
+  status = getSingletonVar(&singleton);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  if (!(*singleton)->plsManager) {
+    unlockMutex();
+    status = Shizu_Gcx_Status_NotInitialized;
+    return status;
+  }
+
+  size_t hashValue;
+  status = hashName(name, nameLength, &hashValue);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  size_t hashIndex = hashValue % (*singleton)->plsManager->cp;
+
+  for (PlsNode* node = (*singleton)->plsManager->p[hashIndex]; NULL != node; node = node->next) {
+    if (node->hashValue == hashValue && node->nameLength == nameLength) {
+      if (!memcmp(node->name, name, nameLength)) {
+        *exists = true;
+        unlockMutex();
+        return Shizu_Gcx_Status_Success;
+      }
+    }
+  }
+  *exists = false;
+  unlockMutex();
+  return Shizu_Gcx_Status_Success;
+}
+
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_get
+  (
+    char const* name,
+    size_t nameLength,
+    void** p
+  )
+{
+  Shizu_Gcx_Status status;
+  if (!name || !p) {
+    status = Shizu_Gcx_Status_ArgumentInvalid;
+    return status;
+  }
+  status = lockMutex();
+  if (status) {
+    return status;
+  }
+  Singleton** singleton = NULL;
+  status = getSingletonVar(&singleton);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  if (!(*singleton)->plsManager) {
+    unlockMutex();
+    status = Shizu_Gcx_Status_NotInitialized;
+    return status;
+  }
+
+  size_t hashValue;
+  status = hashName(name, nameLength, &hashValue);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  size_t hashIndex = hashValue % (*singleton)->plsManager->cp;
+
+  for (PlsNode* node = (*singleton)->plsManager->p[hashIndex]; NULL != node; node = node->next) {
+    if (node->hashValue == hashValue && node->nameLength == nameLength) {
+      if (!memcmp(node->name, name, nameLength)) {
+        *p = node->p;
+        unlockMutex();
+        return Shizu_Gcx_Status_Success;
+      }
+    }
+  }
+  unlockMutex();
+  return Shizu_Gcx_Status_PlsNotExists;
+}
+
+Shizu_Gcx_Status
+Shizu_Gcx_Pls_create
+  (
+    char const* name,
+    size_t nameLength,
+    size_t sz,
+    void** p
+  )
+{
+  Shizu_Gcx_Status status;
+  if (!name || !p) {
+    status = Shizu_Gcx_Status_ArgumentInvalid;
+    return status;
+  }
+  status = lockMutex();
+  if (status) {
+    return status;
+  }
+  Singleton** singleton = NULL;
+  status = getSingletonVar(&singleton);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  if (!(*singleton)->plsManager) {
+    unlockMutex();
+    status = Shizu_Gcx_Status_NotInitialized;
+    return status;
+  }
+
+  size_t hashValue;
+  status = hashName(name, nameLength, &hashValue);
+  if (status) {
+    unlockMutex();
+    return status;
+  }
+
+  size_t hashIndex = hashValue % (*singleton)->plsManager->cp;
+
+  for (PlsNode* node = (*singleton)->plsManager->p[hashIndex]; NULL != node; node = node->next) {
+    if (node->hashValue == hashValue && node->nameLength == nameLength) {
+      if (!memcmp(node->name, name, nameLength)) {
+        unlockMutex();
+        return Shizu_Gcx_Status_PlsExists;
+      }
+    }
+  }
+
+  PlsNode* node = malloc(sizeof(PlsNode));
+  if (!node) {
+    unlockMutex();
+    return Shizu_Gcx_Status_AllocationFailed;
+  }
+  node->name = malloc(nameLength > 0 ? nameLength : 1);
+  if (!node->name) {
+    unlockMutex();
+    free(node);
+    return Shizu_Gcx_Status_AllocationFailed;
+  }
+  memcpy(node->name, name, nameLength);
+  node->nameLength = nameLength;
+  node->hashValue = hashValue;
+
+  node->sz = sz;
+  node->p = malloc(sz > 0 ? sz : 1);
+  if (!node->p) {
+    unlockMutex();
+    free(node->name);
+    free(node);
+    return Shizu_Gcx_Status_AllocationFailed;
+  }
+
+  node->next = (*singleton)->plsManager->p[hashIndex];
+  (*singleton)->plsManager->p[hashIndex] = node;
+  (*singleton)->plsManager->sz++;
+  
+  unlockMutex();
+  return Shizu_Gcx_Status_Success;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

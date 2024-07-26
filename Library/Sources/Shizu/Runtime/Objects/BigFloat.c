@@ -27,7 +27,7 @@
 #include "Shizu/Runtime/Extensions.h"
 #include "Shizu/Runtime/Gc.h"
 
-#include "Shizu/Runtime/Objects/BigInteger.h"
+#include "Shizu/Runtime/Objects/BigInteger10.h"
 #include "Shizu/Runtime/Objects/ByteArray.h"
 #include "Shizu/Runtime/Objects/String.h"
 
@@ -143,7 +143,7 @@ Shizu_BigFloat_constructImpl
   Shizu_BigFloat* SELF = (Shizu_BigFloat*)Shizu_Value_getObject(&argumentValues[0]);
   Shizu_Object_construct(state, (Shizu_Object*)SELF);
   if (1 == numberOfArgumentValues) {
-    SELF->integer = Shizu_BigInteger_zero(state);
+    SELF->integer = Shizu_BigInteger10_zero(state);
     SELF->scale = 0;
   } else if (3 == numberOfArgumentValues) {
     if (!Shizu_Value_isObject(&argumentValues[1]) || !Shizu_Value_isInteger32(&argumentValues[2])) {
@@ -151,17 +151,17 @@ Shizu_BigFloat_constructImpl
       Shizu_State2_jump(state);
     }
     Shizu_Object* object = Shizu_Value_getObject(&argumentValues[1]);
-    if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), object->type, Shizu_BigInteger_getType(state))) {
+    if (!Shizu_Types_isSubTypeOf(Shizu_State2_getState1(state), Shizu_State2_getTypes(state), object->type, Shizu_BigInteger10_getType(state))) {
       Shizu_State2_setStatus(state, Shizu_Status_ArgumentTypeInvalid);
       Shizu_State2_jump(state);
     }                                          
-    SELF->integer = (Shizu_BigInteger*)object;
+    SELF->integer = (Shizu_BigInteger10*)object;
     SELF->scale = Shizu_Value_getInteger32(&argumentValues[2]);
   } else {
     Shizu_State2_setStatus(state, Shizu_Status_NumberOfArgumentsInvalid);
     Shizu_State2_jump(state);
   }
-  SELF->integer = Shizu_BigInteger_create(state);
+  SELF->integer = Shizu_BigInteger10_create(state);
   SELF->scale = 0;
   ((Shizu_Object*)SELF)->type = TYPE;
 }
@@ -195,7 +195,7 @@ Shizu_BigFloat_createFromInteger32
   Shizu_BigFloat* SELF = (Shizu_BigFloat*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
   Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value argumentValues[] = { Shizu_Value_InitializerObject(SELF),
-                                   Shizu_Value_InitializerObject(Shizu_BigInteger_createFromInteger32(state, v)),
+                                   Shizu_Value_InitializerObject(Shizu_BigInteger10_createFromInteger32(state, v)),
                                    Shizu_Value_InitializerInteger32(0) };
   DESCRIPTOR->construct(state, &returnValue, 3, &(argumentValues[0]));
   return SELF;
@@ -215,7 +215,7 @@ Shizu_BigFloat_createFromInteger64
   Shizu_BigFloat* SELF = (Shizu_BigFloat*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
   Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value argumentValues[] = { Shizu_Value_InitializerObject(SELF),
-                                   Shizu_Value_InitializerObject(Shizu_BigInteger_createFromInteger64(state, v)),
+                                   Shizu_Value_InitializerObject(Shizu_BigInteger10_createFromInteger64(state, v)),
                                    Shizu_Value_InitializerInteger32(0) };
   DESCRIPTOR->construct(state, &returnValue, 3, &(argumentValues[0]));
   return SELF;
@@ -234,7 +234,7 @@ Shizu_BigFloat_zero
   Shizu_BigFloat* SELF = (Shizu_BigFloat*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
   Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value argumentValues[] = { Shizu_Value_InitializerObject(SELF),
-                                   Shizu_Value_InitializerObject(Shizu_BigInteger_zero(state)),
+                                   Shizu_Value_InitializerObject(Shizu_BigInteger10_zero(state)),
                                    Shizu_Value_InitializerInteger32(0) };
   DESCRIPTOR->construct(state, &returnValue, 3, &(argumentValues[0]));
   return SELF;
@@ -251,7 +251,7 @@ Shizu_BigFloat_one
   Shizu_BigFloat* SELF = (Shizu_BigFloat*)Shizu_Gc_allocateObject(state, DESCRIPTOR->size);
   Shizu_Value returnValue = Shizu_Value_InitializerVoid(Shizu_Void_Void);
   Shizu_Value argumentValues[] = { Shizu_Value_InitializerObject(SELF),
-                                   Shizu_Value_InitializerObject(Shizu_BigInteger_one(state)),
+                                   Shizu_Value_InitializerObject(Shizu_BigInteger10_one(state)),
                                    Shizu_Value_InitializerInteger32(0) };
   DESCRIPTOR->construct(state, &returnValue, 3, &(argumentValues[0]));
   return SELF;
@@ -261,7 +261,7 @@ Shizu_BigFloat*
 Shizu_BigFloat_createExplicit
   (
     Shizu_State2* state,
-    Shizu_BigInteger* x,
+    Shizu_BigInteger10* x,
     Shizu_Integer32 s
   ) 
 {

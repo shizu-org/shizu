@@ -25,25 +25,33 @@ Shizu_beginExecutable()
 
 list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/Main.c)
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testFromInteger.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testFromInteger.h)
+# base 10 big integers
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testFromInteger.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testFromInteger.h)
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testType.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testType.h)
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testType.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testType.h)
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testDefault.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testDefault.h)
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testDefault.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testDefault.h)
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testToInteger.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testToInteger.h)
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testToInteger.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testToInteger.h)
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testArithmetic.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testArithmetic.h)
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testArithmetic.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testArithmetic.h)
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger/testFromString.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger/testFromString.h)
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testFromString.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testFromString.h)
+
+# base 2 big integers
+list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger2/testType.c)
+list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger2/testType.h)
 
 Shizu_endExecutable()
+
+target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/Sources)
+target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Sources)
 
 target_link_libraries(${name} PRIVATE ${Shizu.project-name})
 

@@ -279,9 +279,9 @@ Shizu_Float32_postCreateType
     Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
     Shizu_State1_jump(state);
   }
-  g->precision = Shizu_Float32_FractionBits + 1;
+  g->precision = Shizu_Float32_SignificandBits + 1;
   // W := S - P := 32 - 24 = 8 
-  g->fractionBitsCount = Shizu_Float32_FractionBits;
+  g->fractionBitsCount = Shizu_Float32_SignificandBits;
   g->fractionBitsShift = 0;
   g->fractionBitsMask = (1 << g->fractionBitsCount) - 1;         // 00000000011111111111111111111111
   g->fractionBitsMask <<= g->fractionBitsShift;
@@ -448,9 +448,9 @@ typedef struct Float64 {
 
   Shizu_Integer64 precision;
 
-  Shizu_Integer64 fractionBitsCount;
-  Shizu_Integer64 fractionBitsShift;
-  Shizu_Integer64 fractionBitsMask;
+  Shizu_Integer64 significandBitsCount;
+  Shizu_Integer64 significandBitsShift;
+  Shizu_Integer64 significandBitsMask;
 
   Shizu_Integer64 exponentBitsCount;
   Shizu_Integer64 exponentBitsShift;
@@ -506,20 +506,20 @@ Shizu_Float64_postCreateType
     Shizu_State1_jump(state);
   }
 
-  g->precision = Shizu_Float64_FractionBits + 1;
+  g->precision = Shizu_Float64_Precision + 1;
 
-  g->fractionBitsCount = Shizu_Float64_FractionBits;
-  g->fractionBitsShift = 0;
-  g->fractionBitsMask = (1 << g->fractionBitsCount) - 1;
-  g->fractionBitsMask <<= g->fractionBitsShift;
+  g->significandBitsCount = Shizu_Float64_SignificandBits;
+  g->significandBitsShift = 0;
+  g->significandBitsMask = (1 << g->significandBitsCount) - 1;
+  g->significandBitsMask <<= g->significandBitsShift;
   
   g->exponentBitsCount = Shizu_Float64_ExponentBits;
-  g->exponentBitsShift = g->fractionBitsCount;
+  g->exponentBitsShift = g->significandBitsCount;
   g->exponentBitsMask = (1 << g->exponentBitsCount) - 1;
   g->exponentBitsMask <<= g->exponentBitsShift;                 
 
   g->signBitsCount = Shizu_Float64_SignBits;
-  g->signBitsShift = g->exponentBitsCount + g->fractionBitsCount;
+  g->signBitsShift = g->exponentBitsCount + g->significandBitsCount;
   g->signBitsMask = (1 << g->signBitsCount) - 1;
   g->signBitsMask <<= g->signBitsShift;
 
@@ -642,7 +642,7 @@ Shizu_Float64_getSignBitsShift
 }
 
 Shizu_Integer64
-Shizu_Float64_getFractionBitsMask
+Shizu_Float64_getSignificandBitsMask
   (
     Shizu_State1* state
   )
@@ -652,11 +652,11 @@ Shizu_Float64_getFractionBitsMask
     Shizu_State1_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State1_jump(state);
   }
-  return g->fractionBitsMask;
+  return g->significandBitsMask;
 }
 
 Shizu_Integer64
-Shizu_Float64_getFractionBitsShift
+Shizu_Float64_getSignificandBitsShift
   (
     Shizu_State1* state
   )
@@ -666,7 +666,7 @@ Shizu_Float64_getFractionBitsShift
     Shizu_State1_setStatus(state, Shizu_Status_EnvironmentFailed);
     Shizu_State1_jump(state);
   }
-  return g->fractionBitsShift;
+  return g->significandBitsShift;
 }
 
 #endif

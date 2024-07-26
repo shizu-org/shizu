@@ -52,5 +52,9 @@
 #define Shizu_Configuration_WithFloat64 @Shizu_Configuration_WithFloat64@
 
 
+/// @brief Defined to 1 if tests are enabled. Defined to 0 otherwise.
+#define Shizu_Configuration_WithTests @Shizu_Configuration_WithTests@
+
+
 
 #endif // SHIZU_RUNTIME_CONFIGURE_H_INCLUDED

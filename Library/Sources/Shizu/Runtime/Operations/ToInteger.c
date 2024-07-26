@@ -59,8 +59,8 @@ Shizu_Operations_toInteger32Version1
       Shizu_Value_setInteger32(returnValue, (Shizu_Integer32)x);
     }
   } else if (Shizu_Runtime_Extensions_isString(state, argumentValues[0])) {
-    Shizu_BigInteger* bigInteger = Shizu_BigInteger_createFromString(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0]));
-    Shizu_Value_setInteger32(returnValue, Shizu_BigInteger_toInteger32(state, bigInteger));
+    Shizu_BigInteger10* bigInteger = Shizu_BigInteger10_createFromString(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0]));
+    Shizu_Value_setInteger32(returnValue, Shizu_BigInteger10_toInteger32(state, bigInteger));
   } else {
     Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
     Shizu_State2_jump(state);
@@ -95,8 +95,8 @@ Shizu_Operations_toInteger64Version1
       Shizu_Value_setInteger64(returnValue, (Shizu_Integer64)x);
     }
   } else if (Shizu_Runtime_Extensions_isString(state, argumentValues[0])) {
-    Shizu_BigInteger* bigInteger = Shizu_BigInteger_createFromString(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0]));
-    Shizu_Value_setInteger64(returnValue, Shizu_BigInteger_toInteger64(state, bigInteger));
+    Shizu_BigInteger10* bigInteger = Shizu_BigInteger10_createFromString(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0]));
+    Shizu_Value_setInteger64(returnValue, Shizu_BigInteger10_toInteger64(state, bigInteger));
   } else {
     Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
     Shizu_State2_jump(state);

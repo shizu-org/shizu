@@ -31,10 +31,18 @@
 #include "Shizu/Runtime/Status.h"
 #include "Shizu/Runtime/Value.h"
 
+#include "Shizu/Runtime/countLeadingZeroes.h"
+#include "Shizu/Runtime/countTrailingZeroes.h"
+#include "Shizu/Runtime/getWorkingDirectory.h"
+#include "Shizu/Runtime/isPowerOfTwo.h"
+#include "Shizu/Runtime/powerOfTwoGreaterThan.h"
+#include "Shizu/Runtime/powerOfTwoGreaterThanOrEqualTo.h"
+
 #include "Shizu/Runtime/Operations/Include.h"
 
 #include "Shizu/Runtime/Objects/BigFloat.h"
-#include "Shizu/Runtime/Objects/BigInteger.h"
+#include "Shizu/Runtime/Objects/BigInteger2.h"
+#include "Shizu/Runtime/Objects/BigInteger10.h"
 #include "Shizu/Runtime/Objects/ByteArray.h"
 #include "Shizu/Runtime/Objects/CxxProcedure.h"
 #include "Shizu/Runtime/Objects/Environment.h"

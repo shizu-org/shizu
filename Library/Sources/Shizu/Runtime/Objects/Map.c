@@ -25,11 +25,10 @@
 #include "Shizu/Runtime/State2.h"
 #include "Shizu/Runtime/State1.h"
 #include "Shizu/Runtime/Gc.h"
+#include "Shizu/Runtime/countLeadingZeroes.h"
 
 // INT_MAX, SIZE_MAX
 #include <limits.h>
-
-#include "idlib/bit_scan.h"
 
 static const char* namedMemoryName = "Shizu.Maps.NamedMemory";
 
@@ -153,51 +152,48 @@ Shizu_Map_postCreateType
     Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
-  size_t leadingZeroes;
-  size_t shift;
-  size_t t;
-  t = idlib_count_leading_zeroes_u32(0);
-  if (t != 32) {
+  Shizu_JumpTarget jumpTarget;
+  Shizu_State1_pushJumpTarget(state1, &jumpTarget);
+  if (!setjmp(jumpTarget.environment)) {
+    size_t leadingZeroes;
+    size_t shift;
+    size_t t;
+
+    // Determine minimum capacity.
+    t = 8;
+    if (t > Shizu_Integer32_Maximum) {
+      t = Shizu_Integer32_Maximum;
+    }
+    if (t > INT_MAX) {
+      t = INT_MAX;
+    }
+    g->minimumCapacity = t;
+    leadingZeroes = Shizu_countLeadingZeroesU32(state1, (uint32_t)g->minimumCapacity);
+    shift = 32 - 1 - leadingZeroes;
+    t = ((size_t)1 << shift);
+    g->minimumCapacity = t;
+    // Determine maximum capacity.
+    t = SIZE_MAX / sizeof(Shizu_Map_Node*);
+    if (t > Shizu_Integer32_Maximum) {
+      t = Shizu_Integer32_Maximum;
+    }
+    if (t > INT_MAX) {
+      t = INT_MAX;
+    }
+    g->maximumCapacity = t;
+    leadingZeroes = Shizu_countLeadingZeroesU32(state1, (uint32_t)g->maximumCapacity);
+    shift = 32 - 1 - leadingZeroes;
+    t = ((size_t)1 << shift);
+    g->maximumCapacity = t;
+    //
+    if (g->minimumCapacity > g->maximumCapacity) {
+      Shizu_State1_setStatus(state1, 1);
+      Shizu_State1_jump(state1);
+    }
+    Shizu_State1_popJumpTarget(state1);
+  } else {
+    Shizu_State1_popJumpTarget(state1);
     Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
-    Shizu_State1_setStatus(state1, 1);
-    Shizu_State1_jump(state1);
-  }
-  t = idlib_count_leading_zeroes_u32((uint32_t)Shizu_Integer32_Maximum);
-  if (t != 1) {
-    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
-    Shizu_State1_setStatus(state1, 1);
-    Shizu_State1_jump(state1);
-  }
-  // Determine minimum capacity.
-  t = 8;
-  if (t > Shizu_Integer32_Maximum) {
-    t = Shizu_Integer32_Maximum;
-  }
-  if (t > INT_MAX) {
-    t = INT_MAX;
-  }
-  g->minimumCapacity = t;
-  leadingZeroes = idlib_count_leading_zeroes_u32((uint32_t)g->minimumCapacity);
-  shift = 32 - 1 - leadingZeroes;
-  t = ((size_t)1 << shift);
-  g->minimumCapacity = t;
-  // Determine maximum capacity.
-  t = SIZE_MAX / sizeof(Shizu_Map_Node*);
-  if (t > Shizu_Integer32_Maximum) {
-    t = Shizu_Integer32_Maximum;
-  }
-  if (t > INT_MAX) {
-    t = INT_MAX;
-  }
-  g->maximumCapacity = t;
-  leadingZeroes = idlib_count_leading_zeroes_u32((uint32_t)g->maximumCapacity);
-  shift = 32 - 1 - leadingZeroes;
-  t = ((size_t)1 << shift);
-  g->maximumCapacity = t;
-  //
-  if (g->minimumCapacity > g->maximumCapacity) {
-    Shizu_State1_deallocateNamedStorage(state1, namedMemoryName);
-    Shizu_State1_setStatus(state1, 1);
     Shizu_State1_jump(state1);
   }
 }

@@ -28,8 +28,21 @@
 #include "Shizu/Runtime/Gc.h"
 #include "Shizu/Runtime/Extensions.h"
 
-#include "Shizu/Runtime/Operations/ToFloat32.h"
 #include "Shizu/Runtime/Operations/ToInteger.h"
+
+#include "Shizu/Runtime/Operations/ToFloat32.h"
+#include "Shizu/Runtime/Include.h"
+
+#if defined(Shizu_Configuration_WithTests)
+
+void
+Shizu_Operations_toFloat32_tests
+  (
+    Shizu_State2* state
+  )
+{ Shizu_Operations_toFloat32Version1_tests(state); }
+
+#endif
 
 void
 Shizu_Operations_toFloat32

@@ -52,6 +52,8 @@ enum Shizu_Status {
   Shizu_Status_SyntacticalError,
   /// @brief A semantical error occurred.
   Shizu_Status_SemanticalError,
+  /// @brief A value is not representable.
+  Shizu_Status_NotRepresentable,
 
   Shizu_Status_OperationInvalid,
 
