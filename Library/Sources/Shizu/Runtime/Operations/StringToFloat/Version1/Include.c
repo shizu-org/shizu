@@ -3,7 +3,7 @@
 
 #include "Shizu/Runtime/floatBits.h"
 #include "Shizu/Runtime/Operations/StringToFloat/Version1/Parser.h"
-#include "Shizu/Runtime/Operations/StringToFloat/Version1/BigInt.h"
+#include "Shizu/Runtime/Operations/Utilities/BigInt/Include.h"
 #include "Shizu/Runtime/countLeadingZeroes.h"
 #include "Shizu/Runtime/countTrailingZeroes.h"
 
@@ -174,19 +174,11 @@ callbackFunction
     }
     numberOfLeadingZeroes++;
   }
-  // That is the number of digits BEFORE the decimal point without leading zeroes.
-  // This value indicates the number of times to add 1 to the exponent such that there is no non-zero digit before the decimal point.
-  // That is:
-  // If the original number had a digit sequence of length n before the decimal point (without leading zeroes) then
-  // - we shift the digits to the right the decimal point (dividing by 10^n).
-  // - we add n to the exponent (multiplying by 10^n).
-  // The new number is equivalent to the old number.
-  // shift is 0 iff a) there were no digits in the integral part or b) there were only zero digits in the integral part.
+  // Modify the input "v.w * 10^e" to ".vw * 10^(e + |v|)".
   size_t shift = integralDigitsCount - numberOfLeadingZeroes;
   if (shift) {
     static_assert(SIZE_MAX <= UINT64_MAX, "<internal error>");
-    bigint_t* y = bigint_from_u64(Shizu_State2_getState1(state), (uint64_t)shift);
-    c->exponent = bigint_add(Shizu_State2_getState1(state), c->exponent, y);
+    bigint_in_situ_add_u64(Shizu_State2_getState1(state), c->exponent, shift);
   }
 
   // Count the number of trailing zeroes to trim after the decimal point.
@@ -239,8 +231,6 @@ callbackFunction
     x->sign = sign ? +1 : -1;
   }
   c->significand = x;
-  // v.w * 10^n becomes .vw * 10^(n+|v|)
-  bigint_in_situ_mul_10(Shizu_State2_getState1(state), c->exponent, integralDigitsCount - numberOfLeadingZeroes);
 }
 
 double clamp_f64(Shizu_State2* state, double v, double minimum, double maximum) {
@@ -301,7 +291,7 @@ Shizu_Operations_StringToFloat64_Version1_convert
   Shizu_JumpTarget jumpTarget;
   Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_Operations_StringToFloat_Version1_parse(state, source, &context, &callbackFunction);
+    Shizu_Operations_StringToFloat_Parser_parse(state, source, &context, &callbackFunction);
     // [1] At this point, we have two sign-magnitude arbitrary precision integers x and y
     // such that d = x * 10^y where d is the number represented by the input string.
     Shizu_Cxx_Debug_assert(NULL != context.exponent);
@@ -406,7 +396,7 @@ Shizu_Operations_StringToFloat32_Version1_convert
   Shizu_JumpTarget jumpTarget;
   Shizu_State2_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    Shizu_Operations_StringToFloat_Version1_parse(state, source, &context, &callbackFunction);
+    Shizu_Operations_StringToFloat_Parser_parse(state, source, &context, &callbackFunction);
     // [1] At this point, we have two sign-magnitude arbitrary precision integers x and y
     // such that d = x * 10^y where d is the number represented by the input string.
     Shizu_Cxx_Debug_assert(NULL != context.exponent);
@@ -434,6 +424,7 @@ Shizu_Operations_StringToFloat32_Version1_convert
   for (size_t i = totalDigitsCount, n = totalDigitsCount - prefixDigitsCount; i > n; --i) {
     v_ui = v_ui * 10 + context.significand->p[i - 1];
   }
+  // Note that v_f still has to be multiplied by the exponent. 
   float v_f = (float)v_ui;
   if (context.exponent->sz > INT32_DECIMAL_DIG - 1) {
     // The maximum number of decimal digits required to represent any int32_t value.
@@ -576,8 +567,8 @@ Shizu_Operations_StringToFloat32_Version1_convert
     Shizu_State2_pushJumpTarget(state, &jumpTarget);
     if (!setjmp(jumpTarget.environment)) {
       // Basically we remove delta most insignificand digits and replace them by a 1.
-      bigint_in_situ_div_10(state1, context.significand, delta);
-      bigint_in_situ_mul_10(state1, context.significand, 1);
+      bigint_in_situ_div_p10(state1, context.significand, delta);
+      bigint_in_situ_mul_p10(state1, context.significand, 1);
       bigint_in_situ_add_u8(state1, context.significand, 1);
       Shizu_State2_popJumpTarget(state);
     } else {
@@ -595,7 +586,7 @@ Shizu_Operations_StringToFloat32_Version1_convert
     bigd0 = bigint_from_u32(state1, v_ui);
     size_t pow = 0;
     for (size_t i = prefixDigitsCount; i < totalDigitsCount; ++i) {
-      bigint_in_situ_mul_10(state1, bigd0, 1);
+      bigint_in_situ_mul_p10(state1, bigd0, 1);
       bigint_in_situ_add_u8(state1, bigd0, context.significand->p[i]);
     }
     Shizu_State1_popJumpTarget(state1);
@@ -606,7 +597,7 @@ Shizu_Operations_StringToFloat32_Version1_convert
   uint32_t ieeeBits = Shizu_f32ToU32(state1, v_f); // IEEE-754 bits of float candidate
   const int32_t b5 = max_s32(state1, 0, -e);       // powers of 5 in bigb, value is not modified inside correctionLoop
   const int32_t d5 = max_s32(state1, 0, +e);       // powers of 5 in bigd, value is not modified inside correctionLoop
-  bigint_in_situ_mul(state1, bigd0, bigint_pow5(state1, d5)); /// FIXME: Leak.
+  bigint_in_situ_mul(state1, bigd0, bigint_p5(state1, d5)); /// FIXME: Leak.
   bigint_t* bigd = NULL;
   int prevd2 = 0;
   while (true) {
@@ -663,9 +654,9 @@ Shizu_Operations_StringToFloat32_Version1_convert
     d2 -= common2;
     ulp2 -= common2;
 
-    bigint_t* bigb = bigint_mul_pow_5_pow_2(state1, ieeeSignificandBits, b5, b2);
+    bigint_t* bigb = bigint_mul_p5_p2(state1, ieeeSignificandBits, b5, b2);
     if (bigd == NULL || prevd2 != d2) {
-      bigd = bigint_mul(state1, bigd0, bigint_pow2(state1, d2));
+      bigd = bigint_mul(state1, bigd0, bigint_p2(state1, d2));
       prevd2 = d2;
     }
     // to recap:
@@ -694,7 +685,7 @@ Shizu_Operations_StringToFloat32_Version1_convert
           // Cannot de-scale ulp this far.
           // Must scale diff in other direction.
           ulp2 = 0;
-          bigint_in_situ_mul_2(state1, diff, 1);
+          bigint_in_situ_mul_p2(state1, diff, 1);
         }
       }
     } else if (cmp > 0) {
@@ -706,7 +697,7 @@ Shizu_Operations_StringToFloat32_Version1_convert
       // This happens with surprising frequency.
       break;
     }
-    cmp = bigint_compare_pow5_pow2(state1, diff, b5, ulp2);
+    cmp = bigint_compare_p5_p2(state1, diff, b5, ulp2);
     if (cmp < 0) {
       // Difference is small.
       // This is close enough.
@@ -748,7 +739,6 @@ Shizu_Operations_StringToFloat_Version1_tests
 {
   static_assert(-307 == DBL_MIN_10_EXP, "<error>"); // -307
   static_assert(+308 == DBL_MAX_10_EXP, "<error>"); // +308
-  bigint_tests(Shizu_State2_getState1(state));
 }
 
 #endif

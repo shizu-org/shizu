@@ -29,11 +29,13 @@
 #include "Shizu/Runtime/Value.h"
 
 #if defined(Shizu_Configuration_WithTests)
+
 void
-Shizu_Operations_toFloat32_tests
+Shizu_Operations_toFloat_tests
   (
     Shizu_State2* state
   );
+
 #endif
 
 void

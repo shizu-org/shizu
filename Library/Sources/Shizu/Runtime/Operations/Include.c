@@ -35,12 +35,17 @@
 
 #if defined(Shizu_Configuration_WithTests)
 
+#include "Shizu/Runtime/Operations/Utilities/BigInt/Include.h"
+
 void
-Shizu_Operations_toFloat32_tests
+Shizu_Operations_toFloat_tests
   (
     Shizu_State2* state
   )
-{ Shizu_Operations_toFloat32Version1_tests(state); }
+{
+  bigint_tests(Shizu_State2_getState1(state));
+  Shizu_Operations_toFloat32Version1_tests(state);
+}
 
 #endif
 

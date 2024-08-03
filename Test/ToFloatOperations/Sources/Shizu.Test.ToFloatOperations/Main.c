@@ -28,7 +28,7 @@
 // strlen
 #include <string.h>
 
-/* Test Shizu_Operations_toFloat with a string as its input. */
+/* Test Shizu_Operations_toFloat32 with a string as its input. */
 static void
 test1
   (
@@ -112,7 +112,7 @@ main
     failed = true;
   }
 #if defined(Shizu_Configuration_WithTests)
-  if (safeExecute(&Shizu_Operations_toFloat32_tests)) {
+  if (safeExecute(&Shizu_Operations_toFloat_tests)) {
     failed = true;
   }
 #endif

@@ -176,8 +176,8 @@ list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/StringToFloat/
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/StringToFloat/Version1/Include.h)
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/StringToFloat/Version1/Parser.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/StringToFloat/Version1/Parser.h)
-list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/StringToFloat/Version1/BigInt.c)
-list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/StringToFloat/Version1/BigInt.h)
+list(APPEND ${name}.source_files Sources/Shizu/Runtime/Operations/Utilities/BigInt/Include.c)
+list(APPEND ${name}.header_files Includes/Shizu/Runtime/Operations/Utilities/BigInt/Include.h)
 
 list(APPEND ${name}.source_files Sources/Shizu/Runtime/Types/_SmallTypeArray.c)
 list(APPEND ${name}.header_files Includes/Shizu/Runtime/Types/_SmallTypeArray.h)

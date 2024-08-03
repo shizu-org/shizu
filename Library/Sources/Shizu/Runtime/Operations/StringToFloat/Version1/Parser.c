@@ -21,8 +21,8 @@ typedef struct ParserState {
     int symbol;
   } input;
   struct {
-    ParserState_CallbackContext* callbackContext;
-    ParserState_CallbackFunction* callbackFunction;
+    Shizu_Operations_StringToFloat_Parser_CallbackContext* callbackContext;
+    Shizu_Operations_StringToFloat_Parser_CallbackFunction* callbackFunction;
   } output;
 } ParserState;
 
@@ -155,12 +155,12 @@ run
 }
 
 void
-Shizu_Operations_StringToFloat_Version1_parse
+Shizu_Operations_StringToFloat_Parser_parse
   (
     Shizu_State2* state,
     Shizu_String* source,
-    ParserState_CallbackContext* callbackContext,
-    ParserState_CallbackFunction* callbackFunction
+    Shizu_Operations_StringToFloat_Parser_CallbackContext* callbackContext,
+    Shizu_Operations_StringToFloat_Parser_CallbackFunction* callbackFunction
   )
 {
   ParserState parserState;

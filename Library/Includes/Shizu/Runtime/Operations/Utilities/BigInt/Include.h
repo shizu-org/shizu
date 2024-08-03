@@ -1,5 +1,5 @@
-#if !defined(SHIZU_RUNTIME_OPERATIONS_STRINGTOFLOAT_VERSION1_BIGINT_H_INCLUDED)
-#define SHIZU_RUNTIME_OPERATIONS_STRINGTOFLOAT_VERSION1_BIGINT_H_INCLUDED
+#if !defined(SHIZU_RUNTIME_OPERATIONS_UTILITIES_BIGINT_H_INCLUDED)
+#define SHIZU_RUNTIME_OPERATIONS_UTILITIES_BIGINT_H_INCLUDED
 
 #include "Shizu/Runtime/Value.h"
 #include "Shizu/Runtime/State1.h"
@@ -151,7 +151,7 @@ bigint_compare_magnitudes
 
 // Compare x with 5^b5 * 2^b2
 static inline int32_t
-bigint_compare_pow5_pow2
+bigint_compare_p5_p2
   (
     Shizu_State1* state,
     bigint_t const* x,
@@ -176,7 +176,7 @@ bigint_free
 
 /// In-place divide a bigint with 10^n.
 static inline void
-bigint_in_situ_div_10
+bigint_in_situ_div_p10
   (
     Shizu_State1* state,
     bigint_t* x,
@@ -185,7 +185,7 @@ bigint_in_situ_div_10
 
 /// In-place multiply a bigint with 10^n.
 static inline void
-bigint_in_situ_mul_10
+bigint_in_situ_mul_p10
   (
     Shizu_State1* state,
     bigint_t* x,
@@ -194,7 +194,7 @@ bigint_in_situ_mul_10
 
 // In-place multiply a bigint with 2^n.
 static inline void
-bigint_in_situ_mul_2
+bigint_in_situ_mul_p2
   (
     Shizu_State1* state,
     bigint_t* x,
@@ -228,7 +228,7 @@ bigint_mul
 // Create bigint v * 5^b5 * 2^b2.
 // TODO: Should be renamed.
 static inline bigint_t*
-bigint_mul_pow_5_pow_2
+bigint_mul_p5_p2
   (
     Shizu_State1* state,
     int32_t v,
@@ -245,7 +245,7 @@ bigint_negate
 
 // Compute 2^n, 0 <= n <= UINT64_MAX.
 static bigint_t*
-bigint_pow2
+bigint_p2
   (
     Shizu_State1* state,
     uint64_t n
@@ -253,10 +253,42 @@ bigint_pow2
 
 // Compute 5^n, 0 <= n <= UINT64_MAX.
 static bigint_t*
-bigint_pow5
+bigint_p5
   (
     Shizu_State1* state,
     uint64_t n
+  );
+
+// Create a bigint representing the specified int8_t value.
+static inline bigint_t*
+bigint_from_i8
+  (
+    Shizu_State1* state,
+    int8_t v
+  );
+
+// Create a bigint representing the specified int16_t value.
+static inline bigint_t*
+bigint_from_i16
+  (
+    Shizu_State1* state,
+    int16_t v
+  );
+
+// Create a bigint representing the specified int32_t value.
+static inline bigint_t*
+bigint_from_i32
+  (
+    Shizu_State1* state,
+    int32_t v
+  );
+
+// Create a bigint representing the specified int64_t value.
+static inline bigint_t*
+bigint_from_i64
+  (
+    Shizu_State1* state,
+    int64_t v
   );
 
 // Create a bigint representing the specified uint8_t value.
@@ -654,7 +686,7 @@ bigint_compare_magnitudes
 }
 
 static inline int32_t
-bigint_compare_pow5_pow2
+bigint_compare_p5_p2
   (
     Shizu_State1* state,
     bigint_t const* x,
@@ -666,7 +698,7 @@ bigint_compare_pow5_pow2
   Shizu_JumpTarget jumpTarget;
   Shizu_State1_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    y = bigint_mul_pow_5_pow_2(state, 1, b5, b2);
+    y = bigint_mul_p5_p2(state, 1, b5, b2);
     int32_t cmp = bigint_compare(state, x, y);
     bigint_free(state, y);
     y = NULL;
@@ -843,6 +875,7 @@ bigint_from_u8
   */
   #error("not yet implemented")
 #endif
+  x->sign = +1;
   return x;
 }
 
@@ -901,6 +934,7 @@ bigint_from_u16
   */
   #error("not yet implemented")
 #endif
+  x->sign = +1;
   return x;
 }
 
@@ -959,6 +993,7 @@ bigint_from_u32
   */
   #error("not yet implemented")
 #endif
+  x->sign = +1;
   return x;
 }
 
@@ -1014,6 +1049,220 @@ bigint_from_u64
     x->p[i] = x->p[x->sz - i - 1];
     x->p[x->sz - i - 1] = t;
   }  
+  */
+  #error("not yet implemented")
+#endif
+  x->sign = +1;
+  return x;
+}
+
+static inline bigint_t*
+bigint_from_i8
+  (
+    Shizu_State1* state,
+    int8_t v
+  )
+{
+  // Conservative estimate of the maximum number of decimal digits an int8_t value can yield.
+  // INT8_MIN is -128.  
+  // INT8_MAX is  127.
+  // Hence 3 digits are a conservative estimate.
+  static const size_t DECIMAL_DIGITS = 3;
+  static const int32_t BASE_INT8 = 10;
+
+  bigint_t* x = malloc(sizeof(bigint_t));
+  if (!x) {
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  if (!v) {
+    x->p = malloc(sizeof(uint8_t) * 1);
+    if (!x->p) {
+      free(x);
+      Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+      Shizu_State1_jump(state);
+    }
+    x->p[0] = 0;
+    x->cp = 1;
+    x->sz = 1;
+    x->sign = 0;
+    return x;
+  }
+  x->p = malloc(sizeof(uint8_t) * DECIMAL_DIGITS);
+  if (!x->p) {
+    free(x);
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  x->cp = DECIMAL_DIGITS;
+#if BIGINT_CFG_ORDER == BIGINT_CFG_ORDER_LSD_TO_MSD
+  size_t i = 0;
+  if (v == INT16_MIN) {
+    uint8_t digit = (uint8_t)((v % BASE_INT8) * INT8_C(-1));
+    x->p[i++] = digit;
+    v /= BASE_INT8;
+  }
+  if (v < 0) {
+    x->sign = -1;
+    v *= INT8_C(-1);
+  } else {
+    x->sign = +1;
+  }
+  while (v) {
+    uint8_t digit = (uint8_t)(v % BASE_INT8);
+    x->p[i++] = digit;
+    v /= BASE_INT8;
+  }
+  x->sz = i;
+#else
+  /*
+  for (i = 0; i < x->sz / 2; ++i) {
+    uint8_t t = x->p[i];
+    x->p[i] = x->p[x->sz - i - 1];
+    x->p[x->sz - i - 1] = t;
+  }
+  */
+  #error("not yet implemented")
+#endif
+  return x;
+}
+
+static inline bigint_t*
+bigint_from_i16
+  (
+    Shizu_State1* state,
+    int16_t v
+  )
+{
+  // Conservative estimate of the maximum number of decimal digits an int16_t value can yield.
+  // INT16_MIN is -32768.  
+  // INT16_MAX is  32767.
+  // Hence 5 digits are a conservative estimate.
+  static const size_t DECIMAL_DIGITS = 5;
+  static const int32_t BASE_INT16 = 10;
+
+  bigint_t* x = malloc(sizeof(bigint_t));
+  if (!x) {
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  if (!v) {
+    x->p = malloc(sizeof(uint8_t) * 1);
+    if (!x->p) {
+      free(x);
+      Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+      Shizu_State1_jump(state);
+    }
+    x->p[0] = 0;
+    x->cp = 1;
+    x->sz = 1;
+    x->sign = 0;
+    return x;
+  }
+  x->p = malloc(sizeof(uint8_t) * DECIMAL_DIGITS);
+  if (!x->p) {
+    free(x);
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  x->cp = DECIMAL_DIGITS;
+#if BIGINT_CFG_ORDER == BIGINT_CFG_ORDER_LSD_TO_MSD
+  size_t i = 0;
+  if (v == INT16_MIN) {
+    uint8_t digit = (uint8_t)((v % BASE_INT16) * INT16_C(-1));
+    x->p[i++] = digit;
+    v /= BASE_INT16;
+  }
+  if (v < 0) {
+    x->sign = -1;
+    v *= INT16_C(-1);
+  } else {
+    x->sign = +1;
+  }
+  while (v) {
+    uint8_t digit = (uint8_t)(v % BASE_INT16);
+    x->p[i++] = digit;
+    v /= BASE_INT16;
+  }
+  x->sz = i;
+#else
+  /*
+  for (i = 0; i < x->sz / 2; ++i) {
+    uint8_t t = x->p[i];
+    x->p[i] = x->p[x->sz - i - 1];
+    x->p[x->sz - i - 1] = t;
+  }
+  */
+  #error("not yet implemented")
+#endif
+  return x;
+}
+
+static inline bigint_t*
+bigint_from_i32
+  (
+    Shizu_State1* state,
+    int32_t v
+  )
+{
+  // Conservative estimate of the maximum number of decimal digits an int32_t value can yield.
+  // INT32_MIN is -2147483648.  
+  // INT32_MAX is  2147483647.
+  // Hence 10 digits are a conservative estimate.
+  static const size_t DECIMAL_DIGITS = 10;
+  static const int32_t BASE_INT32 = 10;
+
+  bigint_t* x = malloc(sizeof(bigint_t));
+  if (!x) {
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  if (!v) {
+    x->p = malloc(sizeof(uint8_t) * 1);
+    if (!x->p) {
+      free(x);
+      Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+      Shizu_State1_jump(state);
+    }
+    x->p[0] = 0;
+    x->cp = 1;
+    x->sz = 1;
+    x->sign = 0;
+    return x;
+  }
+  x->p = malloc(sizeof(uint8_t) * DECIMAL_DIGITS);
+  if (!x->p) {
+    free(x);
+    Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
+    Shizu_State1_jump(state);
+  }
+  x->cp = DECIMAL_DIGITS;
+#if BIGINT_CFG_ORDER == BIGINT_CFG_ORDER_LSD_TO_MSD
+  size_t i = 0;
+  if (v == INT32_MIN) {
+    uint8_t digit = (uint8_t)((v % BASE_INT32) * INT32_C(-1));
+    x->p[i++] = digit;
+    v /= BASE_INT32;
+  }
+  if (v < 0) {
+    x->sign = -1;
+    v *= INT32_C(-1);
+  } else {
+    x->sign = +1;
+  }
+  while (v) {
+    uint8_t digit = (uint8_t)(v % BASE_INT32);
+    x->p[i++] = digit;
+    v /= BASE_INT32;
+  }
+  x->sz = i;
+#else
+  /*
+  for (i = 0; i < x->sz / 2; ++i) {
+    uint8_t t = x->p[i];
+    x->p[i] = x->p[x->sz - i - 1];
+    x->p[x->sz - i - 1] = t;
+  }
   */
   #error("not yet implemented")
 #endif
@@ -1162,7 +1411,7 @@ bigint_mul
 }
 
 static inline bigint_t*
-bigint_mul_pow_5_pow_2
+bigint_mul_p5_p2
   (
     Shizu_State1* state,
     int32_t v,
@@ -1179,12 +1428,12 @@ bigint_mul_pow_5_pow_2
       Shizu_State1_setStatus(state, Shizu_Status_AllocationFailed);
       Shizu_State1_jump(state);
     }
-    y = bigint_pow5(state, (uint64_t)b5);
+    y = bigint_p5(state, (uint64_t)b5);
     bigint_in_situ_mul(state, x, y);
     bigint_free(state, y);
     y = NULL;
 
-    y = bigint_pow2(state, (uint64_t)b2);
+    y = bigint_p2(state, (uint64_t)b2);
     bigint_in_situ_mul(state, x, y);
     bigint_free(state, y);
     y = NULL;
@@ -1207,7 +1456,7 @@ bigint_mul_pow_5_pow_2
 
 /// In-place divide a bigint with 10^n.
 static inline void
-bigint_in_situ_div_10
+bigint_in_situ_div_p10
   (
     Shizu_State1* state,
     bigint_t* x,
@@ -1215,10 +1464,15 @@ bigint_in_situ_div_10
   )
 {
 #if BIGINT_CFG_ORDER == BIGINT_CFG_ORDER_LSD_TO_MSD
-  if (x->sz > 0) {
-    x->sz -= n;
+  if (n >= x->sz) {
+    x->sign = 0;
+    x->p[0] = 0;
+    x->sz = 1;
   } else {
-    x->sz = 0;
+    for (size_t i = 0; i < x->sz - n; ++i) {
+      x->p[i] = x->p[n + i];
+    }
+    x->sz -= n;
   }
 #else
   #error("not yet implemented")
@@ -1240,37 +1494,52 @@ bigint_in_situ_mul
 
 /// In-place multiply a bigint with 10^n.
 static inline void
-bigint_in_situ_mul_10
+bigint_in_situ_mul_p10
   (
     Shizu_State1* state,
     bigint_t* x,
     size_t n
   )
 {
+  if (bigint_is_zero(state, x)) {
+    // x is zero and x * 10^n = 0 * 10^n = 0.
+    return;
+  }
   bigint_ensure_free_cp(state, x, n);
   size_t old_sz = x->sz;
   // @todo Check for overflow.
   size_t new_sz = x->sz + n;
 #if BIGINT_CFG_ORDER == BIGINT_CFG_ORDER_LSD_TO_MSD
-  for (size_t i = old_sz; i < new_sz; ++i) {
+  // Basically we have "w" with "|w| > 0" and "w[n-1] != '0'".
+  // We change this to "'0'^n w".
+
+  // Shift the existing digits up by n.
+  for (size_t i = old_sz; i > 0; --i) {
+    x->p[i + n - 1] = x->p[i - 1];
+  }
+  // Fill the n digits with zeros.
+  for (size_t i = 0; i < n; ++i) {
     x->p[i] = 0;
   }
+
 #else
-  #error("not yet implemented")  
+  for (size_t i = old_sz; i < new_sz; ++i) {
+    x->p[i] = 0;
+}
 #endif
   x->sz = new_sz; 
 }
 
 // In-place multiply a bigint with 2^n.
 static inline void
-bigint_in_situ_mul_2
+bigint_in_situ_mul_p2
   (
     Shizu_State1* state,
     bigint_t* x,
     uint64_t n
   )
 {
-  bigint_t* y = bigint_pow2(state, n);
+  bigint_t* y = bigint_p2(state, n);
   Shizu_JumpTarget jumpTarget;
   Shizu_State1_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
@@ -1285,14 +1554,14 @@ bigint_in_situ_mul_2
 }
 
 static bigint_t*
-bigint_pow2
+bigint_p2
   (
     Shizu_State1* state,
     uint64_t n
   )
 {
   if (n < 32) {
-    return bigint_from_u32(state, (uint32_t)(UINT32_C(1) << n));
+    return bigint_from_u32(state, UINT32_C(1) << ((uint8_t)n));
   } else if (n < 63) {
     return bigint_from_u64(state, UINT64_C(1) << n);
   } else {
@@ -1306,8 +1575,8 @@ bigint_pow2
     Shizu_JumpTarget jumpTarget;
     Shizu_State1_pushJumpTarget(state, &jumpTarget);
     if (!setjmp(jumpTarget.environment)) {
-      x = bigint_pow2(state, p);
-      y = bigint_pow2(state, q);
+      x = bigint_p2(state, p);
+      y = bigint_p2(state, q);
       z = bigint_mul(state, x, y);
       Shizu_State1_popJumpTarget(state);
       bigint_free(state, y);
@@ -1335,13 +1604,13 @@ bigint_pow2
 }
 
 static bigint_t*
-bigint_pow5
+bigint_p5
   (
     Shizu_State1* state,
     uint64_t n
   )
 {
-#define POW5 UINT64_C(5)*UINT64_C(5)*UINT64_C(5)*UINT64_C(5)*UINT64_C(5)
+#define P5 UINT64_C(5)*UINT64_C(5)*UINT64_C(5)*UINT64_C(5)*UINT64_C(5)
   // Table with powers of 5 from 0 to 27.
   // 5^27 is the greatest power of 5 less than or equal to UINT64_MAX.
   // UINT64_MAX is 18,446,744,073,709,551,615.
@@ -1352,30 +1621,33 @@ bigint_pow5
     UINT64_C(5) * UINT64_C(5),// 5^2
     UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^3
     UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^4
-    POW5,// 5^5
-    POW5 * UINT64_C(5),// 5^6
-    POW5 * UINT64_C(5) * UINT64_C(5),// 5^7
-    POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^8
-    POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^9
-    POW5 * POW5,// 5^10
-    POW5 * POW5 * UINT64_C(5),// 5^11
-    POW5 * POW5 * UINT64_C(5) * UINT64_C(5),// 5^12
-    POW5 * POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^13
-    POW5 * POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^14
-    POW5 * POW5 * POW5,// 5^15
-    POW5 * POW5 * POW5 * UINT64_C(5),// 5^16
-    POW5 * POW5 * POW5 * UINT64_C(5) * UINT64_C(5),// 5^17
-    POW5 * POW5 * POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^18
-    POW5 * POW5 * POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^19
-    POW5 * POW5 * POW5 * POW5,// 5^20
-    POW5 * POW5 * POW5 * POW5 * UINT64_C(5),// 5^21
-    POW5 * POW5 * POW5 * POW5 * UINT64_C(5) * UINT64_C(5),// 5^22
-    POW5 * POW5 * POW5 * POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^23
-    POW5 * POW5 * POW5 * POW5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^24
-    POW5 * POW5 * POW5 * POW5 * POW5,// 5^25
-    POW5 * POW5 * POW5 * POW5 * POW5 * UINT64_C(5),// 5^26
-    POW5 * POW5 * POW5 * POW5 * POW5 * UINT64_C(5) * UINT64_C(5),// 5^27
+    P5,// 5^5
+    P5 * UINT64_C(5),// 5^6
+    P5 * UINT64_C(5) * UINT64_C(5),// 5^7
+    P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^8
+    P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^9
+    P5 * P5,// 5^10
+    P5 * P5 * UINT64_C(5),// 5^11
+    P5 * P5 * UINT64_C(5) * UINT64_C(5),// 5^12
+    P5 * P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^13
+    P5 * P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^14
+    P5 * P5 * P5,// 5^15
+    P5 * P5 * P5 * UINT64_C(5),// 5^16
+    P5 * P5 * P5 * UINT64_C(5) * UINT64_C(5),// 5^17
+    P5 * P5 * P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^18
+    P5 * P5 * P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^19
+    P5 * P5 * P5 * P5,// 5^20
+    P5 * P5 * P5 * P5 * UINT64_C(5),// 5^21
+    P5 * P5 * P5 * P5 * UINT64_C(5) * UINT64_C(5),// 5^22
+    P5 * P5 * P5 * P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^23
+    P5 * P5 * P5 * P5 * UINT64_C(5) * UINT64_C(5) * UINT64_C(5) * UINT64_C(5),// 5^24
+    P5 * P5 * P5 * P5 * P5,// 5^25
+    P5 * P5 * P5 * P5 * P5 * UINT64_C(5),// 5^26
+    P5 * P5 * P5 * P5 * P5 * UINT64_C(5) * UINT64_C(5),// 5^27
   };
+
+#undef P5
+
   static const powersOf5Size = sizeof(powersOf5) / sizeof(uint64_t);
   static_assert(sizeof(powersOf5) / sizeof(uint64_t) == 28, "<internal error>");
   if (n < powersOf5Size) {
@@ -1391,8 +1663,8 @@ bigint_pow5
     Shizu_JumpTarget jumpTarget;
     Shizu_State1_pushJumpTarget(state, &jumpTarget);
     if (!setjmp(jumpTarget.environment)) {
-      x = bigint_pow5(state, p);
-      y = bigint_pow5(state, q);
+      x = bigint_p5(state, p);
+      y = bigint_p5(state, q);
       z = bigint_mul(state, x, y);
       Shizu_State1_popJumpTarget(state);
       bigint_free(state, y);
@@ -1427,18 +1699,26 @@ bigint_subtract
     bigint_t const* y
   )
 {
-  bigint_t* c = NULL;
-  bigint_t* b = bigint_negate(state, y);
+  bigint_t* a = NULL, *b = NULL;
+  a = bigint_negate(state, y);
   Shizu_JumpTarget jumpTarget;
   Shizu_State1_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
-    c = bigint_add(state, x, y);
+    b = bigint_add(state, x, a);
     Shizu_State1_popJumpTarget(state);
-    bigint_free(state, b);
-    return c;
+    bigint_free(state, a);
+    a = NULL;
+    return b;
   } else {
     Shizu_State1_popJumpTarget(state);
-    bigint_free(state, b);
+    if (b) {
+      bigint_free(state, b);
+      b = NULL;
+    }
+    if (a) {
+      bigint_free(state, a);
+      a = NULL;
+    }
     Shizu_State1_jump(state);
   }
 }
@@ -1504,5 +1784,5 @@ bigint_tests
 
 #endif
 
-#endif SHIZU_RUNTIME_OPERATIONS_STRINGTOFLOAT_VERSION1_BIGINT_H_INCLUDED
+#endif SHIZU_RUNTIME_OPERATIONS_UTILITIES_BIGINT_H_INCLUDED
  

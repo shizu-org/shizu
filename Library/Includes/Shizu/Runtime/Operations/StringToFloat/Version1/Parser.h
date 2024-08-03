@@ -5,7 +5,7 @@
 #include "Shizu/Runtime/State2.h"
 typedef struct Shizu_String Shizu_String;
 
-typedef void ParserState_CallbackContext;
+typedef void Shizu_Operations_StringToFloat_Parser_CallbackContext;
 
 // Invoked when the significand was parsed. This function must be invoked exactly once during a successful parser.
 // @param sign true if positive, false if negative.
@@ -16,10 +16,10 @@ typedef void ParserState_CallbackContext;
 // @param exponentSign true if positive, false if negative.
 // @param exponentDigits Pointer to the exponent digits.
 // @param exponentDigitsLength The number of exponentDigits. Can be zero.
-typedef void (ParserState_CallbackFunction)
+typedef void (Shizu_Operations_StringToFloat_Parser_CallbackFunction)
   (
     Shizu_State2* state,
-    ParserState_CallbackContext* context,
+    Shizu_Operations_StringToFloat_Parser_CallbackContext* context,
     bool sign,
     char const* integerPart,
     size_t integerPartLength,
@@ -30,12 +30,12 @@ typedef void (ParserState_CallbackFunction)
     size_t exponentDigitsLength);
 
 void
-Shizu_Operations_StringToFloat_Version1_parse
+Shizu_Operations_StringToFloat_Parser_parse
   (
     Shizu_State2* state,
     Shizu_String* source,
-    ParserState_CallbackContext* callbackContext,
-    ParserState_CallbackFunction* callbackFunction
+    Shizu_Operations_StringToFloat_Parser_CallbackContext* callbackContext,
+    Shizu_Operations_StringToFloat_Parser_CallbackFunction* callbackFunction
   );
 
 #endif // SHIZU_RUNTIME_OPERATIONS_STRINGTOFLOAT_VERSION1_PARSER_H_INCLUDED

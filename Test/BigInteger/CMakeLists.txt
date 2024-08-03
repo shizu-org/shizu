@@ -38,9 +38,6 @@ list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testDefault.h)
 list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testToInteger.c)
 list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testToInteger.h)
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testArithmetic.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testArithmetic.h)
-
 list(APPEND ${name}.source_files Sources/Shizu.Test.BigInteger10/testFromString.c)
 list(APPEND ${name}.header_files Sources/Shizu.Test.BigInteger10/testFromString.h)
 

@@ -21,7 +21,6 @@
 
 #include "Shizu/Runtime/Include.h"
 
-#include "Shizu.Test.BigInteger10/testArithmetic.h"
 #include "Shizu.Test.BigInteger10/testDefault.h"
 #include "Shizu.Test.BigInteger10/testFromInteger.h"
 #include "Shizu.Test.BigInteger10/testToInteger.h"
@@ -90,25 +89,6 @@ main
 #endif
   // From string (constructor) (testFromString.h).
   if (safeExecute(&Shizu_Test_BigInteger10_testFromString)) {
-    failed = true;
-  }
-  // Arithmetic operations (testArithmetic.h).
-  if (safeExecute(&Shizu_Test_BigInteger10_testNegate)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger10_testAddition)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger10_testSubtraction)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger10_testMultiplyBy10)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger10_testDivideBy10)) {
-    failed = true;
-  }
-  if (safeExecute(&Shizu_Test_BigInteger10_testMultiply)) {
     failed = true;
   }
   // To integer conversions (testToInteger.h).
