@@ -51,8 +51,8 @@ static void parse(Shizu_State2* state, Shizu_String* relativePath) {
   Shizu_String* inputString = NULL;
   inputByteArray = getFileContents(state, relativePath);
   inputString = Shizu_String_create(state, Shizu_ByteArray_getRawBytes(state, inputByteArray), Shizu_ByteArray_getNumberOfRawBytes(state, inputByteArray));
-  Shizu_Environment* compilerEnvironment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "DataDefinitionLanguage", strlen("DataDefinitionLanguage")));
-  Shizu_CxxProcedure* p = Shizu_Environment_getCxxProcedure(state, compilerEnvironment, Shizu_String_create(state, "createParser", strlen("createParser")));
+  Shizu_Environment* environment = Shizu_Environment_getEnvironment(state, Shizu_State2_getGlobalEnvironment(state), Shizu_String_create(state, "DataDefinitionLanguage", strlen("DataDefinitionLanguage")));
+  Shizu_CxxProcedure* p = Shizu_Environment_getCxxProcedure(state, environment, Shizu_String_create(state, "createParser", strlen("createParser")));
   Shizu_Value returnValue; Shizu_Value arguments[1];
   p->f(state, &returnValue, 0, &arguments[0]);
   Shizu_Value self = returnValue;

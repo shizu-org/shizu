@@ -57,13 +57,27 @@ Shizu_Operations_toInteger32Version1
       Shizu_State2_jump(state);
     } else {
       Shizu_Value_setInteger32(returnValue, (Shizu_Integer32)x);
+      return;
     }
-  } else if (Shizu_Runtime_Extensions_isString(state, argumentValues[0])) {
-    Shizu_Value_setInteger32(returnValue, Shizu_Operations_StringToInteger32_Version1_convert(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0])));
-  } else {
-    Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
-    Shizu_State2_jump(state);
   }
+#if 1 == Shizu_Configuration_WithFloat64
+  if (Shizu_Value_isFloat64(&argumentValues[0])) {
+    double x = Shizu_Value_getFloat64(&argumentValues[0]);
+    if (x != floor(x) || x < Shizu_Integer32_Minimum || x > Shizu_Integer32_Maximum) {
+      Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+      Shizu_State2_jump(state);
+    } else {
+      Shizu_Value_setInteger32(returnValue, (Shizu_Integer32)x);
+      return;
+    }
+  }
+#endif
+  if (Shizu_Runtime_Extensions_isString(state, argumentValues[0])) {
+    Shizu_Value_setInteger32(returnValue, Shizu_Operations_StringToInteger32_Version1_convert(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0])));
+    return;
+  }
+  Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+  Shizu_State2_jump(state);
 }
 
 #if 1 == Shizu_Configuration_WithInteger64
@@ -92,13 +106,27 @@ Shizu_Operations_toInteger64Version1
       Shizu_State2_jump(state);
     } else {
       Shizu_Value_setInteger64(returnValue, (Shizu_Integer64)x);
+      return;
     }
-  } else if (Shizu_Runtime_Extensions_isString(state, argumentValues[0])) {
-    Shizu_Value_setInteger64(returnValue, Shizu_Operations_StringToInteger64_Version1_convert(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0])));
-  } else {
-    Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
-    Shizu_State2_jump(state);
   }
+#if 1 == Shizu_Configuration_WithFloat64
+  if (Shizu_Value_isFloat64(&argumentValues[0])) {
+    double x = Shizu_Value_getFloat64(&argumentValues[0]);
+    if (x != floor(x) || x < Shizu_Integer64_Minimum || x > Shizu_Integer64_Maximum) {
+      Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+      Shizu_State2_jump(state);
+    } else {
+      Shizu_Value_setInteger64(returnValue, (Shizu_Integer64)x);
+      return;
+    }
+  }
+#endif
+  if (Shizu_Runtime_Extensions_isString(state, argumentValues[0])) {
+    Shizu_Value_setInteger64(returnValue, Shizu_Operations_StringToInteger64_Version1_convert(state, (Shizu_String*)Shizu_Value_getObject(&argumentValues[0])));
+    return;
+  }
+  Shizu_State2_setStatus(state, Shizu_Status_ConversionFailed);
+  Shizu_State2_jump(state);
 }
 
 #endif
