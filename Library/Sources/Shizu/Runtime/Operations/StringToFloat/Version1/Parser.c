@@ -86,17 +86,17 @@ run
       sign = false;
     } break;
   };
-  char const* integralStart = NULL;
-  char const* integralEnd = NULL;
+  char const* significandStart = NULL;
+  char const* significandEnd = NULL;
   char const* fractionalStart = NULL;
   char const* fractionalEnd = NULL;
   if (isDigit(state, self)) {
-    integralStart = self->input.current;
-    integralEnd = self->input.current;
+    significandStart = self->input.current;
+    significandEnd = self->input.current;
     do {
       next(state, self);
     } while (isDigit(state, self));
-    integralEnd = self->input.current;
+    significandEnd = self->input.current;
     fractionalStart = self->input.current;
     fractionalEnd = self->input.current;
     if (Period == self->input.symbol) {
@@ -108,8 +108,8 @@ run
       fractionalEnd = self->input.current;
     }
   } else if (Period == self->input.symbol) {
-    integralStart = self->input.current;
-    integralEnd = self->input.current;
+    significandStart = self->input.current;
+    significandEnd = self->input.current;
     next(state, self);
     fractionalStart = self->input.current;
     fractionalEnd = self->input.current;
@@ -150,7 +150,7 @@ run
   if (End != self->input.symbol) {
     syntaxError(state);
   }
-  self->output.callbackFunction(state, self->output.callbackContext, sign, integralStart, integralEnd - integralStart, fractionalStart, fractionalEnd - fractionalStart,
+  self->output.callbackFunction(state, self->output.callbackContext, sign, significandStart, significandEnd - significandStart, fractionalStart, fractionalEnd - fractionalStart,
                                                                      exponentSign, exponentStart, exponentEnd - exponentStart);
 }
 

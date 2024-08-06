@@ -228,8 +228,10 @@ static_assert(Shizu_Float64_SignBits + Shizu_Float64_SignificandBits + Shizu_Flo
 
 typedef int32_t Shizu_Integer32;
 
+// This is -2147483647-1.
 #define Shizu_Integer32_Minimum (INT32_MIN)
 
+// This is +2147483647+0.
 #define Shizu_Integer32_Maximum (INT32_MAX)
 
 
@@ -238,8 +240,10 @@ typedef int32_t Shizu_Integer32;
 
 typedef int64_t Shizu_Integer64;
 
+// This is -9223372036854775807-1.
 #define Shizu_Integer64_Minimum (INT64_MIN)
 
+// This is +9223372036854775807+0.
 #define Shizu_Integer64_Maximum (INT64_MAX)
 
 #endif

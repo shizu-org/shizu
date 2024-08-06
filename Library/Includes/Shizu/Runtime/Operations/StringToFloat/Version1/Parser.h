@@ -7,10 +7,11 @@ typedef struct Shizu_String Shizu_String;
 
 typedef void Shizu_Operations_StringToFloat_Parser_CallbackContext;
 
-// Invoked when the significand was parsed. This function must be invoked exactly once during a successful parser.
+// Invoked when a floating pointer number literal was parsed.
+// This function must be invoked exactly once during a successful parser.
 // @param sign true if positive, false if negative.
-// @param integralDigits Pointer to the integral digits.
-// @param integralDigitsLength The number of integral digits. Can be zero iff fractionalDigitsCount is non-zero.
+// @param significandDigits Pointer to the significand digits.
+// @param significandDigitsLength The number of significand digits. Can be zero iff significandDigitsCount is non-zero.
 // @param fractionalDigits Pointer to the fractional digits.
 // @param fractionalDigitsLength The number of fractional digits. Can be zero iff integralDigitsCount is non-zero.
 // @param exponentSign true if positive, false if negative.
@@ -21,13 +22,14 @@ typedef void (Shizu_Operations_StringToFloat_Parser_CallbackFunction)
     Shizu_State2* state,
     Shizu_Operations_StringToFloat_Parser_CallbackContext* context,
     bool sign,
-    char const* integerPart,
-    size_t integerPartLength,
+    char const* significandPart,
+    size_t significandPartLength,
     char const* fractionalPart,
     size_t fractionalPartLength,
     bool exponentSign,
     char const* exponentDigits,
-    size_t exponentDigitsLength);
+    size_t exponentDigitsLength
+  );
 
 void
 Shizu_Operations_StringToFloat_Parser_parse

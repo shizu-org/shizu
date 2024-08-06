@@ -212,13 +212,13 @@ bigint_test_from_integer
     Shizu_State1* state
   )
 {
-#define TEST(INPUT, MAGNITUDE, SIGN) \
+#define TEST(SUFFIX, INPUT, MAGNITUDE, SIGN) \
   { \
     bigint_t* x = NULL; \
     Shizu_JumpTarget jumpTarget; \
     Shizu_State1_pushJumpTarget(state, &jumpTarget); \
     if (!setjmp(jumpTarget.environment)) { \
-      x = bigint_from_i64(state, INPUT); \
+      x = bigint_from_##SUFFIX(state, INPUT); \
       char expected[] = MAGNITUDE; \
       if (strlen(expected) != x->sz) { \
         Shizu_State1_setStatus(state, Shizu_Status_EnvironmentFailed); \
@@ -249,8 +249,13 @@ bigint_test_from_integer
     } \
   }
 
-  TEST(INT64_MIN, "9223372036854775808", -1);
-  TEST(0, "0", 0);
+  TEST(i64, 0, "0", 0);
+  TEST(i64, Shizu_Integer64_Minimum, "9223372036854775808", -1);
+  TEST(i64, Shizu_Integer64_Maximum, "9223372036854775807", +1);
+
+  TEST(i32, 0, "0", 0);
+  TEST(i32, Shizu_Integer32_Minimum, "2147483648", -1);
+  TEST(i32, Shizu_Integer32_Maximum, "2147483647", +1);
 
 #undef TEST
 }

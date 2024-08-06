@@ -29,8 +29,8 @@
 #include "Shizu/Runtime/Extensions.h"
 
 #include "Shizu/Runtime/Operations/ToInteger.h"
+#include "Shizu/Runtime/Operations/ToFloat.h"
 
-#include "Shizu/Runtime/Operations/ToFloat32.h"
 #include "Shizu/Runtime/Include.h"
 
 #if defined(Shizu_Configuration_WithTests)

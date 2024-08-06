@@ -150,7 +150,7 @@ bigint_compare_magnitudes
   );
 
 // Compare x with 5^b5 * 2^b2
-static inline int32_t
+static inline int8_t
 bigint_compare_p5_p2
   (
     Shizu_State1* state,
@@ -244,7 +244,7 @@ bigint_negate
   );
 
 // Compute 2^n, 0 <= n <= UINT64_MAX.
-static bigint_t*
+static inline bigint_t*
 bigint_p2
   (
     Shizu_State1* state,
@@ -252,7 +252,7 @@ bigint_p2
   );
 
 // Compute 5^n, 0 <= n <= UINT64_MAX.
-static bigint_t*
+static inline bigint_t*
 bigint_p5
   (
     Shizu_State1* state,
@@ -338,14 +338,14 @@ bigint_is_zero
     bigint_t const* x
   );
 
-static bool
+static inline bool
 bigint_is_positive
   (
     Shizu_State1* state,
     bigint_t const* x
   );
 
-static bool
+static inline bool
 bigint_is_negative
   (
     Shizu_State1* state,
@@ -353,7 +353,7 @@ bigint_is_negative
   );
   
 // no error
-static void
+static inline void
 _bigint_trim_leading_zeroes
   (
     Shizu_State1* state,
@@ -361,13 +361,33 @@ _bigint_trim_leading_zeroes
   );
 
 // no error
-static void
+static inline void
 _bigint_swap
   (
     Shizu_State1* state,
     bigint_t* x,
     bigint_t* y
   );
+  
+static inline int8_t
+bigint_compare_i32
+  (
+    Shizu_State1* state,
+    bigint_t const* x,
+    int32_t y
+  );
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+static inline int8_t
+bigint_compare_i64
+  (
+    Shizu_State1* state,
+    bigint_t const* x,
+    int64_t y
+  );
+
+#endif
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -685,7 +705,7 @@ bigint_compare_magnitudes
   }
 }
 
-static inline int32_t
+static inline int8_t
 bigint_compare_p5_p2
   (
     Shizu_State1* state,
@@ -699,7 +719,7 @@ bigint_compare_p5_p2
   Shizu_State1_pushJumpTarget(state, &jumpTarget);
   if (!setjmp(jumpTarget.environment)) {
     y = bigint_mul_p5_p2(state, 1, b5, b2);
-    int32_t cmp = bigint_compare(state, x, y);
+    int8_t cmp = bigint_compare(state, x, y);
     bigint_free(state, y);
     y = NULL;
     Shizu_State1_popJumpTarget(state);
@@ -1772,6 +1792,78 @@ _bigint_swap
   }
 #undef swap
 }
+
+static inline int8_t
+bigint_compare_i32
+  (
+    Shizu_State1* state,
+    bigint_t const* x,
+    int32_t y
+  )
+{
+  int8_t sign = INT32_C(0) == y ? INT8_C(0) : (y > INT32_C(0) ? +1 : -1);
+  // Fast path: If the signs are different, then the non-negative one is greater.
+  if (x->sign != sign) {
+    if (x->sign < sign) return -1;
+    else return +1;
+  }
+  // Slow path: The signs are equal.
+  bigint_t* z = bigint_from_i32(state, y);
+  Shizu_JumpTarget jumpTarget;
+  Shizu_State1_pushJumpTarget(state, &jumpTarget);
+  if (!setjmp(jumpTarget.environment)) {
+    int8_t cmp = bigint_compare(state, x, z);
+    bigint_free(state, z);
+    z = NULL;
+    Shizu_State1_popJumpTarget(state);
+    return cmp;
+  } else {
+    Shizu_State1_popJumpTarget(state);
+    if (z) {
+      bigint_free(state, z);
+      z = NULL;
+    }
+    Shizu_State1_jump(state);
+  }
+}
+
+#if 1 == Shizu_Configuration_WithInteger64
+
+static inline int8_t
+bigint_compare_i64
+  (
+    Shizu_State1* state,
+    bigint_t const* x,
+    int64_t y
+  )
+{
+  int8_t sign = INT64_C(0) == y ? INT8_C(0) : (y > INT64_C(0) ? +1 : -1);
+  // Fast path: If the signs are different, then the non-negative one is greater.
+  if (x->sign != sign) {
+    if (x->sign < sign) return -1;
+    else return +1;
+  }
+  // Slow path: The signs are equal.
+  bigint_t* z = bigint_from_i64(state, y);
+  Shizu_JumpTarget jumpTarget;
+  Shizu_State1_pushJumpTarget(state, &jumpTarget);
+  if (!setjmp(jumpTarget.environment)) {
+    int8_t cmp = bigint_compare(state, x, z);
+    bigint_free(state, z);
+    z = NULL;
+    Shizu_State1_popJumpTarget(state);
+    return cmp;
+  } else {
+    Shizu_State1_popJumpTarget(state);
+    if (z) {
+      bigint_free(state, z);
+      z = NULL;
+    }
+    Shizu_State1_jump(state);
+  }
+}
+
+#endif
 
 #if defined(Shizu_Configuration_WithTests)
 

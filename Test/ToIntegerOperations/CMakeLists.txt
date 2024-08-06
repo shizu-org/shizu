@@ -19,20 +19,11 @@
 # 3. This notice may not be removed or altered from any source distribution.
 #
 
-set(name ${Shizu.project-name}.Test.BigFloat)
+set(name ${Shizu.project-name}.Test.ToIntegerOperations)
 
 Shizu_beginExecutable()
 
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/Main.c)
-
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/testType.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigFloat/testType.h)
-
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/testDefault.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigFloat/testDefault.h)
-
-list(APPEND ${name}.source_files Sources/Shizu.Test.BigFloat/testFromInteger.c)
-list(APPEND ${name}.header_files Sources/Shizu.Test.BigFloat/testFromInteger.h)
+list(APPEND ${name}.source_files Sources/Shizu.Test.ToIntegerOperations/Main.c)
 
 Shizu_endExecutable()
 

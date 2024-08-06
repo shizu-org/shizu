@@ -19,20 +19,28 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(SHIZU_OBJECTS_BIGINTEGER2_FROMBIGINTEGER10_H_INCLUDED)
-#define SHIZU_OBJECTS_BIGINTEGER2_FROMBIGINTEGER10_H_INCLUDED
+#if !defined(SHIZU_RUNTIME_OPERATIONS_TOFLOAT_H_INCLUDED)
+#define SHIZU_RUNTIME_OPERATIONS_TOFLOAT_H_INCLUDED
 
 #include "Shizu/Runtime/Value.h"
-typedef struct Shizu_BigInteger10 Shizu_BigInteger10;
 
 void
-_Shizu_BigInteger2_fromBigInteger10
+Shizu_Operations_toFloat32Version1
   (
     Shizu_State2* state,
-    Shizu_BigInteger10* source,
-    Shizu_Boolean* sign,
-    uint32_t** p,
-    uint32_t* n
+    Shizu_Value* returnValue,
+    Shizu_Integer32 numberOfArgumentValues,
+    Shizu_Value* argumentValues
   );
 
-#endif // SHIZU_OBJECTS_BIGINTEGER2_FROMBIGINTEGER10_H_INCLUDED
+#if defined(Shizu_Configuration_WithTests)
+
+void
+Shizu_Operations_toFloat32Version1_tests
+  (
+    Shizu_State2* state
+  );
+
+#endif
+
+#endif // SHIZU_RUNTIME_OPERATIONS_TOFLOAT_H_INCLUDED

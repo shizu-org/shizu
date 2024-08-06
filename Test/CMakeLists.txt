@@ -21,9 +21,8 @@
 
 add_subdirectory(Fundamental)
 add_subdirectory(ByteArray)
-add_subdirectory(BigInteger)
-add_subdirectory(BigFloat)
 add_subdirectory(ToFloatOperations)
+add_subdirectory(ToIntegerOperations)
 add_subdirectory(CountLeadingZeroes)
 add_subdirectory(CountTrailingZeroes)
 add_subdirectory(IsPowerOfTwo)

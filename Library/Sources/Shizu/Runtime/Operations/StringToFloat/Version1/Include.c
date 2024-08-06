@@ -144,7 +144,7 @@ makeExp
   c->exponent = x;
 }
 
-// Basically the callback function creates to big integers in context.
+// Basically the callback function creates two big integers in context.
 // such that the original floating pointer number v.w * 10^e is expressed
 // as .vw * 10^(e + |v|).
 static void
@@ -153,8 +153,8 @@ callbackFunction
     Shizu_State2* state,
     void* context,
     bool sign,
-    char const* integralDigits,
-    size_t integralDigitsCount,
+    char const* significandDigits,
+    size_t significandDigitsCount,
     char const* fractionalDigits,
     size_t fractionalDigitsCount,
     bool exponentSign,
@@ -168,14 +168,14 @@ callbackFunction
 
   // Count the number of leading zeroes to trim before the decimal point.
   size_t numberOfLeadingZeroes = 0;
-  for (size_t i = 0, n = integralDigitsCount; i < n; ++i) {
-    if ('0' != integralDigits[i]) {
+  for (size_t i = 0, n = significandDigitsCount; i < n; ++i) {
+    if ('0' != significandDigits[i]) {
       break;
     }
     numberOfLeadingZeroes++;
   }
   // Modify the input "v.w * 10^e" to ".vw * 10^(e + |v|)".
-  size_t shift = integralDigitsCount - numberOfLeadingZeroes;
+  size_t shift = significandDigitsCount - numberOfLeadingZeroes;
   if (shift) {
     static_assert(SIZE_MAX <= UINT64_MAX, "<internal error>");
     bigint_in_situ_add_u64(Shizu_State2_getState1(state), c->exponent, shift);
@@ -189,7 +189,7 @@ callbackFunction
     }
     numberOfTrailingZeroes++;
   }
-  size_t cp = (integralDigitsCount - numberOfLeadingZeroes) + (fractionalDigitsCount - numberOfTrailingZeroes);
+  size_t cp = (significandDigitsCount - numberOfLeadingZeroes) + (fractionalDigitsCount - numberOfTrailingZeroes);
   if (!cp) {
     cp = 1;
   }
@@ -207,8 +207,8 @@ callbackFunction
   }
   size_t j = 0;
   // Read the digits in their textual order (MBD to LSD).
-  for (size_t i = numberOfLeadingZeroes, n = integralDigitsCount; i < n; ++i) {
-    x->p[j++] = (uint8_t)(integralDigits[i] - '0');
+  for (size_t i = numberOfLeadingZeroes, n = significandDigitsCount; i < n; ++i) {
+    x->p[j++] = (uint8_t)(significandDigits[i] - '0');
   }
   for (size_t i = 0, n = fractionalDigitsCount - numberOfTrailingZeroes; i < n; ++i) {
     x->p[j++] = (uint8_t)(fractionalDigits[i] - '0');
@@ -415,8 +415,6 @@ Shizu_Operations_StringToFloat32_Version1_convert
   // [3] When mapping numbers from decimal to binary, we map from a * 10^q to b * 2^p.
   // What we attempt first summing up the magnitude in a long.
   // We consume up to min(totalDigitsCount, FLT_SIG_MAX_DECIMAL_DIGITS + 1).
-
-
   size_t totalDigitsCount = context.significand->sz;
   size_t prefixDigitsCount = min_sz(state1, totalDigitsCount, FLT_SIG_MAX_DECIMAL_DIGITS + 1);
   uint32_t v_ui = 0;
