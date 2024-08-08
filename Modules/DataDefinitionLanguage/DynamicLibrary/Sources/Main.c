@@ -132,6 +132,8 @@ Shizu_ModuleLibrary_load
     Define(Integer)
     Define(List)
     Define(Map)
+    Define(MapElement)
+    Define(Name)
     Define(Real)
     Define(String)
 
